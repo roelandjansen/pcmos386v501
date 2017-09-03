@@ -13,8 +13,11 @@ This tree:
 See also.....  https://en.wikipedia.org/wiki/PC-MOS/386
 
 In concert with Gary Robertson and Rod Roark it has been decided to place all under GPL v3.
+This does only apply to the PC-MOS/386/The Software Link inc/CDROM code. Does not apply for helper files that 
+are included and publically available.
 
-The PC-MOS386 v5.01 API itself has been documented in Ralf Brown's interrupt list
+The PC-MOS386 v5.01 API itself has been documented in Ralf Brown's interrupt list.
+
 
 http://www.cs.cmu.edu/~ralf/files.html
 

@@ -1,0 +1,143 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**		Written by Dave Nanian and Michael Strickman.
+*/
+
+/*
+**		repeat.cb:
+**
+**		This macro prompts for a number which it uses as a "repeat prefix",
+**	repeating the following for that number of times (default = 1).  If
+**	the command keystroke is bound to "repeat", the current repeat count
+**	is multiplied by four.
+**
+**		Since keystroke macros are handled at the "process" level (by the
+**	standard keyboard handling routine), we have to simulate them if the
+**	user chooses playback as the command to be repeated.	Note that a
+**	keystroke macro with an "undo" command in it will not repeat properly,
+**	since undo cannot be called within an undoable command.
+**
+**		This method does not work (except in the case of keystroke macros)
+**	if the command prompts the user for any reason, nor does it work for
+**	inserting numeric characters (they are interpreted as part of the
+**	repeat count).  As always, the Esc key will get you out.
+*/
+
+void repeat ()
+{
+	global int	_rep_done;		//	Exit flag.
+
+	int	repeat_count = 1,		//	The number of times to repeat.
+			key_value, 				//	The complete value of the key read.
+			ascii_value,			//	The ascii value of the key (lower byte).
+			first = 1;				//	Is this the first numeric keypress?
+
+	string	sequence,			//	The key sequence we're looking up.
+				partial,				//	Multiple keystroke place holder.
+				assignment;			//	Command that sequence is assigned to.
+
+	/*
+	**		Initialize the repeat count and the "first" flag and display
+	**	the first prompt.
+	*/
+
+	message ("Repeat count = 1: type count or command.");
+	_rep_done = 0;
+
+	/*
+	**		This loop processes the repeat count keystrokes.  While
+	**	valid numeric keys are pressed, we increase the repeat count
+	**	in a simple fashion.  If a non-numeric key is pressed, we
+	**	check to see if it is "repeat".	If so, the current repeat
+	**	count is multiplied by four and "first" is set to TRUE,
+	**	allowing the user to reset the count, if necessary.
+	*/
+
+	while (!_rep_done)
+		{
+		while ((key_value = read_char ()) == -1);
+
+		ascii_value = key_value & 0xff;
+
+		if (key_value == key_to_int ("<Esc>"))
+			_rep_done = 1;
+		else if (ascii_value >= 48 && ascii_value <= 57)
+			{
+			/*
+			**	If this is the first keystroke, start count at 0.
+			*/
+
+			if (first)
+				first = repeat_count = 0;
+
+			repeat_count = repeat_count * 10 + (ascii_value - 48);
+			message ("Repeat count = %u: type count or command.", repeat_count);
+			}
+		else
+			{
+			/*
+			**		If we have a possible command string, we've got
+			**	to check and see if it's a real command.	If
+			**	inq_assignment returns "ambiguous", we're only
+			**	partially down a complicated keystroke sequence.
+			**	If the command is "repeat", ignore it and multiply
+			**	the repeat count by 4.	Otherwise, we have a command
+			**	to repeat, so we exit this loop.
+			*/
+
+			sprintf (partial, "#%d", key_value);
+			sequence += partial;
+
+			if ((assignment = inq_assignment (sequence)) != "ambiguous")
+				if (assignment == "repeat")
+					{
+						repeat_count *= 4;
+						message ("Repeat count = %u: type count or command.", repeat_count);
+						first = 1;
+						sequence = "";
+					}
+				else if (assignment == "nothing")
+					{
+					beep ();
+					sequence = "";
+					}
+				else
+					_rep_done = 1;
+			}
+		}
+
+	/*
+	**		This page of code executes the keystroke command.	First,
+	**	we check to see if the person pressed Esc -- if so, the command
+	**	is cancelled.	Otherwise, we repeat the number of times
+	**	specified by repeat_count.
+	*/
+
+	if (key_value == key_to_int ("<Esc>"))
+		message ("Command cancelled.");
+	else
+		{
+		message ("");
+		register_macro (7, "_repeat_halt");
+		_rep_done = 0;
+
+		while (!_rep_done && above (repeat_count, 0))
+			{
+			--repeat_count;
+			execute_macro (assignment);
+			}
+		unregister_macro (7, "_repeat_halt");
+
+		if (_rep_done)
+			message ("Repeat halted.");
+		else
+			message ("Repeat completed.");
+		}
+}
+
+int _repeat_halt ()
+{
+	_rep_done = 1;
+	returns (0);
+}

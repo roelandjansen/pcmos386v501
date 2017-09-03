@@ -1,0 +1,8 @@
+  Window Concepts  ;display_help "windows"
+      Create       ;display_help "splitting"
+      Resize       ;display_help "resizing"
+      Change       ;display_help "switching"
+      Delete       ;display_help "removing"
+       Zoom        ;display_help "zoom_window"
+      Borders      ;display_help "borders"
+      Colors       ;display_help "color"

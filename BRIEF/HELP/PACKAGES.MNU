@@ -1,0 +1,6 @@
+ Language Packages  ;display_help "languages"
+   Brace Checking   ;display_help "brace matching"
+     Compiling      ;display_help "compiling"
+   Error Location   ;display_help "error location"
+ Procedure Location ;display_help "routines"
+  Word Processing   ;display_help "word processing"

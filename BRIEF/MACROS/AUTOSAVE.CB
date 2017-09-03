@@ -1,0 +1,312 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**		Written by Dave Nanian and Michael Strickman.
+*/
+
+/*
+**		autosave.cb:
+**
+**		This macro implements a simple autosave feature using the BRIEF
+**	idle action registered macro facility.  Every time the user is idle
+**	for the amount of time specified by -i<num>, the buffer list is checked
+**	and modified files are automatically written to disk as "filename.asv"
+**	(stands for AutoSaVe).
+**
+**		Autosaving can be forced after a number of minutes by passing the
+**	number of minutes between forced autosaves to the autosave macro.  Note
+**	that this type of autosave can not be interrupted, and could become quite
+**	annoying if the value is too low.
+*/
+
+string escape_re (string original, ~string);
+
+int	force_autosave,		//	Whether or not we should save unmodified files.
+		save_buf,				//	Buffer that stores saved names.
+		last_idle_save,		//	Last idle time we saved.
+		last_save_time,		//	Last real time we saved.
+		last_save_day;			//	Last day we saved (to deal with rollover).
+
+void autosave (~int)
+{
+	int	hours,
+			minutes;
+
+	register_macro (4, "save_files");
+	get_parm (0, force_autosave);
+	date (NULL, NULL, last_save_day);
+	time (hours, minutes);
+	last_save_time = minutes + (hours * 60);
+}
+
+/*
+**		save_files:
+**
+**		This macro loops through the buffer list, writing all of the modified
+**	buffers.  Note that a special buffer is created to keep track of the
+**	autosaved files.
+*/
+
+void save_files ()
+{
+	int	curr_buf,
+			old_buf,
+			saved,
+			do_autosave,
+			force_save,
+			hours,
+			minutes,
+			day;
+
+	date (NULL, NULL, day);
+	time (hours, minutes);
+	force_save = force_autosave && (minutes + ((hours + (day != last_save_day ? 24 : 0)) * 60)) - last_save_time >= force_autosave;
+
+	if (inq_idle_time () < last_idle_save)
+		last_idle_save = 0;
+
+	if (force_save || inq_idle_time () > inq_idle_default () && last_idle_save == 0)
+		{
+		last_idle_save = inq_idle_time ();
+		curr_buf = inq_buffer ();
+
+		/*
+		**		This loop goes through the buffer list, and stops when
+		**	all non-system buffers have been checked.
+		**
+		**		Note that if this is an idle save and the user starts
+		**	typing, the loop stops.  This prevents the autosave from
+		**	continuing when the user has made the transition from an
+		**	idle to a non-idle state.
+		**
+		**		If this is a forced save, all buffers are saved before
+		**	stopping.
+		*/
+
+		while (!(curr_buf == old_buf || !force_save && inq_kbd_char ()))
+			{
+			if (!old_buf)
+				old_buf = curr_buf;
+
+			if (inq_modified () && !inq_system ())
+				{
+				/*
+				**		If the current buffer is modified, and is not a system
+				**	buffer, we have to write it to disk.
+				*/
+
+				string	full_name,
+							just_name,
+							extension;
+
+				inq_names (full_name, extension, just_name);
+
+				if (strlen (extension))
+					full_name = substr (full_name, 1, rindex (full_name, "." + extension) - 1);
+
+				save_position ();
+				top_of_buffer ();
+				drop_anchor (3);
+
+				if (!save_buf)
+					{
+					set_buffer (save_buf = create_buffer ("Autosaves", NULL, 1));
+					delete_line ();
+					register_macro (5, "save_exit");
+					}
+				else
+					set_buffer (save_buf);
+
+				top_of_buffer ();
+
+				/*
+				**		If the file has been autosaved already, we
+				**	have some additional work to do.
+				*/
+
+				if (search_fwd (escape_re (full_name) + ".as[v0-9]\xff" + escape_re (extension) + "\n"))
+					{
+					full_name = read ();
+					full_name = substr (full_name, 1, index (full_name, "\xff") - 1);
+
+					/*
+					**		If this is a forced save, we do it
+					**	whether the files are the same or not.
+					*/
+
+					if (force_save)
+						{
+						del (full_name);
+						++do_autosave;
+						}
+					else
+						{
+						int	comp_buf,
+								done;
+
+						string	line_1,
+									line_2;
+
+						/*
+						**		At this point, we know the file has
+						**	been saved once before.  Here, we check
+						**	to see if the file has actually been
+						**	modified since the last autosave.  This
+						**	is done by performing a line-by-line
+						**	comparison of the two files.	Note that
+						**	this comparison (and the entire autosave)
+						**	is aborted if the users starts typing.
+						*/
+
+						if (comp_buf = create_buffer ("Save Comp", full_name, 1))
+							{
+							while (!(inq_kbd_char () || done))
+								{
+								set_buffer (curr_buf);
+
+								/*
+								**		If we're past the end of the
+								**	file, we use the null string rather
+								**	than the newline character that read
+								**	usually returns.	If this wasn't
+								**	done, files with newline characters
+								**	at their ends would match files
+								**	that were essentially the same but
+								**	shorter.
+								*/
+
+								if (inq_position ())
+									line_1 = "";
+								else
+									{
+									line_1 = read ();
+									move_rel (1, 0);
+									}
+								set_buffer (comp_buf);
+
+								if (inq_position ())
+									line_2 = "";
+								else
+									{
+									line_2 = read ();
+									move_rel (1, 0);
+									}
+								done += line_1 != line_2 || line_1 == "";
+								}
+							set_buffer (curr_buf);
+							delete_buffer (comp_buf);
+
+							/*
+							**		We want to actually perform the save
+							**	if the users hasn't typed anything and
+							**	the last lines compared didn't match.
+							*/
+
+							if (!inq_kbd_char () && line_1 != line_2)
+								{
+								++do_autosave;
+
+								/*
+								**		We delete the previously saved
+								**	file at this point.	If we didn't,
+								**	a backup file could be created.
+								*/
+
+								del (full_name);
+								}
+							}
+						}
+					}
+				else
+					{
+					/*
+					**		To avoid problems with buffers that have the same base name
+					**	but multiple extensions, we check to see if we've already saved
+					**	a buffer with the intended autosave filename.  If so, we construct
+					**	a new extension using a number as the last character.  This
+					**	method handles up to ten different files in the same directory
+					**	with the same base name, which will, hopefully, be plenty.
+					*/
+
+					int	save_pass;
+
+					do
+						{
+						top_of_buffer ();
+						}
+					while (search_fwd (full_name + ".as" + substr ("v1234567890", ++save_pass, 1) + "\xff", 0));
+
+					full_name += ".as" + substr ("v1234567890", save_pass, 1);
+
+					insert (full_name + "\xff" + extension + "\n");
+					++do_autosave;
+					}
+				if (do_autosave)
+					{
+					++saved;
+					set_buffer (curr_buf);
+					message ("Autosaving %s...", just_name);
+					end_of_buffer ();
+
+					if (write_block (full_name) <= 0)
+						raise_anchor ();
+
+					--do_autosave;
+					}
+				else
+					raise_anchor ();
+
+				restore_position ();
+				}
+			/*
+			**		When we go to the next buffer, we ask next buffer for
+			**	all of the buffers, not just non-system.	This way, if we
+			**	started with a system buffer, we don't infinite loop.
+			*/
+
+			set_buffer (curr_buf = next_buffer (1));
+			}
+		if (old_buf)
+			set_buffer (old_buf);
+
+		if (force_save || saved)
+			{
+			if (force_save || !inq_kbd_char ())
+				{
+				last_save_day = day;
+				last_save_time = minutes + hours * 60;
+				}
+			if (saved)
+				message ("Autosave complete.");
+			}
+		}
+}
+
+/*
+**		save_exit:
+**
+**		This routine is called just before BRIEF is going to exit for real.
+**	At that time, all of the autosaved files are deleted from the disk
+**	since they are no longer needed.
+*/
+
+void save_exit (void)
+{
+	if (save_buf)
+		{
+		string	name;
+
+		int	old_buf = set_buffer (save_buf);
+
+		top_of_buffer ();
+
+		while (!inq_position ())
+			{
+			name = read ();
+			del (substr (name, 1, index (name, "\xff") - 1));
+			down ();
+			}
+		set_buffer (old_buf);
+		}
+	unregister_macro (4, "save_files");
+}

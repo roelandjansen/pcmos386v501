@@ -1,0 +1,1020 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**		pwb.cb:
+**
+** This macro package permits BRIEF to interface with the Microsoft
+** Programmers Workbench.
+**
+**	It saves and restores the BRIEF state using the PWB State
+** File (current.sts).  The state information includes the search and
+** translate global variables, the buffers (and positions therein), and
+** bookmarks.  Please refer to the Brief DOS/ OS-2 User's Guide,
+** Chapter 7 "Third-Party Packages", page 215 for additional details
+** on using the pwb macro package.
+**
+*/
+
+#define REG_EXIT_ACTION 5
+#define TRUE				1
+#define FALSE				0
+#define SYSTEM 			1
+
+extern int	_reg_exp,				//	Current regular expression setting.
+				_dir,						//	Current search direction.
+				_t_dir,					//	Current translate direction.
+				_block_search,			//	Current block search setting.
+				_check_warnings,		//	"Check output for warnings" setting.
+				_background;			//	Whether or not to compile in the bg.
+
+extern string	_s_pat,				//	Last search pattern.
+					_t_pat,				//	Last translate pattern.
+					_r_pat;				//	Last translate replacement.
+
+extern string search_path (string pathvar, string filename);
+
+void save_state ();
+int _save_state (int start_buf_id);
+void _save_marks (int start_buf_id);
+void _save_files (int start_buf_id);
+void _save_file_info (int start_buf_id);
+void .sts ();
+void pwb ();
+void _restore_pwb (void);
+_restore (int);
+string _remove_newlines (string trans_str);
+
+/*
+**		save_state:
+**
+**		This macro, when registered as an EXIT_ACTION (type 5)
+**	registered macro, saves the state of the search variables
+**	as well as the names and positions of the current files.
+**
+**		The state file is broken up into several sections.  Each section
+**	is preceded by a tag that describes the type of information stored in
+**	the section.
+*/
+
+void save_state ()
+{
+	int	save_buf_id,
+			start_buf_id,
+			old_backup;
+
+	string	file_name;
+
+
+	/*
+	**		If the user hasn't specified a BFILE as yet (if there
+	**	isn't any BFILE in the environment, (inq_environment) returns
+	**	the null string), or the given BFILE is invalid in some other
+	**	way,	we can't save the state.  We display a message to this
+	**	effect and exit.
+	*/
+
+	file_name = trim (ltrim (lower (inq_environment ("BFILE"))));
+
+	if (substr (file_name, strlen (file_name) - 3) != ".sts")
+		error ("Invalid BFILE specified, state not saved.");
+	else
+	{
+		/*
+		**		Here we create a buffer for the state file.	It's created
+		**	as a system buffer to prevent it from appearing in the buffer
+		**	list (and getting saved along with the other files).
+		*/
+
+		if (!strlen (file_name))
+		{
+			/*
+			** In reality, right here is where we would create a current.sts if
+			**	we couldn't find one where it belonged.
+			*/
+
+			file_name = "current.sts";
+		}
+
+		if (!(save_buf_id = create_buffer ("State", file_name, SYSTEM)))
+			error ("Invalid BFILE specified, state not saved.");
+		else
+		{
+			int	screen_lines,
+					screen_cols;
+
+			/*
+			**		We need to reset the current buffer later, since
+			**	other macros could run after we do and we don't want
+			**	to leave BRIEF in an unstable state.  We save its
+			**	buffer id before continuing.
+			*/
+
+			start_buf_id = set_buffer (save_buf_id);
+
+			/*
+			**		First, we make sure the PWB state file version is one we
+			** support.  If it isn't, we bail.
+			*/
+
+			top_of_buffer ();
+
+			if (!(search_fwd ("<[\t ]@\\[shared-\\]", TRUE, TRUE) &&
+				 search_fwd ("<[\t ]@version=2", TRUE, TRUE)))
+			{
+				error ("Unsupported BFILE specified, state not saved.");
+				return;
+			}
+
+			/*
+			**		First, we save the "global" information: [shared-]
+			** This includes the bookmarks and the primary mark (current file
+			** and position within the current file).
+			*/
+
+			_save_marks (start_buf_id);
+
+			/*
+			**		 Next, we save the "common tool" information: [edit-]
+			** This is only the files we are currently editing.
+			*/
+
+			_save_files (start_buf_id);
+
+			/*
+			**		Finally, we save the BRIEF state information: [brief]
+			** This includes the screen size, search and translate directions,
+			** regular expression setting, block search setting, and search
+			** and translate patterns.
+			*/
+
+			top_of_buffer ();
+
+			if (search_fwd ("<[\t ]@\\[brief\\]", TRUE, TRUE))
+			{
+				/*
+				**		Remove any existing BRIEF state information first.
+				*/
+
+				down ();
+				drop_anchor ();
+
+				if (search_fwd ("<[\t ]@\\[", TRUE, TRUE))
+					prev_char ();
+				else
+					end_of_buffer ();
+
+				delete_block ();
+			}
+			else
+			{
+				end_of_buffer ();
+				insert ("\n[brief]\n");
+			}
+
+			inq_screen_size (screen_lines, screen_cols);
+
+			insert ("\tscreen=%d %d\n\ttoggles=%d %d %d %d %d %d\n",
+									screen_lines, screen_cols,
+									_dir, _reg_exp, _block_search,
+									_t_dir, _check_warnings, _background);
+
+			/*
+			**		The search and translate patterns could,
+			**	potentially, have newline characters in them.
+			**	The _remove_newlines subroutine replaces those
+			**	newline characters with \n, the regular expression
+			**	that means "newline".
+			*/
+
+			insert ("\tsrch=" + _remove_newlines (_s_pat));
+			insert ("\tsrc=" + _remove_newlines (_t_pat));
+			insert ("\trpl=" + _remove_newlines (_r_pat));
+
+			/*
+			**		Now we call the _save_state macro to save the
+			**	remainder of the state information.  Note that
+			**	this macro can be replaced to extend restore's
+			**	capabilities.
+			*/
+
+			_save_file_info (start_buf_id);
+			_save_state (start_buf_id);
+			set_buffer (save_buf_id);
+
+			/*
+			**		Finally, we write the restore file to disk.
+			**	Since we don't want backup files created, we
+			**	turn those off.  We put it back the way it was
+			**	before exiting, since other macros could run
+			**	once we're through.
+			*/
+
+			old_backup = set_backup (FALSE);
+			write_buffer ();
+			set_backup (old_backup);
+			delete_buffer (save_buf_id);
+			set_buffer (start_buf_id);
+		}
+	}
+}
+
+/*
+**		_save_state:
+**
+**		This macro is the end of the save_state chain; other macros can
+**	replace it to save state information in the state file.
+*/
+
+int _save_state (int)
+{
+	returns (0);
+}
+
+/*
+**		_save_marks:
+**
+**		This macro saves the the bookmarks and the primary mark in the
+** [shared-] section of the state file.
+*/
+
+void _save_marks (int start_buf_id)
+{
+	int 		save_buf_id = inq_buffer (),
+				i, curr_buf_id, line, col,
+				mark_line1, mark_line2;
+	string	info;
+
+	top_of_buffer ();
+	search_fwd ("<[\t ]@\\[shared-\\]", TRUE, TRUE);
+	down ();
+	inq_position (mark_line1);
+
+	while (search_fwd ("<[\t ]@\\c{\\[}|{mark=edit}|{pmark=}"))
+		if (read (1) == "[")
+			break;
+		else
+		{
+			if (!mark_line2)
+				inq_position (mark_line2);
+
+			delete_line ();
+			beginning_of_line ();
+		}
+
+	/*
+	**		Finally, we save the bookmarks and the primary mark.
+	*/
+
+	goto_line (mark_line2 ? mark_line2 : mark_line1);
+
+	for ( ; i < 10 ; i++)
+		if (goto_bookmark (i, curr_buf_id, line, col))
+			{
+			set_buffer (curr_buf_id);
+			inq_names (info);
+			set_buffer (save_buf_id);
+			insert ("\tmark=edit %s %u %u bnumber=%u\n", info, line, col, i);
+			}
+	set_buffer (start_buf_id);
+	inq_position (line, col);
+	inq_names (info);
+	set_buffer (save_buf_id);
+	insert ("\tpmark=\"%s\" %u %u\n", info, line, col);
+}
+
+/*
+**		_save_files:
+**
+**		This macro gets called to save the "common tool" state information.
+*/
+
+void _save_files (int start_buf_id)
+{
+	int	save_buf_id = inq_buffer (),
+			curr_buf_id = start_buf_id,
+			line,
+			col,
+			top_line,
+			top_col,
+			mark_line1, mark_line2;
+
+	string	info;
+
+	top_of_buffer ();
+	search_fwd ("<[\t ]@\\[edit-\\]", TRUE, TRUE);
+	down ();
+	inq_position (mark_line1);
+
+	while (search_fwd ("<[\t ]@\\c{\\[}|{file=}"))
+		if (read (1) == "[")
+			break;
+		else
+		{
+			if (!mark_line2)
+				inq_position (mark_line2);
+
+			delete_line ();
+			beginning_of_line ();
+		}
+
+	/*
+	**		Finally, we save the files.
+	*/
+
+	goto_line (mark_line2 ? mark_line2 : mark_line1);
+
+	set_buffer (start_buf_id);
+
+	do
+	{
+		if (!inq_system ())
+		{
+			inq_position (line, col);
+			inq_top_left (top_line, top_col, NULL, NULL, NULL, curr_buf_id);
+			inq_names (info);
+			set_buffer (save_buf_id);
+			insert ("\tfile=\"%s\" %u %u %u %u\n", info, top_line, top_col, line, col);
+			set_buffer (curr_buf_id);
+		}
+		set_buffer (curr_buf_id = next_buffer (1));
+	}
+	while (curr_buf_id != start_buf_id);
+
+	set_buffer (save_buf_id);
+}
+
+/*
+**		_save_file_info:
+**
+**		This macro gets called to save the variable length state information.
+*/
+
+void _save_file_info (int start_buf_id)
+{
+	int	save_buf_id = inq_buffer (),
+			curr_buf_id,
+			curr_win_id = inq_window (),
+			start_win_id = curr_win_id,
+			line,
+			col,
+			top_line,
+			top_col,
+			cursor_line,
+			cursor_col,
+			lx,
+			by,
+			rx,
+			ty,
+			i;
+
+	string	info;
+
+	/*
+	**		Now that the global state information has been saved, we save the
+	**	information about the buffers and windows in the [brief] section.
+	**
+	**		First, we save all the buffers that are being displayed in tiled
+	**	windows.  These windows are recreated along with the buffers if no
+	**	filename is specified.
+	**
+	**		Then, we save information about the buffers that aren't being
+	**	viewed in a window.
+	**
+	**		We skip system buffers manually, rather than with the (next_buffer)
+	**	parameter, because we could have been entered with a system buffer as
+	**	the current buffer.  If we made use of the (next_buffer) parameter,
+	**	we'd never come back to the starting buffer and would infinite loop.
+	*/
+
+	do
+		{
+		/*
+		**		We don't save the state of overlapping windows.  Exit if there's
+		**	one on the screen.
+		*/
+
+		if (inq_window_info (curr_win_id, curr_buf_id, lx, by, rx, ty))
+			break;
+
+		/*
+		**		If there's a buffer in the window, save all the appropriate
+		**	information, including:
+		**
+		**			The fully qualified filename.
+		**			The line and column of the file in the top left corner
+		**			of the window.
+		**			The line and column of the file the cursor's on.
+		**			The window's coordinates (lx, by, rx, ty).
+		**			The window's colors.
+		*/
+
+		if (curr_buf_id)
+			{
+			set_buffer (curr_buf_id);
+			inq_names (info);
+			inq_top_left (top_line, top_col, curr_win_id, cursor_line, cursor_col);
+			set_buffer (save_buf_id);
+			insert ("\tfile=%s %u %u %u %u %d %d %d %d c=%d\n", info,
+										top_line, top_col, cursor_line, cursor_col,
+										lx, by, rx, ty, inq_window_color (curr_win_id));
+			}
+		curr_win_id = next_window (curr_win_id);
+		}
+	while (start_win_id != curr_win_id);
+
+	/*
+	**		Now we save all the buffers that aren't viewed in windows.
+	*/
+
+	set_buffer (start_buf_id);
+
+	do
+		{
+		/*
+		**		If there was an overlapping window on the screen, we save
+		**	_all_ the buffers, not just the ones that weren't being viewed.
+		*/
+
+		if (!inq_system () && (!inq_views (curr_buf_id) || inq_window_info ()))
+			{
+			inq_names (info);
+			inq_position (line, col);
+			inq_top_left (top_line, top_col, NULL, NULL, NULL, curr_buf_id);
+
+			set_buffer (save_buf_id);
+			insert ("\tfile=%s %u %u %u %u\n", info, top_line, top_col, line, col);
+			set_buffer (curr_buf_id);
+			}
+		set_buffer (curr_buf_id = next_buffer (1));
+		}
+	while (start_buf_id != curr_buf_id);
+
+	set_buffer (save_buf_id);
+}
+
+/*
+**		.sts:
+**
+**		This macro is, quite frankly, a mite strange.  When the
+**	user types "b" with no arguments, BRIEF automatically loads
+**	the file specified by the BFILE environment variable.  If
+**	that file has the extension ".sts", this macro runs.
+**
+**		This macro then restores the files that were active
+**	during the last editing session.  The state file buffer
+**	(specified in the BFILE) isn't deleted -- the restore macro,
+**	which runs after the file loading sequence, does that after
+**	restoring the state of the search and translate variables.
+*/
+
+void .sts ()
+{
+	string	file_name;
+
+	/*
+	**		We need the name of the current file for the next test.
+	**	All we need is the buffer name, which is the last parameter.
+	**	The NULL placeholder is used to omit the additional information.
+	*/
+
+	inq_names (NULL, NULL, file_name);
+
+	/*
+	**		This logic only makes sense the first time this file extension
+	**	macro is called.  If we're running it for the second time, or the file
+	**	isn't the same as the state file (maintained in the BFILE environment
+	**	variable), we skip it.	Initialization logic for "real" .rst files can
+	**	be placed in the "true" clause of the if statement (replacing or
+	**	supplementing the (tabs) statement).
+	**
+	**		We use "index" here because the only thing we really care about is
+	**	that the file name matches the name of the file specified in BFILE:
+	**	remember that the path specified could be relative.
+	*/
+
+	if (!(first_time () && index (trim (lower (inq_environment ("BFILE"))) + "\xff", file_name + "\xff")))
+		tabs (9);
+	else
+	{
+		int	save_buf_id = inq_buffer (),
+				curr_buf,
+				line,
+				col,
+				top_line,
+				top_col,
+				lx,
+				by,
+				rx,
+				ty,
+				bg_color,
+				loc,
+				has_window,
+				window_to_select,
+				old_msg_level = inq_msg_level ();
+
+		string	file_line;
+
+		/*
+		**		BRIEF has already edited the state file (because of normal BFILE
+		**	processing) and made it the current buffer.	We get its buffer id
+		**	for future use, search for the [brief] string that tells us where
+		**	the file data starts, and process the file information, which
+		**	is in the following format:
+		**
+		**		The string "file=".
+		**		Full, qualified filename.
+		**		The line displayed at the top of the last/this window.
+		**		The column at the left hand side of the last/this window.
+		**		The current line number in this window/in the buffer.
+		**		The current column number in this window/in the buffer.
+		**
+		**		The rest of the information is optional, and is only there if
+		**	there were views of the buffer.
+		**
+		**		The coordinates of the window (lx, by, rx, ty).
+		**		The string "c=".
+		**		The window color.
+		**
+		**		Note that if the telltale [brief] string isn't found, we can't
+		**	process the .rst file.  In addition, if the screen size specified
+		**	in the [edit-] section isn't the same as the current screen size,
+		**	we can't continue.
+		*/
+
+		if (search_fwd ("<[\t ]@\\[brief\\]", TRUE, TRUE) >= 1)
+		{
+			int	curr_win_lines,
+					curr_win_cols,
+					old_win_lines,
+					old_win_cols,
+					create_windows;
+
+			inq_screen_size (curr_win_lines, curr_win_cols);
+			search_fwd ("<[\t ]@screen=\\c", TRUE, TRUE);
+//			next_char (7);
+			old_win_lines = atoi (file_line = trim (ltrim (compress (read ()))));
+			old_win_cols = atoi (substr (file_line, index (file_line, " ") + 1));
+
+			if (search_fwd ("<[\t ]@\\cfile=", TRUE, TRUE))
+			{
+				lx = 1;
+				rx = curr_win_cols - 2;
+				ty = 1;
+				by = curr_win_lines - 3;
+				bg_color = inq_window_color ();
+				create_windows = ((curr_win_lines == old_win_lines) && (curr_win_cols == old_win_cols));
+
+//				down ();
+				display_windows (FALSE);
+
+				/*
+				**		Here's the loop that processes the file information.  We
+				**	continue restoring files until there's no more information in
+				**	the file to restore (signaled by EOF or another section).
+				*/
+			
+				while (substr (file_line = ltrim (trim (read ())), 1, 5) == "file=")
+				{
+					/*
+					**		The string "c=" is only present if this is a window/file
+					**	declaration.
+					*/
+
+					if (loc = rindex (file_line, " c="))
+					{
+						has_window = TRUE;
+
+						if (create_windows)
+						{
+							bg_color = atoi (substr (file_line, loc + 3));
+							loc = rindex (substr (file_line, 1, loc - 1), " ");
+							ty = atoi (substr (file_line, loc + 1));
+							loc = rindex (substr (file_line, 1, loc - 1), " ");
+							rx = atoi (substr (file_line, loc + 1));
+							loc = rindex (substr (file_line, 1, loc - 1), " ");
+							by = atoi (substr (file_line, loc + 1));
+							loc = rindex (substr (file_line, 1, loc - 1), " ");
+							lx = atoi (substr (file_line, loc + 1));
+							file_line = substr (file_line, 1, loc - 1);
+						}
+						else
+						{
+							int	i;
+
+							for ( ; i < 5 ; i++)
+							{
+								file_line = substr (file_line, 1, loc - 1);
+								loc = rindex (file_line, " ");
+							}
+						}
+					}
+					else if (!window_to_select)
+						has_window = TRUE;
+
+					loc = rindex (file_line, " ");
+					col = atoi (substr (file_line, loc + 1));
+					loc = rindex (substr (file_line, 1, loc - 1), " ");
+					line = atoi (substr (file_line, loc + 1));
+					loc = rindex (substr (file_line, 1, loc - 1), " ");
+					top_col = atoi (substr (file_line, loc + 1));
+					loc = rindex (substr (file_line, 1, loc - 1), " ");
+					top_line = atoi (substr (file_line, loc + 1));
+
+					file_name = trim (ltrim (substr (file_line, 6, loc - 6)));
+					down ();
+
+					/*
+					**		edit_file is used to load the file back in because it
+					**	deals with all the details of attaching the buffer to the
+					**	window, calling the proper initialization routines, setting
+					**	the current buffer, etc.
+					**
+					**		If the call to edit_file fails, we know something has
+					**	gone wrong.  So we ignore this file and continue to the
+					**	next.
+					*/
+
+					set_msg_level (0);
+
+					if (curr_buf = inq_buffer (file_name))
+						set_buffer (curr_buf);
+
+					if (curr_buf || edit_file (file_name) > 0)
+					{
+						if (has_window && (create_windows || !window_to_select))
+						{
+							int	window_id = create_tiled_window (lx, by, rx, ty, inq_buffer ());
+
+							if (!window_to_select)
+								window_to_select = window_id;
+
+							set_top_left (top_line, top_col, window_id, line, col);
+							window_color (bg_color, window_id);
+						}
+						else
+						{
+							move_abs (line, col);
+							set_top_left (top_line, top_col, NULL, NULL, NULL, inq_buffer ());
+						}
+
+						/*
+						**		At this point, the restored file has been made the
+						**	current buffer.	We have to make our state file current
+						**	so the top of the loop works correctly.
+						*/
+
+						set_buffer (save_buf_id);
+					}
+					else if (has_window && (create_windows || !window_to_select))
+					{
+						int	window_id = create_tiled_window (lx, by, rx, ty, save_buf_id);
+
+						if (!window_to_select)
+							window_to_select = window_id;
+					}
+					set_msg_level (old_msg_level);
+					has_window = FALSE;
+				}
+
+				display_windows (1);
+				set_window (window_to_select);
+			}
+		}
+
+		curr_buf = set_buffer (save_buf_id);
+		top_of_buffer ();
+
+		if (search_fwd ("<[\t ]@\\[edit-\\]"))
+		{
+			int	buffer_id,
+					line, col, top_line, top_col;
+
+			do
+			{
+				down ();
+				file_line = trim (ltrim (read ()));
+
+				if (substr (file_line, 1, index (file_line, "=")) == "file=")
+				{
+					int	loc = rindex (file_line, " ");
+					string	file;
+
+					file = substr (file_line, index (file_line, "\"") + 1);
+					file = substr (file, 1, rindex (file, "\"") - 1);
+
+					col = atoi (substr (file_line, loc + 1));
+					loc = rindex (substr (file_line, 1, loc - 1), " ");
+					line = atoi (substr (file_line, loc + 1));
+					loc = rindex (substr (file_line, 1, loc - 1), " ");
+					top_col = atoi (substr (file_line, loc + 1));
+					loc = rindex (substr (file_line, 1, loc - 1), " ");
+					top_line = atoi (substr (file_line, loc + 1));
+
+					if (edit_file (file) > 0)
+					{
+						move_abs (line, col);
+						set_top_left (top_line, top_col, NULL, NULL, NULL, inq_buffer ());
+						set_buffer (save_buf_id);
+					}
+				}
+			} while (substr (file_line, 1, 1) != "[" && !inq_position ());
+		}
+
+		attach_buffer (curr_buf);
+
+		/*
+		**		Restore the primary mark.
+		*/
+
+		set_buffer (save_buf_id);
+		top_of_buffer ();
+		
+		if (search_fwd ("<[\t ]@\\[shared-\\]", TRUE, TRUE) &&
+				search_fwd ("<[\t ]@pmark=\"\\c", TRUE, TRUE))
+		{
+			loc = rindex (file_line = read (), " ");
+			col = atoi (substr (file_line, loc + 1));
+			loc = rindex (substr (file_line, 1, loc - 1), " ");
+			line = atoi (substr (file_line, loc + 1));
+			file_line = substr (file_line, 1, rindex (file_line, "\"") - 1);
+
+			if (edit_file (file_line))
+				move_abs (line, col);
+			else
+				set_buffer (curr_buf);
+		}
+	}
+}
+
+/*
+**		pwb:
+**
+**		This macro restores the state of the search and translate
+**	global variables, as well as the list of bookmarks for each
+**	currently edited file.
+**
+**		Note that if the ".sts" macro ran when BRIEF was started,
+**	the state file (BFILE) has already been loaded.  In this case,
+**	(create_buffer) just gives us its buffer ID, and doesn't bother
+**	loading the file again.
+*/
+
+void pwb ()
+{
+	if (first_time ())
+	{
+		string	file_name;
+
+		/*
+		**		First, we register the macro that will end up saving the state of
+		**	the session for the next time around.
+		*/
+
+		register_macro (REG_EXIT_ACTION, "save_state");
+
+		/*
+		**		If this macro runs, and no BFILE is specified, we can't restore
+		**	the state (you can't restore what isn't there).  So we put up an
+		**	error message and exit.  If the file doesn't exist, we don't
+		**	proceed -- once again, there's nothing to restore!
+		*/
+
+		file_name = trim (ltrim (lower (inq_environment ("BFILE"))));
+
+		if (substr (file_name, strlen (file_name) - 3) != ".sts")
+			error ("Invalid BFILE specified, state not restored.");
+		else if (exist (file_name))
+		{
+			/*
+			**		Before we make the state file buffer current, we have to
+			**	ensure the old buffer (which is in the main window) is saved
+			**	away.  Before we exit the macro, we have to reset it:  otherwise,
+			**	BRIEF gets very unhappy.
+			*/
+
+			int	buffer_id,
+					old_buffer = inq_buffer ();
+
+			string	file_line;
+
+			/*
+			**		If the buffer creation fails ((create_buffer) returns 0), we
+			**	tell the user about the problem and stop.  Otherwise, we continue
+			**	with the restore.
+			*/
+
+			if (!(buffer_id = create_buffer ("Restore", file_name)))
+				error ("Invalid BFILE specified.");
+			else
+			{
+				/*
+				**		Here we make the restore buffer current and parse the
+				**	information in the state file.  This includes:
+				**
+				**	 The size of the screen.
+				**	 The search direction, regular expression setting,
+				**	  search block setting, translate direction, warnings-only
+				**	  and background compile settings.
+				**	 The search pattern.
+				**	 The translate pattern.
+				**	 The replacement string.
+				**
+				**		No error checking is done on the results of the parse:  if
+				**	the numbers aren't right, the (atoi) call will fail and
+				**	things will default to 0 (if the strings don't exist, they'll
+				**	probably be null).
+				*/
+
+				set_buffer (buffer_id);
+				top_of_buffer ();
+
+				if (search_fwd ("<[\t ]@\\[brief\\]", TRUE, TRUE))
+				{
+					down ();
+
+					while (substr (file_line = ltrim (read ()), 1, 1) != "[" && !inq_position ())
+					{
+						switch (substr (file_line, 1, index (file_line, "=")))
+						{
+							case "toggles=":
+							{
+								file_line = trim (compress (file_line));
+								_dir = atoi (substr (file_line, 9));
+								file_line = substr (file_line, index (file_line, " ") + 1);
+								_reg_exp = atoi (file_line);
+								file_line = substr (file_line, index (file_line, " ") + 1);
+								_block_search = atoi (file_line);
+								file_line = substr (file_line, index (file_line, " ") + 1);
+								_t_dir = atoi (file_line);
+								file_line = substr (file_line, index (file_line, " ") + 1);
+								_check_warnings = atoi (file_line);
+								file_line = substr (file_line, index (file_line, " ") + 1);
+								_background = atoi (file_line);
+							}
+							case "srch=":
+								_s_pat = substr (file_line, 6, strlen (file_line) - 6);
+
+							case "src=":
+								_t_pat = substr (file_line, 5, strlen (file_line) - 5);
+
+							case "rpl=":
+								_r_pat = substr (file_line, 5, strlen (file_line) - 5);
+						}
+						down ();
+					}
+					/*
+					**		Now we call the _restore macro to finish up the
+					**	restoration.  Note that this macro can be replaced to
+					**	extend restore's capabilities.
+					*/
+
+					_restore_pwb ();
+					_restore (old_buffer);
+				}
+			}
+			set_buffer (buffer_id);
+
+			/*
+			**		Here we make sure the state file buffer isn't the same as
+			**	the buffer that was current when we entered the macro.  This
+			**	shouldn't happen, but it could.
+			*/
+
+			if (old_buffer != buffer_id && !inq_views (buffer_id))
+			{
+				set_buffer (old_buffer);
+				delete_buffer (buffer_id);
+			}
+		}
+	}
+}
+
+/*
+**		_restore_pwb:
+**
+**		This macro restores the "common tool" state information.
+*/
+
+void _restore_pwb (void)
+{
+	int	use_srch, use_rpl;
+	string	srch, rpl, src, file_line;
+
+	top_of_buffer ();
+
+	if (search_fwd ("<[\t ]@\\[edit-\\]"))
+	{
+		do
+		{
+			down ();
+			file_line = trim (ltrim (read ()));
+
+			switch (substr (file_line, 1, index (file_line, "=")))
+			{
+				case "srch=":
+					srch = substr (file_line, index (file_line, "=") + 1);
+
+				case "fSrchRe=":
+					use_srch = !atoi (substr (file_line, index (file_line, "=") + 1));
+
+				case "rpl=":
+					rpl = substr (file_line, index (file_line, "=") + 1);
+
+				case "src=":
+					src = substr (file_line, index (file_line, "=") + 1);
+
+				case "fRplRe=":
+					use_rpl = !atoi (substr (file_line, index (file_line, "=") + 1));
+			}
+		} while (substr (file_line, 1, 1) != "[" && !inq_position ());
+
+		if (use_srch)
+			_s_pat = srch;
+
+		if (use_rpl)
+		{
+			_t_pat = src;
+			_r_pat = rpl;
+		}
+	}
+}
+
+/*
+**		_restore:
+**
+**		This macro restores the variable editing information.  It can be
+**	replaced by the user to extend restore's capabilities.
+*/
+
+_restore (int)
+{
+	/*
+	**		Now, we restore the list of bookmarks.  We check to see if each
+	**	buffer in the file list is being edited in this session.  If so, its
+	**	bookmarks are restored.
+	*/
+
+	top_of_buffer ();
+
+	if (search_fwd ("<[\t ]@\\[shared-\\]", TRUE, TRUE))
+	{
+		int	bookmark_num,
+				loc,
+				mark_buf,
+				line,
+				col;
+
+		string	file_line;
+
+		down ();
+
+		while (!inq_position () && read (1) != "[")
+		{
+			file_line = trim (ltrim (compress (read ())));
+
+			if (substr (file_line, 1, 9) == "mark=edit")
+			{
+				file_line = substr (file_line, 11);
+
+				if ((mark_buf = inq_buffer (substr (file_line, 1, index (file_line, " ") - 1)))
+						&& (loc = rindex (file_line, " bnumber=")))
+				{
+					bookmark_num = atoi (substr (file_line, loc + 9));
+					loc = rindex (substr (file_line, 1, loc - 1), " ");
+					col = atoi (substr (file_line, loc + 1));
+					loc = rindex (substr (file_line, 1, loc - 1), " ");
+					line = atoi (substr (file_line, loc + 1));
+					drop_bookmark (bookmark_num, "y", mark_buf, line, col);
+				}
+			}
+			down ();
+		}
+	}
+}
+
+/*
+**		_remove_newlines:
+**
+**		This macro replaces all newline characters with the character sequence
+**	"\n".  This prevents problems when a search pattern with a newline in it
+**	is inserted.  Note that a hard carriage return is also inserted at the
+**	end of the line as a step saver.
+*/
+
+string _remove_newlines (string trans_str)
+{
+	int	loc;
+
+	/*
+	**		This loop checks for newlines in the passed string.  If
+	**	once is found, the string is split into two parts:  the part
+	**	before the newline, and the part after.  The two halves are
+	**	then put back together again, with a newline regular expression
+	**	("\n") in between.
+	*/
+
+	while (loc = index (trans_str, "\n"))
+		trans_str = substr (trans_str, 1, loc - 1) + "\\n" + substr (trans_str, loc + 1);
+
+	returns (trans_str + "\n");
+}

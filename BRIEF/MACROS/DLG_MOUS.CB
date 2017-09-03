@@ -1,0 +1,241 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**
+**		dlg_mous.cb:
+**
+**		This file contains all macros for the Dialog Manager's Mouse Interface.
+*/
+
+#include "dialog.h"
+#include "dlg.h"
+#include "win_ctrl.h"
+
+int _is_push_button( int col );
+int _is_list( int buf_line, int buf_col );
+extern void begin_word();
+
+extern int _dialog_mouse_buf;
+
+int mouse_choice_type,
+	 new_focus,
+	 focus_y,
+	 focus_x1,
+	 focus_x2;
+
+/*
+**	mouse_dialog
+**
+**	Handle all the mouse events of interest for dialog boxes
+**														
+*/
+
+void mouse_dialog	  (int event, int modifier, int parm2,	int parm3 )			
+{
+	/* handle the events of interest */
+
+	switch ( event )
+		{
+		case BTN1_DOWN:
+			{
+			string str;
+			int curr_buf,
+				 line,
+				 col,
+				 lx,
+				 rx;
+
+			/*		Save current buffer */	
+		
+			curr_buf = inq_buffer();						
+			inq_position(line, col);
+
+			/*		The _dialog_mouse_buf is a mirror image of the display
+			**	buffer except instead of contols, the buffer contains control
+			**	codes.   For example if a radio button	in the display buffer 
+			**	looks like XXXX ( ), in the mouse info buffer it looks
+			**	like 88888888.
+			*/
+
+			set_buffer(_dialog_mouse_buf);
+
+			/*		By positioning in the mouse buffer, we can determine
+			**	what the current focus is.
+			*/
+
+			move_abs(line, col);
+
+			/*		Find the left and right edges of this control
+			*/
+
+			search_back("\t|<| ", TRUE);
+			inq_position(NULL, lx);
+
+			/* Find out where the control ends */
+
+			move_rel(0, 1);
+			search_fwd("\t|>| ", TRUE);
+			inq_position(NULL, rx);
+
+			/*		If this is the first time here, set the current focus.
+			*/
+
+			if (first_time())
+				{
+				focus_y = line;
+				focus_x1 = lx + 1;
+				focus_x2 = rx - 1;
+				}
+
+			/*		Now, check to see if the focus has changed, if so,
+			**	set the new_focus flag
+			*/
+
+			if (line != parm2 || parm3 < lx + 1 || parm3 > rx - 1)
+				{
+
+				/*		Move to new position and read in one character.
+				**	That character is the control code (or 0 if not over
+				**	a control.
+				*/				
+		
+				move_abs(parm2, parm3);
+				str = read(1);
+				mouse_choice_type = atoi(str);
+
+				/*		If the mouse down was over a control we have a new_focus */
+
+				if (mouse_choice_type != 0)
+					{
+
+					/*		Find the left edge of the control 
+					*/
+
+					search_back("\t|<| ", TRUE);
+					inq_position(focus_y, focus_x1);
+					move_rel(0, 1);
+					search_fwd("\t|>| ", TRUE);
+					inq_position(NULL, focus_x2);
+					focus_x1 ++;
+					focus_x2 --;
+					new_focus = 1;
+					}
+				}
+	
+			/*		If the focus has not changed and the last mouse_choice is 
+			**	0 (becuase of a click outside of any control, need to reset
+			**	the mouse_choice_type
+			*/
+
+			else if (mouse_choice_type == 0)
+				{
+				move_abs(parm2, parm3);
+				str = read(1);
+				mouse_choice_type = atoi(str);
+				}
+
+			set_buffer(curr_buf);
+			}
+
+		case BTN1_CLICK:
+			{
+
+			/*	 If we are still in focus and we have a valid mouse_choice_type */
+
+			if (parm2 == focus_y && parm3 >= focus_x1 && parm3 <= focus_x2 &&
+				 mouse_choice_type)
+					{
+					/* if the fcous has not changed */
+
+					if (!new_focus)
+						{
+						/*		Send a button pick.
+						*/
+						if (mouse_choice_type == CHECK ||
+							 mouse_choice_type == RADIO ||
+							 mouse_choice_type == PUSH)
+
+							_dlg_pick_btn();		 
+
+						/*		Send an alter list
+						*/
+						else if (mouse_choice_type == LIST)
+							{
+							raise_anchor ();
+							move_abs(parm2, parm3);
+							begin_word();
+							_list_highlight ();
+							}
+
+						/*		Must be a field, so just position the cursor
+						*/
+						else
+							{
+							raise_anchor();
+							move_abs(parm2, parm3);
+							}
+						}
+
+					else if (_dialog_exit()) 
+						{
+						string temp;
+
+						raise_anchor();
+						set_buffer (_dialog_data_buf);
+						top_of_buffer();
+
+						/* locate the line in the control file where the control is defined */
+
+						sprintf( temp, "( @%d @, @%d @)", focus_y, focus_x1);
+						search_fwd( temp, TRUE, TRUE );
+						beginning_of_line();
+
+						/* send the enter event */
+
+						_dialog_enter();			
+
+						if (mouse_choice_type == CHECK ||
+							 mouse_choice_type == RADIO ||
+							 mouse_choice_type == PUSH)
+
+							_dlg_pick_btn();
+						
+						else if (mouse_choice_type == LIST)
+							{
+							int x1, x2;
+
+							inq_marked(NULL, x1, NULL, x2);
+
+							/*		If not in a marked are, we must be selecting
+							**	a new list entry
+							*/
+		
+							if (parm3 < x1 || parm3 > x2)
+								{
+								raise_anchor();
+								move_abs(parm2, parm3);
+								begin_word();
+								_list_highlight ();
+								}
+							}
+
+						/*		This must be a field, so position the cursor.
+						*/
+						else
+							{
+							raise_anchor();
+							move_abs(parm2, parm3);
+							}
+						}
+					new_focus = 0;
+				}
+			}
+		/*		For close and set window, just want to exit the dialog manager.
+		*/
+		case	CLOSE_WIN:
+		case	SET_WIN:
+
+			_dialog_f10();
+		}
+	}
+

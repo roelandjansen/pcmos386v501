@@ -1,0 +1,426 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**
+**		dlg_menu.cb:
+**
+**		This file contains all BRIEF macros for managing menus provided
+**    by the dialog manager.
+*/
+
+#include "dialog.h"
+#include "dlg.h"
+#include "win_ctrl.h"
+
+/*
+**		mouse_menu
+**
+**		Handle all the mouse events of interest for menus
+**
+** Mouse assignments
+** BTN1 DOWN, UP, MOVE - highlight a menu entry
+** BTN1_CLICK				- pick a menu choice
+** BTN2_CLICK 				- close the menu
+*/
+void mouse_menu	(	int event, 			// the event code
+							int modifier,	  	// modifier keys
+							int parm2,			// line or scroll bar code
+							int parm3 )			// column or thumb position
+{
+  	/* handle the events of interest */
+
+	switch ( event ){
+		/*
+		** Note: the double click is ignored because the CLICK message
+		** comes thru before the double click message so the click causes
+		** the menu selection.
+		*/
+		case BTN1_DOWN:				// highlite a menu entry
+		case BTN1_UP:					// highlite a menu entry
+		case BTN1_MOVE: 				// highlite a menu entry
+		case BTN1_CLICK: {				// pick a menu choice
+			int lines;
+			if ( modifier == 0 )	{		// make sure no modifiers present
+				/* determine the number of lines in the buffer */
+				save_position();
+				end_of_buffer();		// position to the end of the buffer
+				inq_position( lines );
+				restore_position();
+
+				if ( 0 < parm2 && parm2 <= lines ) {
+					inq_position( lines );
+					if ( lines != parm2 ) {		// did the mouse move to a new entry?
+						raise_anchor();			// erase current highlight
+						move_abs( parm2, 0 );	// position to choice that was clicked on
+						_menu_highlight();		// highlight the menu choice
+					}
+					if ( event == BTN1_CLICK )	_dialog_menu_pick();
+				}
+			}
+		}
+
+		/*
+		** Close the menu if the user clicks in the status area.
+		** If you would like a click in the status area, when a
+		** menu is up to mean shut down the menu and bring up
+		** a command prompt, then remove the test for BTN1_CLICK
+		** and just exit.  Then the BTN1_DOWN message will cause
+		** the menu to exit and the BTN1_CLICK will pass thru to
+		** the default handler which will bring up the command prompt
+		*/
+ 		case STATUS_AREA:
+			switch ( parm2 ) {
+				case BTN1_CLICK:
+					exit();
+			}
+
+		/* close the menu if the close button clicked on this menu */
+		case CLOSE_WIN:
+			if ( inq_window() == parm2 ) exit(); // close this menu
+
+		/* close the menu if the user clicked outside of it */
+		case SET_WIN:
+			if ( inq_window() != parm2 ) exit(); // close this menu
+
+		case VSCROLL:						// vertical scroll bar event
+			switch ( parm2 ){
+				case SB_BOTTOM:			// end of menu request
+					_dialog_menu_end();
+				case SB_TOP:				// top of menu request
+					_dialog_menu_home();
+				case SB_PAGEDOWN:			// page down request
+					_dialog_menu_pgdn();
+				case SB_PAGEUP:			// page up request
+					_dialog_menu_pgup();
+				case SB_LINEDOWN:			// line down request
+					_dialog_menu_down();
+				case SB_LINEUP:			// line up request
+					_dialog_menu_up();
+				case SB_THUMBTRACK:{		// scroll while tracking the thumb
+					raise_anchor();				// erase current highlight
+
+					/* set the thumb position */
+
+					set_ctrl_state(VERT_THUMB, parm3);
+
+					/* make sure we're at the left col */
+
+					move_abs(0, 1);
+
+					_menu_highlight();			// highlight the menu choice
+				}
+			}
+
+	}
+}
+
+/*
+**		_menu_highlight:
+**
+**		Calls the menu alter event.  If it succeeds, highlights the
+**	current menu line using a line mark.
+*/
+
+int _menu_highlight ()
+{
+	int	line;
+
+	inq_position (line);
+
+	if (execute_macro (_dialog_action_func, DIALOG_MOVE_MENU, line, _menu_button ()))
+		{
+		raise_anchor ();
+		drop_anchor (3);
+		returns (TRUE);
+		}
+	else
+		returns (FALSE);
+}
+
+/*
+**		_dialog_menu_home:
+**
+**		Moves the selection to the first selectable item on the menu.
+**	Calls the action function with the new line number and menu button
+**	text.
+*/
+
+void _dialog_menu_home ()
+{
+	top_of_buffer ();
+
+	while (!_menu_highlight ())
+		down ();
+}
+
+/*
+**		_dialog_menu_end:
+**
+**		Moves to the last selectable item on the menu.	Calls the
+**	action function with the new line number and menu button text.
+*/
+
+void _dialog_menu_end ()
+{
+	end_of_buffer ();
+	beginning_of_line ();
+	to_bottom ();
+
+	while (!_menu_highlight ())
+		up ();
+}
+
+/*
+**		_dialog_menu_pgup, _dialog_menu_pgdn:
+**
+**		Pages up or down in a menu.
+*/
+
+void _dialog_menu_pgup ()
+{
+	page_up ();
+
+	if (!(_menu_highlight () || _dialog_menu_up ()))
+		_dialog_menu_down ();
+}
+
+void _dialog_menu_pgdn ()
+{
+	page_down ();
+
+	while (inq_position ())
+		up ();
+
+	if (!(_menu_highlight () || _dialog_menu_down ()))
+		_dialog_menu_up ();
+}
+
+/*
+**		_dialog_menu_down:
+**
+**		Moves the current selection down, stopping at next selectable
+**	item; if the bottom of the menu is encountered, returns to the
+**	previous position.  Returns whether or not it succeeded in moving.
+**		Calls the action function with the new line number and menu
+**	button text as parameters.
+*/
+
+int _dialog_menu_down ()
+{
+	int	failed;
+
+	save_position ();
+
+	while (TRUE)
+		{
+		down ();
+
+		if (inq_position ())
+			{
+			failed++;
+			break;
+			}
+		else if (_menu_highlight ())
+			break;
+		}
+	restore_position (failed);
+	returns (!failed);
+}
+
+/*
+**		_dialog_menu_up:
+**
+**		Moves the current selection up to the previous selectable
+**	item, if there are any.  Returns TRUE if it succeeded.
+*/
+
+int _dialog_menu_up ()
+{
+	int	moved;
+
+	save_position ();
+
+	while (up ())
+		if (_menu_highlight ())
+			{
+			moved++;
+			break;
+			}
+	if (!moved)
+		set_top_left (1, 1);
+
+	restore_position (!moved);
+	returns (moved);
+}
+
+/*
+**		_menu_go:
+**
+**		Reads a character (that was just inserted; _menu_go is
+**	called by a type 0 registered macro) from the buffer and deletes
+**	it, then looks for a matching button before the end of the menu.
+**	If there is none, looks for one starting with the first item.
+**	If there is still none, stays put.	(If a selectable button is found,
+**	_menu_go moves to it and highlights it.)
+*/
+
+void _menu_go (int key)
+{
+	string	pattern;
+
+	int	end_line,
+			after_line,
+			start_line,
+			start_col,
+			failed;
+
+	/*
+	**		Figure out the time when the key was pressed.  This is a
+	**	relative number, measured in tenths of a second, and it is
+	**	used to figure out when a user is typing a multi-key
+	**	sequence.
+	*/
+
+	time (NULL, start_line, start_col, end_line);
+	end_line = (start_line * 60 + start_col) * 10 + end_line / 10;
+	after_line = end_line - _dialog_menu_time;
+	_dialog_menu_time = end_line;
+
+	while (after_line < 0)
+		after_line += 32768;
+
+	/*
+	**		If .8 seconds or more elapsed since we last pressed a key in
+	**	this menu, we clear the remembered prefix.
+	*/
+
+	if (after_line >= 8)
+		_dialog_menu_prefix = "";
+
+	/*
+	**		Figure out what key was pressed.
+	*/
+
+	sprintf (pattern, "%c", key);
+
+	/*
+	**		If the character is a regular expression character, we make
+	**	sure to put a backslash in front of it.
+	*/
+
+	if (index ("?*@+|\\<>%${}[]~-", pattern))
+		pattern = "\\" + pattern;
+
+	pattern = "<[ \\t]@" + (_dialog_menu_prefix += pattern);
+
+	/*
+	**		Find the last line of the window; if the search takes us
+	**	outside it, we want to center the line in the window.
+	*/
+
+	inq_position (start_line, start_col);
+	end_of_window ();
+	inq_position (end_line);
+	move_abs (start_line, start_col);
+
+	/*
+	**		If we are searching for a one-character button prefix, we
+	**	search the current line last, not first.
+	*/
+
+	if (strlen (_dialog_menu_prefix) == 1)
+		down ();
+
+	/*
+	**		Search from the current position to EOF, breaking if
+	**	a selectable line is found.  If the pattern is not found,
+	**	start searching from the top of the file down.
+	*/
+
+	while (!failed)
+		{
+		if (search_fwd (pattern, TRUE, FALSE) <= 0)
+			{
+			move_abs (start_line, start_col);
+			drop_anchor (3);
+			top_of_buffer ();
+
+			while (!failed)
+				{
+				if (search_fwd (pattern, TRUE, FALSE, TRUE) <= 0)
+					++failed;
+				else if (_menu_highlight ())
+					{
+					inq_position (after_line);
+
+					if (after_line > end_line)
+						center_line ();
+
+					return;
+					}
+				else
+					down ();
+				}
+			/*
+			**		If we can't find the current multi-character prefix in the
+			**	menu, but the last two characters were the same, we throw
+			**	away the second of those and look for the next prefix that
+			**	matches.
+			*/
+
+			if ((failed = strlen (_dialog_menu_prefix)) > 1 && substr (_dialog_menu_prefix, failed, 1) == substr (_dialog_menu_prefix, failed - 1, 1))
+				{
+				_dialog_menu_prefix = substr (_dialog_menu_prefix, 1, failed - 1);
+				pattern = "<[ \\t]@" + _dialog_menu_prefix;
+				move_abs (start_line, start_col);
+				down ();
+				failed = FALSE;
+				}
+			else
+				failed = TRUE;
+
+			raise_anchor ();
+			}
+		else if (_menu_highlight ())
+			{
+			inq_position (after_line);
+
+			if (after_line > end_line)
+				center_line ();
+
+			return;
+			}
+		else
+			down ();
+		}
+	move_abs (start_line, start_col);
+}
+
+/*
+**		_dialog_menu_pick:
+**
+**		Processes the menu line that is selected when the user presses
+**	Enter.
+*/
+
+void _dialog_menu_pick ()
+{
+	int	line;
+
+	inq_position (line);
+
+	if (execute_macro (_dialog_action_func, DIALOG_PICK_MENU, line, _menu_button ()))
+		_dialog_picked = line;
+}
+
+/*
+**		_menu_button:
+**
+**		Returns the text of the current menu button, with leading and
+**	trailing white space removed.
+*/
+
+string _menu_button ()
+{
+	returns (trim (ltrim (read ())));
+}

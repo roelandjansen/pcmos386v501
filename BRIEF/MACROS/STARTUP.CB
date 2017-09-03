@@ -1,0 +1,131 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**		Written by Dave Nanian and Michael Strickman.
+*/
+
+/*
+**		startup.cb:
+**
+**		This macro file is automatically loaded at the start of each editing
+**	session.  If you want to change the default configuration of BRIEF,
+**	you will have to modify this file.
+*/
+
+#include "keyboard.h"
+#include "misc.h"
+
+/*
+**		The following macro is invoked once, after the first buffer has been
+**	loaded at the start of each editing session.
+*/
+
+void startup ()
+{
+	/*
+	**		First, we call the "keyboard" macro, included above.	This
+	**	macro defines all of the BRIEF commands and keystrokes that are
+	**	implemented as macros, and tells BRIEF which files they can be
+	**	found in.
+	*/
+
+	keyboard ();
+
+	/*
+	**		Here we load the language package.	If there's no BPACKAGES
+	**	environment variable, this load in unnecessary.
+	*/
+
+	if (strlen (inq_environment ("BPACKAGES")))
+		load_macro ("language");
+
+	register_macro (3, "_do_beep");		  //	Beep for invalid keystrokes.
+}
+
+/*
+**		This macro, which is called when a file with a .c extension is read
+**	into a buffer, sets the tabs.
+**
+**		Note that the (tabs) macro primitive replicates the distance of the
+**	last tab stop until the end of the line.
+*/
+
+void .c ()
+{
+	tabs (4);
+}
+
+/*
+**		The following macros are called when files with their names as
+**	extensions are read into buffers.
+*/
+
+void .m ()
+{
+	.c ();			//	Tabs are the same as a .c file.
+}
+
+void .h ()
+{
+	.c ();			//	Tabs are the same as a .c file.
+}
+
+void .cb ()
+{
+	.c ();			//	Tabs are the same as a .c file.
+}
+
+void .asm ()
+{
+	tabs (9);
+}
+
+/*
+**		The next macro is called if the extension of the file does not match
+**	any of the previous macros (".h", ".c", ".m", ".asm").
+*/
+
+void default ()
+{
+	tabs (9);			//	By default, use assembler-style tabs.
+}
+
+/*
+**		_do_beep:
+**
+**		This macro calls the beep primitive -- beep cannot be registered.
+*/
+
+void _do_beep ()
+{
+	beep ();
+}
+
+/*
+**		_invalid_key:
+**
+**		This macro is called whenever an invalid keystroke has been typed
+**	in the main loop.  By default, it just reads the character and beeps.
+**	Replacement macros can, of course, perform additional actions.  Note,
+**	however, that if the keystroke is left on the input queue, and there
+**	hasn't been any change in the keymap, the _invalid_key macro will get
+**	called again.
+*/
+
+void _invalid_key (void)
+{
+	read_char ();
+	beep ();
+}
+
+/*
+**		_exit:
+**
+**		Performs the same function as exit, but does not register as
+**	a context-sensitive help macro.	No name beginning with _ does.
+*/
+
+void _exit ()
+{
+	exit ();
+}

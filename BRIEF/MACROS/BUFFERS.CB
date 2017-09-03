@@ -1,0 +1,990 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**		Written by Dave Nanian and Michael Strickman.
+*/
+
+#include "dialog.h"
+#include "win_ctrl.h"
+
+/*
+**		buffers.cb:
+**
+**		This file contains all of the standard BRIEF macros for buffer
+**	manipulation.
+*/
+
+/*
+**		buf_list:
+**
+**		This macro provides the user with a list of buffers that can be
+**	manipulated and scrolled through.  It is of interest because it
+**	simulates an array of buffer ids using a system buffer.	Macro
+**	programmers interested in using arrays should examine this code
+**	carefully before implementing an array system of their own.
+*/
+
+#define SYSTEM   1					  //	The value to use for system buffers.
+#define NEW_FILE 1					  //	The value to use for new file attachments.
+#define NUM_ENTRIES_DISPLAYED  6	  // The number of non-expert entries displayed
+
+void display_file_name ();
+int _buf_write ();
+string _bookmark_menu ();
+void mouse_buf_list();
+void _buf_position( int );
+
+void buf_list (~int)
+{
+	global int	_buf_list,	//	Buffer that contains visible list.
+					_buf_array,	//	Buffer that simulates an array.
+					_end_buf,	//	The buffer to be attached on exit.
+					_expert;		//	Are we in expert mode?
+
+	int	num_bufs,			//	The number of buffers in the list.
+			start_buf, 			//	The buffer we started on.
+			curr_buf,			//	The buffer we're on (in the loop).
+			modified;			//	Is the current buffer modified?
+
+	string	file_name, 		//	The file name of the buffer.
+				buffer_name;	//	The buffer name.
+
+	if (get_parm (0, _expert))
+		_expert = !!_expert;
+	else
+		_expert = 0;
+
+	/*
+	**		First, we create the array and list buffers, making sure that they
+	**	have the "system" attributes.  We use non-file buffers because this is
+	**	temporary information.
+	**
+	**		The "_buf_list" buffer contains a textual list of all of the non
+	**	system buffers currently in memory.  "_buf_array" contains a list of the
+	**	corresponding buffer pointers.  Note that the buffer pointers are not
+	**	inserted into the buffer as is -- they are converted to string integers
+	**	first.  This prevents inserting bad characters like tab, return and EOF.
+	*/
+
+	message ("Creating buffer list...");
+
+	/*		First, we get the ID of the current buffer -- we have to
+	**	restore it at the end of the macro.  After that, we create the
+	**	array buffer and put it aside for the moment.  Note that the
+	**	array buffer is a non-file buffer -- this prevents disk accesses
+	**	since the file is held completely in memory.
+	*/
+
+	start_buf = _end_buf = inq_buffer ();
+
+	/*		Make sure we start off with a non-system buffer 
+	*/
+
+	if (inq_system(start_buf))
+		start_buf = _end_buf = next_buffer ();		
+
+	if (inq_system(start_buf))
+		{
+		error ("No buffers found.");
+		}		
+
+	_buf_array = create_buffer ("Buffer Array", NULL, SYSTEM);
+
+	/*		Now, we create the buffer that the user will actually see on
+	**	the screen, set it to be the current buffer, and set the tabs to
+	**	the values we want (tabs default to every column).
+	*/
+
+	set_buffer (_buf_list = create_buffer ("Buffer List", NULL, SYSTEM));
+	tabs (5);
+
+	/*		This loop creates both buffer lists:  the non-system buffers
+	**	are looped through and information about them are culled and added
+	**	to the list.
+	*/
+
+	while (start_buf != curr_buf)
+		{
+		if (!curr_buf)
+			curr_buf = start_buf;
+		else
+			{
+			set_buffer (_buf_list);
+			insert ("\n");
+			set_buffer (_buf_array);
+			insert ("\n");
+			}
+		++num_bufs;
+		message ("Creating buffer list [#%d]...", num_bufs);
+		set_buffer (curr_buf);
+		inq_names (file_name, NULL, buffer_name);
+		modified = inq_modified ();
+		set_buffer (_buf_list);
+
+		if (!_expert)
+			insert ("%d)\tBuffer \"%s\" has %sbeen modified.\n\tFile: ", num_bufs, buffer_name, modified ? "" : "not ");
+		else
+			insert ("%d)\t", num_bufs);
+
+		insert (file_name + (modified ? "*" : ""));
+
+		set_buffer (_buf_array);
+		insert ("%d", curr_buf);
+		set_buffer (curr_buf);
+		curr_buf = next_buffer ();
+		}
+	message ("List created.");
+
+	/*
+	**		At this point, the array buffer and list buffer have been created
+	**	and filled in.  We create a window to display the list in, initialize
+	**	the marked area, set up a keymap, and call process.  Process handles
+	**	the mainline loop -- we need only provide action routines.
+	*/
+
+	set_ctrl_state( ZOOM_BTN, HIDE_CTRL);		// hide the zoom button for this window
+	set_ctrl_state( HORZ_SCROLL, HIDE_CTRL);	// hide the horz scroll bar for this window
+	create_window (5, 4+NUM_ENTRIES_DISPLAYED*2+1, 74, 4,
+						" or  to select, E to edit, D to delete, W to write, ESC to exit.");
+	set_ctrl_state( ZOOM_BTN, SHOW_CTRL);		// show the zoom button
+	set_ctrl_state( HORZ_SCROLL, SHOW_CTRL);	// show the horz scroll bar 
+	attach_buffer (_buf_list);
+
+	keyboard_push ();
+	assign_to_key ("<Down>", "_buf_down");
+	assign_to_key ("<Up>", "_buf_up");
+	assign_to_key ("<PgUp>", "_buf_pgup");
+	assign_to_key ("<PgDn>", "_buf_pgdn");
+	assign_to_key ("<Home>", "_buf_home");
+	assign_to_key ("<End>", "_buf_end");
+	assign_to_key ("<Ctrl-PgUp>", "_buf_home");
+	assign_to_key ("<Ctrl-PgDn>", "_buf_end");
+	assign_to_key ("d", "_buf_delete");
+	assign_to_key ("D", "_buf_delete");
+	assign_to_key ("<Ctrl-minus>", "_buf_delete");
+	assign_to_key ("e", "_buf_edit");
+	assign_to_key ("E", "_buf_edit");
+	assign_to_key ("<Alt-e>", "_buf_edit");
+	assign_to_key ("W", "_buf_write");
+	assign_to_key ("w", "_buf_write");
+	assign_to_key ("<Alt-w>", "_buf_write");
+	assign_to_key ("<Enter>", "_buf_edit");
+	assign_to_key ("<Esc>", "exit");
+
+	/*
+	**	specify the function to handle mouse events and save the
+	** previous mouse handler to allow for sub-classing of events
+	*/
+	set_mouse_action( "mouse_buf_list" );
+
+	move_abs (2 - _expert, 100);
+	drop_anchor (3);
+	move_abs (1, 1);
+	set_buffer (_buf_array);
+	move_abs (1, 1);
+	set_buffer (_buf_list);
+	refresh ();
+
+	process ();
+
+	/*		Now that we're back from the processing, we pop the keymap that
+	**	we created, raise the assorted anchors, and delete the temporary
+	**	window and the buffers.
+	*/
+
+	keyboard_pop ();
+	raise_anchor ();
+	delete_window ();
+	delete_buffer (_buf_list);
+	delete_buffer (_buf_array);
+
+	/*		If we end with a different buffer than we started with, we
+	**	attach it to the current window and display its file name.
+	**	Otherwise, we set the current buffer back, and call NEW_FILE
+	**	to make sure its defaults are reset.
+	*/
+
+	set_buffer (_end_buf);
+	inq_names (file_name);
+	edit_file (file_name);
+}
+
+/*
+**		_buf_down:
+**
+**		This routine is called whenever the user presses a down arrow.
+**	It moves the array buffer and list buffer's current lines, ensuring
+**	the user does not go past the end of the buffer.
+*/
+
+int _buf_down ()
+{
+	int line;
+
+	inq_position (line);
+
+	if (!_expert && line % 2 == 0)
+		{
+		swap_anchor();
+		refresh();
+		}
+
+	move_rel (3 - _expert * 2, 0);
+
+	if (inq_position ())
+		{
+		move_rel (-3 + _expert * 2, 0);
+		return (0);
+		}
+	else
+		{
+		raise_anchor ();
+		drop_anchor (3);
+		move_rel (-1 + _expert, 0);
+		set_buffer (_buf_array);
+		down ();
+		set_buffer (_buf_list);
+		returns (1);
+		}
+}
+
+/*
+**		_buf_up:
+**
+**		This macro is called whenever the user presses the up arrow.  It
+**	moves up in the list and array buffers, not going past the top of the
+**	buffer.
+*/
+
+int _buf_up ()
+{
+	int line;
+
+	inq_position (line);
+
+	if (!_expert && line % 2 == 0)
+		{
+		swap_anchor();
+		refresh();
+		}
+
+	if (!up ())
+		return (0);
+	else
+		{
+		raise_anchor ();
+		drop_anchor (3);
+		move_rel (-1 + _expert, 0);
+		set_buffer (_buf_array);
+		move_rel (-1, 0);
+		set_buffer (_buf_list);
+		returns (1);
+		}
+}
+
+/*
+**		_buf_pgup:
+**
+**		This macro is called whenever the user presses PgUp.	It moves up
+**	one screen in the list and array buffers, not going past the top of the
+**	buffer.
+*/
+
+void _buf_pgup ()
+{
+	int	num_lines = NUM_ENTRIES_DISPLAYED * (_expert + 1);
+
+	while (num_lines--)
+		_buf_up ();
+}
+
+void _buf_home ()
+{
+	while (_buf_up ());
+}
+
+/*
+**		_buf_pgdn:
+**
+**		This macro is called whenever the user presses PgDn.	It moves
+**	down one page/screen in the buffer list and the array.
+*/
+
+void _buf_pgdn ()
+{
+	int num_lines = NUM_ENTRIES_DISPLAYED * (_expert + 1);
+
+	while (num_lines--)
+		_buf_down ();
+}
+
+void _buf_end ()
+{
+	while (_buf_down ());
+}
+
+/*
+**		_buf_delete:
+**
+**		This routine is called when the user wants to delete a buffer.
+**	It makes sure the buffer is not in a window, and prompts the user
+**	if the buffer has been modified.
+*/
+
+void _buf_delete ()
+{
+	int	buf_to_delete;
+
+	string	misc_str = "y";
+
+	set_buffer (_buf_array);
+	buf_to_delete = atoi (read ());
+	set_buffer (buf_to_delete);
+
+	if (!inq_views ())
+		{
+		if (inq_modified ())
+			{
+			keyboard_flush ();
+
+			if (!get_parm (NULL, misc_str, "This buffer has not been saved.  Delete [ynw]? ", 1))
+				misc_str = "n";
+			}
+		if (index ("yY", misc_str) || index ("wW", misc_str) && _buf_write () > 0)
+			{
+			int line;
+
+			set_buffer (_buf_list);
+
+			inq_position (line);
+
+			if (!_expert && line % 2 == 0)
+				{
+				swap_anchor();
+				refresh();
+				}
+
+			delete_line ();
+
+			if (!_expert)
+				delete_line ();
+
+			set_buffer (_buf_array);
+			delete_line ();
+			delete_buffer (buf_to_delete);
+			set_buffer (_buf_list);
+
+			if (inq_position ())
+				_buf_up ();
+			else
+				{
+				raise_anchor ();
+				move_rel (1 - _expert, 0);
+				drop_anchor (3);
+				move_rel (-1 + _expert, 0);
+				}
+			}
+		else if (!index ("wW", misc_str))
+			message ("Buffer not deleted.");
+		}
+	else
+		error ("You can't delete a viewed buffer.");
+
+	set_buffer (_buf_list);
+}
+
+/*		_buf_edit:
+**
+**		This routine is called when the user is on a buffer that he wants
+**	to edit.  It sets the global "_end_buf" variable to the current
+**	line's buffer, and calls exit so no further processing takes place.
+*/
+
+void _buf_edit ()
+{
+	set_buffer (_buf_array);
+	_end_buf = atoi (read ());
+	set_buffer (_buf_list);
+	exit ();
+}
+
+/*
+**		_buf_write:
+**
+**		This routine is called when the user wants to write a modified
+**	buffer.	It makes sure the buffer is modified -- if so, it's written
+**	and the information in the window is updated.
+*/
+
+int _buf_write ()
+{
+	int	old_msg_level,
+			ret_code;
+
+	set_buffer (_buf_array);
+	set_buffer (atoi (read ()));
+
+	if (inq_modified ())
+		{
+		old_msg_level = inq_msg_level ();
+		set_msg_level (0);
+
+		if ((ret_code = write_buffer ()) > 0)
+			{
+			set_msg_level (old_msg_level);
+			set_buffer (_buf_list);
+
+			if (!_expert)
+				{
+				search_fwd ("has \\c");
+				insert ("not ");
+				down ();
+				}
+			end_of_line ();
+			backspace ();
+			move_rel (-1 + _expert, -100);
+			}
+		else
+			set_msg_level (old_msg_level);
+		}
+	else
+		error ("Buffer not modified.");
+
+	set_buffer (_buf_list);
+	returns (ret_code);
+}
+
+/*
+**		edit_file:
+**
+**		This macro replaces the built-in edit_file function:	it displays
+**	the file name of the edited file if the edit operation was successful.
+*/
+
+replacement int edit_file (~string)
+{
+	int	ret_code,
+			old_msg_level;
+
+	old_msg_level = inq_msg_level ();
+
+	if (inq_called () == "")
+		set_msg_level (0);
+
+	ret_code = edit_file ();
+	set_msg_level (old_msg_level);
+
+	if (ret_code == 1)
+		display_file_name ();
+
+	returns (ret_code);
+}
+
+/*
+**		_multifile_edit_file:
+**
+**		This macro is called by the file completion functions when more then
+**	one file is selected from the completion menu.
+*/
+
+void _multifile_edit_file (int completion_buf_id, string path)
+{
+	int	old_buf_id = set_buffer (completion_buf_id);
+
+	string	file_name;
+
+	top_of_buffer ();
+
+	while (!inq_position () && (file_name = trim (ltrim (read ()))) != "")
+		{
+		edit_file (path + file_name);
+		set_buffer (completion_buf_id);
+		down ();
+		}
+	set_buffer (old_buf_id);
+}
+
+/*
+**		edit_next_buffer:
+**
+**		Edits the next buffer in the buffer list in the current window.  If
+**	there are no other buffers, an error message is displayed.
+*/
+
+void edit_next_buffer ()
+{
+	string	file_name;
+
+	int	new_buffer = next_buffer ();
+
+	if (new_buffer != inq_buffer ())
+		{
+		set_buffer (new_buffer);
+		inq_names (file_name);
+		edit_file (file_name);
+		}
+	else
+		error ("No other buffers.");
+}
+
+/*
+**		edit_prev_buffer:
+**
+**		Edits the previous buffer in the buffer list.
+*/
+
+void edit_prev_buffer ()
+{
+	string	file_name;
+
+	int	old_buffer = inq_buffer ();
+
+	while (next_buffer () != old_buffer)
+		set_buffer (next_buffer ());
+
+	if (inq_buffer () != old_buffer)
+		{
+		inq_names (file_name);
+		edit_file (file_name);
+		}
+	else
+		error ("No other buffers.");
+}
+
+/*
+**		delete_curr_buffer:
+**
+**		This function deletes the current buffer, if it is unmodified,
+**	there is another buffer in the list to replace it, and it is only
+**	visible in one window.
+**
+**		If the buffer is modified, the user is asked if he really wants to
+**	delete the buffer.  If he answers yes, the deletion is performed.
+**
+**		If there are no other buffers, or the buffer is in an overlapping
+**	window and any other window, the deletion is not performed.
+*/
+
+int delete_curr_buffer ()
+{
+	int	old_buf_id = inq_buffer (),
+			new_buf_id = next_buffer (),
+			window_buf_id,
+			orig_window_id,
+			curr_window_id;
+
+	string	reply,
+				file_name;
+
+	if (old_buf_id == new_buf_id)
+		{
+		error ("Can't delete: no other buffers.");
+		return (0);
+		}
+	orig_window_id = inq_window ();
+
+	if (inq_window_info () == 1)
+		{
+		curr_window_id = next_window ();
+
+		while (orig_window_id != curr_window_id)
+			{
+			inq_window_info (curr_window_id, window_buf_id);
+
+			if (window_buf_id == old_buf_id)
+				{
+				error ("Can't delete: buffer's windows overlap.");
+				return (0);
+				}
+			curr_window_id = next_window (curr_window_id);
+			}
+		}
+	if (inq_modified ())
+		{
+		keyboard_flush ();
+
+		if (!get_parm (NULL, reply, "This buffer has not been saved.  Delete [ynw]? ", 1))
+			return (0);
+
+		else if (!strlen (reply) || !index ("yYwW", reply))
+			{
+			message ("Buffer not deleted.");
+			return (0);
+			}
+		if (index ("wW", reply))
+			{
+			int	old_msg_level = inq_msg_level (),
+					ret_code;
+
+			set_msg_level (0);
+			ret_code = write_buffer ();
+			set_msg_level (old_msg_level);
+
+			if (ret_code <= 0)
+				return (0);
+			}
+		}
+	set_buffer (new_buf_id);
+	inq_names (file_name, NULL);
+	set_buffer (old_buf_id);
+	edit_file (file_name);
+
+	if (inq_views (old_buf_id) != 0)
+		{
+		curr_window_id = next_window ();
+
+		while (orig_window_id != curr_window_id)
+			{
+			inq_window_info (curr_window_id, window_buf_id);
+
+			if (old_buf_id == window_buf_id)
+				{
+				set_window (curr_window_id);
+				edit_file (file_name);
+				}
+			curr_window_id = next_window (curr_window_id);
+			}
+		if (inq_window () != orig_window_id)
+			set_window (orig_window_id);
+		}
+	delete_buffer (old_buf_id);
+	returns (1);
+}
+
+/*
+**		_bad_key:
+**
+**		This routine adds menus to some prompts.
+*/
+
+replacement _bad_key ()
+{
+	int	key_pressed = read_char ();
+
+	if (inq_command () == "goto_bookmark" && key_pressed == key_to_int ("<Tab>"))
+		return (_bookmark_menu ());
+
+	push_back (key_pressed);
+	return (_bad_key ());
+}
+
+/*
+**		_bookmark_menu:
+**
+**		This routine actually handles the "invalid keystroke" event
+**	when in the bookmark prompt.
+*/
+
+string _bookmark_menu ()
+{
+	global int	_bookmark;
+
+	int	menu_buf,
+			old_buf,
+			curr_buf,
+			line,
+			col,
+			i,
+			num_bookmarks;
+
+	string	bookmark,
+				file_name;
+
+	while (i < 10)
+		{
+		if (goto_bookmark (i, curr_buf, line, col))
+			++num_bookmarks;
+
+		++i;
+		}
+	if (num_bookmarks == 0)
+		beep ();
+	else
+		{
+		int	num_lines,
+				num_cols,
+				lx,
+				by,
+				rx,
+				ty;
+
+		old_buf = inq_buffer ();
+		sprintf (bookmark, "%d bookmark%s", num_bookmarks, num_bookmarks == 1 ? "" : "s");
+		set_buffer (menu_buf = create_buffer (bookmark, NULL, SYSTEM));
+		num_bookmarks = 0;
+		i = 1;
+		tabs (2, 13, 19, 25, 80);
+
+		while (i <= 10)
+			{
+			if (goto_bookmark (i, curr_buf, line, col))
+				{
+				if (++num_bookmarks == 1)
+					insert ("\n\tBookmark\tLine\tCol\tFile\n\t--------\t----\t---\t----");
+
+				insert ("\n");
+				set_buffer (curr_buf);
+				inq_names (file_name);
+				set_buffer (menu_buf);
+				insert ("\t%d\t%d\t%d\t%s\t;%d", i, line, col, file_name, i);
+				}
+			++i;
+			}
+		set_buffer (old_buf);
+
+		_bookmark = -1;
+		inq_screen_size (num_lines, num_cols);
+
+		num_lines /= 2;
+		num_cols /= 2;
+
+		lx = num_cols - 36;
+		rx = num_cols + 36;
+		ty = num_lines - (4 + (num_bookmarks + 4) / 2);
+		by = ty + (num_bookmarks + 5);
+
+		_process_menu (lx, by, rx, ty, NULL, " or  to move, <Enter> to select, <Esc> to exit", NULL, menu_buf, "_bookmark_action", TRUE);
+
+		if (_bookmark >= 0)
+			{
+			sprintf (bookmark, "%d", _bookmark);
+			push_back (key_to_int ("<Enter>"));
+			return (bookmark);
+			}
+		}
+	returns (inq_cmd_line ());
+}
+
+/*
+**		_bookmark_action:
+**
+**		This is the action routine for the dialog manager.
+*/
+
+int _bookmark_action (int event_type, ~string)
+{
+	string	button_text;
+
+	switch (event_type)
+		{
+		case DIALOG_MOVE_MENU:
+			{
+			get_parm (2, button_text);
+
+			if (index (button_text, ";"))
+				returns (TRUE);
+			else
+				returns (FALSE);
+			}
+		case DIALOG_PICK_MENU:
+		case DIALOG_F10:
+			{
+			get_parm (2, button_text);
+			_bookmark = atoi (substr (button_text, rindex (button_text, ";") + 1));
+			_dialog_esc ();
+			returns (TRUE);
+			}
+		}
+}
+/*
+**		mouse_buf_list
+**
+**		Handle all the mouse events of interest for the buffer list
+**
+** Mouse assignments:
+** btn1 down, up, click		- position to an entry in the list
+** btn1 dblclk					- edit the file
+** btn2 click					- write the file
+** btn2 click + ctrl			- delete the file
+** btn1 click outside the list 	- close the list
+** btn1 click on close button    - close the list
+*/
+void mouse_buf_list (int event, 			// the event code
+							int modifier,		// modifier keys
+							int parm2,			// line or scroll bar code
+							int parm3 )			// column or thumb position
+{
+	/* handle the events of interest */
+
+	switch ( event ){
+		case BTN2_CLICK:			// delete / write the file
+		case BTN1_DOWN:			// position to a file
+		case BTN1_UP:				// position to a file
+		case BTN1_MOVE:			// position to a file
+		case BTN1_CLICK:			// position to a file
+		case BTN1_DBLCLK:{		// edit the file
+			int lines;
+			save_position();		// get number of lines in buffer
+			end_of_buffer();
+			inq_position( lines );
+			restore_position();
+			if ( 0 < parm2 && parm2 <= lines ) {
+				/* if two lines per entry and an even line clicked on
+					switch to corresponding odd line */
+				if ( !_expert && !(parm2%2) ) parm2--;
+				_buf_position( parm2 );		// goto selected position
+
+				switch ( event ){
+					case BTN1_DBLCLK:			// edit the file
+						_buf_edit();			
+					case BTN2_CLICK:			
+						switch ( modifier ){
+							case  0:				// write the file
+							   _buf_write();
+							case KB_CTRL:		// delete the file
+								_buf_delete();
+						}
+				}
+			}
+		}
+
+      case SET_WIN:                 // click outside list closes it
+         if ( parm2 != inq_window() ) exit();
+
+		case CLOSE_WIN:
+			exit();							// close the buffer list
+
+		case VSCROLL:						// vertical scroll bar event
+			switch ( parm2 ){
+				case SB_BOTTOM:			// end of the list
+					_buf_end();
+				case SB_TOP:				// beginning of the list
+					_buf_home();
+				case SB_PAGEDOWN:			// page down request
+					_buf_pgdn();
+				case SB_PAGEUP:			// page up request
+					_buf_pgup();
+				case SB_LINEDOWN:			// line down request
+					_buf_down();
+				case SB_LINEUP:			// line up request
+					_buf_up();
+				case SB_THUMBTRACK:{		// scroll while tracking the thumb
+					int new_line;
+
+					save_position();
+
+					/* 	Move the thumb to the desired position.  We do this
+					**	to find out what the target line is.
+					*/	
+
+					set_ctrl_state(VERT_THUMB, parm3);
+
+					/*		Get the target line
+					*/
+
+					inq_position(new_line);
+
+					restore_position();
+
+					/*		Now let _buf_position really move to the new
+					**	selection.  This is done so that the buffer containing
+					**	buffer info is updated correctly.
+					*/
+
+					_buf_position( new_line );		// goto the entry
+				}
+			}
+
+	}
+
+
+}
+
+/*
+** _buf_position
+**
+** Position to an entry in the list and highlite the entry.
+**
+*/
+
+void _buf_position(int new_line)		// target line to goto
+{
+	int curr_line,
+		 top_left,
+		 line,
+		 moved_up = 0,
+		 extra;
+
+	/*		If we're not in expert mode, we may need to position the cursor
+	**	on the second line of an entry to get the thumb to position
+	**	correctly.
+	*/
+
+	if (!_expert && new_line % 2 == 0)
+		extra = 1;
+
+	else
+		extra = 0;
+
+	inq_position( line );			// get current position
+
+	/*		If we are currently on the second line of an entry, 
+	**	reposition by swapping the anchor.
+	*/ 
+
+	if (!_expert && line % 2 == 0)
+		{
+		swap_anchor();
+		inq_position( line );			// get current position
+		}
+
+	/* target line is below current line */
+
+	if ( line < new_line )
+		{
+		while ( inq_position(line) == 0 && line < new_line)
+			{
+			if (extra && line + 1 == new_line)
+				{
+				swap_anchor();
+				
+				move_abs(0, 1);
+				break;
+				}
+
+			if (!_buf_down())
+				break;
+			}
+		}
+
+	/* target line is above current line */		
+
+	else if ( line > new_line ) 
+		{
+		moved_up = 1;
+
+		while (line + extra > new_line) 
+			{
+			_buf_up();
+
+			inq_position( line );
+
+			if (extra && (line + 1 == new_line))
+				{
+				swap_anchor();
+				break;
+				}
+			}
+
+		}
+
+	refresh();
+
+	/*		Now make sure an  entry is not split by the window.
+	*/
+
+	inq_position(curr_line);
+
+	inq_top_left(top_left);
+
+	if (top_left % 2 == 0)
+		{
+		if (moved_up)
+			set_top_left(top_left - 1, 1);
+
+		else
+			set_top_left(top_left + 1, 1);
+
+		}
+
+}

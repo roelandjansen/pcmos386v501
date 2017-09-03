@@ -1,0 +1,203 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**
+**		mouse.cb:
+**
+**		This file contains an example replacement macro for the default
+**	mouse action handler.  
+**
+*/
+
+#include	"win_ctrl.h"
+
+/*		Mouse events are handled in BRIEF by calling the mouse handler macro
+**	set by set_mouse_action(). There is a default event handler	internal to
+**	BRIEF call "_mouse_action".  If you use setup and enable the mouse, setup
+** will add the line "set_mouse_action _mouse_action" to your initials macro.
+**		
+**		Events can be subclassed by defining your own "_mouse_action macro" as
+**	a replacement macro, acting on events of interest and calling down for all
+**	other	events.	An alternative method would be to use inq_mouse_action()
+**	to find the current mouse handler, call set_mouse_action()	with
+**	with your new handler name as parameter 1, and using execute_macro
+**	to call down to the previous handler.  This second approach is useful
+**	for times when a different mouse handler is needed temporarily such
+**	as in menu processing for the buffer list (see buffers.cb).  
+**		
+**		Note that events which occur outside of the "client area" (the client
+** area is the region within the borders of the current window) are passed to 
+**	the mouse handler macro as high level events such as SET_WIN or ZOOM_WIN.
+**		
+**		There are four parameters passed to the event handler macro.  Parameter
+**	one is the event type, parameter 2 is the keyboard flags, and parameters
+**	three and four vary depending on the value of parameter one.  Win_ctrl.h 
+**	defines values for mouse event processing and lists the definitions of 
+**	of the parameters passed for each type of mouse event.  This information
+**	is also contained in the BRIEF Macro Language Guide in the chapter on
+**	programming the mouse.
+*/
+
+/*		A note about mouse events:
+**		
+**		BTNn_CLICK and BTNn_DBLCLK are "created" by BRIEF based on mouse 
+**	up and down events. For an up event to generate a click it must occur in 
+**	the same focus region as the previous down event. For example, a down event
+**	in the CLIENT area followed by an up event in the scroll bar region will
+**	not generate a click event. Click and double click events a preceded by 
+**	up events which ARE passed to the mouse event handler.
+**		BRIEF supports a three button mouse.  A two button mouse generates
+**	button three events when both buttons are pressed.  If, on a two button
+**	mouse, BTN1 is pressed, then BTN2 is pressed, the sequence of events is:
+**			BTN1_DOWN, BTN1_UP, BTN3_DOWN.
+**	When either BTN1 or BTN2 is released, BTN3_UP is sent and if the focus
+**	has not changed, BTN3_CLICK is sent.  Releasing the other button will
+**	not send any events. Holding BTN1 or BTN2 down and clicking the other
+** will generate BTN3 double click events.
+*/
+		
+/*		Below is a sample replacement macro which acts on a button one click in
+** the time display area of the status line and a button 1 double click in  
+**	the client area. All possible events are listed along with a description of
+**	their parameters for the sake of documentation.
+**		A BTN1_CLICK in the TIME_AREA of the STATUS_AREA will insert the 
+**	date at the current cursor position.  A BTN1_DBLCLK in the client area will
+**	call the default event handler (to highlight the word) and then search for
+**	the word.
+**
+**		To load this macro, use F9 and specify mouse or include -mmouse
+**	in BFLAGS or the command line.
+*/
+
+replacement _mouse_action(int event, int modifier, int parm2, int parm3)
+	{
+	switch (event)
+		{
+
+		/*		parm2 = button event, parm3 = status line region.
+		*/
+
+		case  STATUS_AREA:
+			{
+			/*		If we had a BTN1_CLICK and the mouse was over the TIME_AREA
+			**	insert the date at the current cursor position.
+			*/
+
+			if (parm2 == BTN1_CLICK && parm3 == TIME_AREA)
+				{
+				int year,
+					 month,
+					 day;
+
+				date(year, month, day);
+				insert("%d/%d/%d", month, day, year - 1900);
+				}
+			}
+
+		/*		For all events beginning with BTN, parm2 = line, parm3 = col
+		**	where line and col are the line and column of the buffer where
+		**	the mouse cursor is.
+		*/
+
+		case BTN1_DBLCLK:
+			{
+			int	lx,
+					rx,
+					mark_type;
+
+			/*		Call the default event handler to mark the word.
+			*/
+			_mouse_action(event, modifier, parm2, parm3);
+
+			/*		If a word was marked do the search.
+			*/
+			if (mark_type = inq_marked(NULL, lx, NULL, rx))
+				{
+				string	str;
+				int		msg_lvl,
+							ret_code;
+
+				save_position();
+		
+				/*		Move to the beginning of the word and read it into str.
+				*/
+				move_abs(NULL, lx);
+				str = read(rx - lx + 1);
+
+				/*		Get rid of the mark, save the old message level and
+				**	set the message level to 0 so the user sees the message
+				**	for search.
+				*/
+				raise_anchor();
+				msg_lvl = inq_msg_level();
+				set_msg_level(0);
+
+				/*		Move to the end of the current word so search finds the
+				**	next word.
+				*/
+				move_abs(NULL, rx);
+
+				/*		Set the calling name to blank so the replacement macro
+				**	gets called. (in search.cb)
+				*/
+				set_calling_name("");
+				ret_code = search_fwd(str);
+
+				/*		If search did not find the word, restore the mark to 
+				**	its previous state.
+				*/
+				if (!ret_code)
+					{
+					restore_position();
+					move_abs(NULL, lx);
+					drop_anchor(mark_type);
+					move_abs(NULL, rx + 1);
+					}
+
+				/*		Else clean up the position stack.
+				*/
+				else 
+					restore_position(0);
+
+				/*		Restore the message level.
+				*/
+				set_msg_level(msg_lvl);
+				}
+			}
+				
+		case BTN1_MOVE:  
+		case BTN2_MOVE:  
+		case BTN3_MOVE:  
+		case BTN1_DOWN:  
+		case BTN2_DOWN:  
+		case BTN3_DOWN:  
+		case BTN1_UP:	  
+		case BTN2_UP:	  
+		case BTN3_UP:	  
+		case BTN1_CLICK: 
+		case BTN2_CLICK: 
+		case BTN3_CLICK: 
+		case BTN2_DBLCLK:
+		case BTN3_DBLCLK:
+
+		/*		For HSCROLL and VSCROLL parm2 = scroll bar event sub-code (see
+		**	win_ctrl.h), parm3 = thumb position.
+		*/
+		case HSCROLL:		
+		case VSCROLL:		
+
+		/*		For ZOOM_WIN, CLOSE_WIN, and SET_WIN parm2 = the new window id.
+		**	For SET_WIN parm3 = there area in the new window where the mouse
+		**	event occurred.
+		*/
+
+		case ZOOM_WIN:		
+		case CLOSE_WIN:
+		case SET_WIN:	 
+		default:
+			{
+			_mouse_action(event, modifier, parm2, parm3);
+			}
+		}
+	}
+											

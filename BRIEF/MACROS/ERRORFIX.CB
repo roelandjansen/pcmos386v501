@@ -1,0 +1,936 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**		Written by Dave Nanian and Michael Strickman.
+*/
+
+/*
+**		errorfix.cb:
+**
+**		This file contains the main driver and support macros for BRIEF's
+**	error location facility.
+*/
+
+#include "win_ctrl.h"
+
+#define	TRUE		  1
+#define	FALSE		  0
+
+#define	WARNING	  1
+#define	ERROR		  2
+
+#define	DISPLAY_NEXT_ERROR	0
+#define	POP_UP_ERROR_WINDOW	1
+#define	PROBE_AND_DISPLAY		2
+#define	JUST_PROBE				3
+
+string add_to_path (string path, string file_name);
+string escape_re (string original, ~string);
+void center_line (void);
+void _exit ();
+
+int get_error_file (string full_name);
+int find_error_file (string full_name);
+int delete_error_file (string full_name, int delete_buffer_too);
+void add_error_file (string full_name);
+int next_error (~int action);
+
+int _call_next (string error_extension, string file_name);
+int _call_prev (string error_extension, string file_name);
+int _next_error (~string extension);
+int _prev_error (~string extension);
+int _error_info (string error_file, int, int, string, string file_name);
+
+int	_error_buf_id,		//	Holds the error buffer.
+		_cancel_errorfix;	//	Flag to show whether or not Cancel done from menu.
+string prev_mouse_action;	// the previous mouse event function
+
+/*
+**		_init:
+**
+**		This macro gets run when the macro is loaded.  It creates the
+**	error buffer, and sets _error_buf_id to the error buffer id.
+*/
+
+void _init (void)
+{
+	_error_buf_id = create_buffer ("Error Stack", NULL, 1);
+}
+
+/*
+**		compile_it
+**
+**		This is a replacement compile macro.  It first deletes the error
+**	file, if one exists.  The file name is also removed from the error
+**	stack, and then the actual compilation is executed.  
+**
+**	Returns:
+**
+**		Result of the original compile macro.  
+*/
+
+
+replacement compile_it ()
+{
+	string	file_name;				//	Name of the file that's being compiled.
+
+	inq_names (file_name);
+
+	/*
+	**		Before compiling the file, we ensure that its error file
+	**	has been removed from the error stack and the buffer has been
+	**	deleted from memory.  This ensures the file can be written
+	**	by the compiler, and is up to date.
+	*/
+
+	delete_error_file (file_name, TRUE);
+	returns (compile_it ());
+}
+
+/*
+**		get_error_file:
+**
+**		This routine obtains the most recent error file name, which is
+**	located at the top of the error stack file.  It returns the name
+**	in the passed parameter.
+**
+**	Returns:
+**
+**		TRUE if a file was obtained from the error stack
+**		FALSE if a file could not be obtained from the error stack
+*/
+
+int get_error_file (string full_name)
+{
+	int		old_buf_id = set_buffer (_error_buf_id),
+				loc;
+
+	string	line;
+
+	move_abs (1, 1);
+
+	if ((full_name = read ()) != "\n")
+		{
+		/*
+		**		Trim is used to remove the newline.
+		*/
+
+		full_name = trim (full_name);
+		}
+	else
+		full_name = "";
+
+	put_parm (0, full_name);
+	set_buffer (old_buf_id);
+	returns (full_name != "");
+}
+
+/*
+**		find_error_file:
+**
+**		This routine finds the location of the given file and path
+** in the error stack file.  The current line in the error stack
+**	is left at the found line.
+** 
+**
+**	Returns:
+**
+**		0 if the file name and path are not found.
+**		Otherwise, the line number of the file path in the error stack file.
+*/
+
+int find_error_file (string full_name)
+{
+	int 	old_buf_id = set_buffer (_error_buf_id),
+			error_file_line;
+
+	top_of_buffer ();
+	
+	/*
+	**		Since the full_name includes the drive letter, we don't need
+	** to worry about embedded paths (i.e., accidentally finding
+	**	"\foo\foo\foo.c" instead of "\foo\foo.c").
+	*/
+
+	if (search_fwd (full_name + "\n", 0))
+		inq_position (error_file_line);
+
+	set_buffer (old_buf_id);
+	returns (error_file_line);
+}
+
+/*
+**		delete_error_file:
+**
+**		This routine finds and if found, deletes, the given file and path
+**	from the error stack file.
+*/
+
+int delete_error_file (string full_name, int delete_buffer_too)
+{
+	int	ret_code,
+			old_buf_id = set_buffer (_error_buf_id),
+			buffer_id,
+			loc;
+
+	if (ret_code = find_error_file (full_name))
+		delete_line ();
+
+	/*
+	**		If there is already a buffer for the error file, we
+	**	"create" it (create_buffer returns the ID of a buffer
+	**	that already existed) and then delete it immediately.
+	**	Note that under some very obscure circumstances, the
+	**	create_buffer call could fail.  If it does, it'll
+	**	return 0, which is an invalid buffer id.	We check for
+	**	this case since delete_buffer does not.
+	*/
+
+	loc = rindex (full_name, substr (full_name, 3, 1));
+
+	if (rindex (substr (full_name, loc + 1), "."))
+		full_name = substr (full_name, 1, rindex (full_name, ".")) + "err";
+	else
+		full_name += ".err";
+
+	if (delete_buffer_too
+			&& (buffer_id = create_buffer ("Error File", full_name, 1))
+			&& !inq_views (buffer_id))
+		delete_buffer (buffer_id);
+
+	set_buffer (old_buf_id);
+	returns (ret_code);
+}
+
+/*
+**		add_error_file:
+**
+**		This routine adds an error file to the error stack file.
+**	The given file name (and its path) is inserted at the top of the
+**	error stack file.  A call is made to delete_error_file, to find
+**	and delete a previous occurrence of this file name in the error
+** stack file (if it exists).
+*/
+
+void add_error_file (string full_name)
+{
+	int	old_buf_id = set_buffer (_error_buf_id);
+
+	delete_error_file (full_name, FALSE);
+	top_of_buffer ();
+	insert (full_name + "\n");
+	set_buffer (old_buf_id);
+}
+
+/*
+**		fix_error_name:
+**
+**		This routine constructs the necessary names from the given file_name,
+**	and checks to see if we've already attached the error file to another
+**	file.  If so, we return that file's name rather than the name passed.
+**	This ensures that, when you've got an include file and a source file with
+**	the same name, you keep the error file attached to the source.
+**
+*/
+
+void fix_error_name (string file_name, string error_file, string error_extension)
+{
+	int	loc,
+			old_buf_id = set_buffer (_error_buf_id);
+
+	/*
+	**		This loop'll go through once for an unaliased error file, and twice
+	**	if we find it attached to another buffer.  In essence, it's only a
+	**	loop to save having to repeat the parsing code.
+	*/
+
+	for (;;)
+		{
+		top_of_buffer ();
+
+		loc = rindex (file_name, substr (file_name, 3, 1));
+
+		if (rindex (substr (file_name, loc + 1), "."))
+			{
+			error_extension = substr (file_name, loc = rindex (file_name, "."));
+			error_file = substr (file_name, 1, loc - 1);
+			}
+		else
+			{
+			error_file = file_name;
+			error_extension = ".";
+			}
+		/*
+		**		First, we check for the explicit file name.  If that's not found,
+		**	we check for only the base (no extension).
+		*/
+
+		if (!search_fwd (file_name + "\n", 0) && search_fwd ("<" + escape_re (error_file) + "{.[~/\\\\\n]@}@>"))
+			file_name = trim (read ());
+		else
+			break;
+		}
+	put_parm (0, file_name);
+	put_parm (1, error_file + ".err");
+	put_parm (2, error_extension);
+}
+
+/*
+**		next_error:
+**
+**		This routine is the engine for BRIEF's error location facility.  It
+**	reads in the error file and calls the appropriate routines to display
+**	either an individual error message or a window full of error message
+**	information.
+**
+**		If no parameter (or zero) is passed to next_error, the error file is
+**	read into a buffer and searched for error messages.  If the buffer is
+**	empty, the message "No errors." is displayed and the error buffer is
+**	removed.  If the buffer is not empty, and a message can be located, the
+**	text of the message is displayed on the message line, the cursor is placed
+**	on the first non-blank character of the line containing the error, and that
+**	line is centered in the window.	If no messages can be located, the error
+**	file is presented in a pop-up window.
+**
+**		If a "1" is passed to next_error, the error information is displayed in
+**	a window, with the current message highlighted.  If no messages could be
+**	recognised, the highlight is not displayed, and the cursor can be moved
+**	anywhere within the file.
+**
+**		If a "2" is passed to next_error, the error file is tested to see if
+**	any messages can be recognised.	If so, the same action is taken as with
+**	next_error 0.	If not, no message is displayed and the error file buffer
+**	is deleted.
+**
+**		If a "3" is passed, a test is done and a return code is returned, but
+**	no message is displayed in either case.
+**
+**		In all cases, next_error returns 0 if no error was found, and non-zero
+**	if there was an error.
+**
+**		If an error file is not found for the current file, then the error
+**	stack is accessed to obtain the error file accessed most recently.
+*/
+
+int next_error (~int action)
+{
+	int	error_buf,
+			old_buf_id = inq_buffer (),
+			line,
+			col,
+			loc,
+			attempts,
+			error_type,
+			more_errors,
+			prev_errors,
+			errors_exist,
+			total_error_lines,
+			windowed;
+
+	string	error_msg,
+				error_file,
+				error_file_name,
+				curr_file_name,
+				buf_name,
+				parms,
+				error_extension;
+
+	_cancel_errorfix = FALSE;
+
+	inq_names (error_file_name, NULL, buf_name);
+	curr_file_name = error_file_name;
+
+	/*
+	**		Find the error file for the current buffer.  If one does
+	** not exist, then get the most recently accessed error file
+	** from the error stack.
+	*/
+
+	while (TRUE)
+		{
+		/*
+		**		From the current error_file_name, construct the error_file and
+		**	error_extension (which is either the error_file_name's extension
+		**	or "." if there is no extension).  If there's a similar file
+		**	already in the error list, use it instead.
+		*/
+
+		fix_error_name (error_file_name, error_file, error_extension);
+
+		if (!(error_buf = create_buffer ("Error File", error_file, TRUE)))
+			{
+			/*
+			**		Note that we could have gone through this list a number
+			**	of times before this failure happens, so we must ensure the
+			**	current buffer is reset.
+			*/
+
+			set_buffer (old_buf_id);
+			return (FALSE);
+			}
+  		set_buffer (error_buf);
+
+		/*
+		**		errors_exist is set to TRUE if there is data in the file.
+		**	We assume that an empty file means no file, and that a file
+		**	with data in it is worth looking into.
+		*/
+
+  		save_position ();
+  		top_of_buffer ();
+  		errors_exist = end_of_buffer ();
+		inq_position (total_error_lines);
+		restore_position ();
+
+		if (!errors_exist)
+			{
+			/*
+			**		If there aren't any errors in the file, we need to pop the
+			**	buffer off the error stack (if it's there), and check the one
+			**	at the top of the stack.  If there isn't one, we're done.
+			**
+			**		The attempts variable basically keeps track of the number
+			**	of buffers we've examined that were actually on the error
+			**	stack.  This lets us distinguish between the "No errors"
+			**	and the "No more errors" cases.
+			*/
+
+			attempts += delete_error_file (error_file_name, TRUE);
+
+			/*
+			**		If we're just supposed to check whether or not there are
+			**	errors in the current file, we stop here.
+			*/
+
+			if (action >= PROBE_AND_DISPLAY)
+				break;
+			}
+
+		else
+			{
+			/*
+			**		Now that we know the file isn't empty, we check to
+			**	see if there are "real" errors in the file.  This is done
+			**	with the next/prev error routine appropriate to the file's
+			**	extension.  We set the more_errors and prev_errors variables
+			**	based on this test, and reset the errors_exist variable based
+			**	on both of them.
+			*/
+
+			add_error_file (error_file_name);
+			parms = error_extension + " " + buf_name;
+
+			windowed = (action == POP_UP_ERROR_WINDOW);
+			save_position ();
+			more_errors = execute_macro ("_call_next " + parms);
+
+			if (more_errors && windowed)
+				execute_macro ("_call_prev " + parms);
+			else
+				{
+				down ();
+				save_position ();
+				prev_errors = execute_macro ("_call_prev " + parms);
+				restore_position ();
+				}
+			restore_position ();
+			errors_exist = (more_errors || prev_errors);
+			break;
+			}
+		/*
+		**		If there are any more error files on the error stack, we check
+		**	them out the same way.
+		*/
+
+		if (!get_error_file (error_file_name))
+			{
+			if (attempts == 0)
+				{
+				set_buffer (old_buf_id);
+				message ("No errors.");
+				return (0);
+				}
+			break;
+			}
+		more_errors = prev_errors = FALSE;
+		}
+
+	/*
+	**		If we're supposed to pop up a window, or if the file isn't
+	**	empty and we don't recognize any error messages, we pop up an
+	**	error window.  In the latter case, we do it so the user can
+	**	see what's going on.
+	*/
+
+	if (windowed = (action < PROBE_AND_DISPLAY && (windowed || !errors_exist)))
+		{
+		int	lines,
+				cols;
+
+		/* save the current mouse event routine */
+		prev_mouse_action = inq_mouse_action();
+
+		keyboard_push ();
+		assign_to_key ("<Enter>", "_exit");
+		assign_to_key ("<Esc>", "_error_cancel");
+		assign_to_key ("<Left>", "left");
+		assign_to_key ("<Right>", "right");
+		assign_to_key ("<Home>", "beginning_of_line");
+		assign_to_key ("<End>", "end_of_line");
+
+		/*
+		**		If there are recognizable errors in the file, we assign the
+		**	up and down keys to the error search functions.  Otherwise, we
+		**	just move up and down normally.  This allows the user to browse
+		**	the file even though we don't know what's going on.
+		*/
+
+		if (errors_exist)
+			{
+			save_position ();
+			drop_anchor (3);
+			assign_to_key ("<Up>", "_call_prev " + parms);
+			assign_to_key ("<Down>", "_call_next " + parms);
+			}
+		else
+			{
+			assign_to_key ("<Up>", "up");
+			assign_to_key ("<Down>", "down");
+			}
+		beginning_of_line ();
+		inq_screen_size (lines, cols);
+		set_ctrl_state( ZOOM_BTN,    HIDE_CTRL );	// dont display a zoom button
+		create_window (5, lines - 4, cols - 5, 3, " or  to move, <Enter> to select, <Esc> to exit");
+		set_ctrl_state( ZOOM_BTN,    SHOW_CTRL );	// display a zoom button
+		attach_buffer (error_buf);
+		refresh ();
+		/* establish the mouse action handler for errorfix */
+		set_mouse_action( "mouse_errorfix" );
+		process ();
+
+		if (errors_exist)
+			{
+			restore_position ();
+			raise_anchor ();
+			}
+		delete_window ();
+
+		/*
+		**		Note that we set the current buffer back before doing the
+		**	keyboard_pop:  this ensures that the local keyboard (if any)
+		**	is restored properly.
+		*/
+
+		set_buffer (old_buf_id);
+		keyboard_pop ();
+		set_buffer (error_buf);
+		}
+
+	/*
+	**		At this point the cursor is pointing at the requested error
+	**	message.  If the user didn't cancel, we display the chosen message
+	**	and move the cursor to the appropriate line.
+	*/
+
+	if (!_cancel_errorfix && action != JUST_PROBE)
+		{
+		string	macro_to_call = error_extension + "_error_info";
+
+		if (!inq_macro (macro_to_call))
+			macro_to_call = "_error_info";
+
+		if ((windowed && errors_exist || more_errors)
+			&& (error_type = execute_macro (macro_to_call, buf_name, line, col, error_msg, curr_file_name, error_file_name)))
+			{
+			int	error_file_buf = inq_buffer (curr_file_name);
+
+			if (error_file_buf != old_buf_id)
+				{
+				set_buffer (old_buf_id);
+
+				/*
+				**		If the buffer is in the system, and it's being viewed in
+				**	a window, we switch to it.  Otherwise, we use edit_file to
+				**	read it in (if necessary) and attach it to the current window.
+				*/
+
+				if (error_file_buf != 0 && inq_views (error_file_buf))
+					{
+					int	curr_window = inq_window (),
+							window_buf_id;
+
+					do
+						{
+						curr_window = next_window (curr_window);
+						inq_window_info (curr_window, window_buf_id);
+						}
+					while (window_buf_id != error_file_buf);
+
+					set_window (curr_window);
+					old_buf_id = error_file_buf;
+					}
+				else if (edit_file (curr_file_name) > 0)
+					old_buf_id = inq_buffer ();
+				}
+			else
+				set_buffer (old_buf_id);
+
+			if (error_type < 0)
+				error_type = -error_type;
+
+			if (error_type >= 3)
+				goto_line (line);
+			else
+				goto_old_line (line);
+
+			center_line ();
+
+			if (col)
+				move_abs (0, col);
+			else
+				{
+				beginning_of_line ();
+				next_char (strlen (trim (read ())) - strlen (ltrim (trim (read ()))));
+				}
+			if (error_type == ERROR || error_type == -ERROR)
+				error (error_msg);
+			else
+				message (error_msg);
+			}
+		else if (windowed)
+			message (trim (ltrim (read ())));
+		else
+			{
+			if (errors_exist)
+				message ("No more errors.");
+
+			delete_error_file (error_file_name, TRUE);
+			}
+		}
+	else if (action == JUST_PROBE)
+		delete_error_file (error_file_name, TRUE);
+	else
+		message ("");
+
+	set_buffer (old_buf_id);
+	returns (more_errors);
+}
+/*
+**		mouse_errorfix
+**
+**		Handle all the mouse events of interest for the errorfix text window
+** Mouse assignments
+** BTN1 DOWN, UP, MOVE - highlight an entry
+** BTN1_CLICK				- pick an error entry from the error file window
+** BTN2_CLICK				- close the error file window
+** BTN1_CLICK outside error file window - close error file window
+*/
+void mouse_errorfix(	int event, 			// the event code
+							int modifier,	  	// modifier keys
+							int parm2,			// line or scroll bar code
+							int parm3 )			// column or thumb position
+{
+
+  	/* handle the events of interest */
+
+	switch ( event ){
+		case BTN1_DOWN:
+		case BTN1_UP:
+		case BTN1_MOVE:
+		case BTN1_CLICK:
+		{
+			int old_line, lines, i, count;
+			string cmd;
+			inq_position( old_line );	// get current position
+			raise_anchor();				// unhighlight the current line
+			end_of_buffer();				// position to end of the buffer
+			inq_position( lines );		// get number of lines in buffer
+			move_abs( old_line );		// position back to original line
+
+			if ( 0 < parm2 && parm2 <= lines ) {	// did the user click on a valid line?
+				/* get the command assigned to Up or Down */
+				if ( parm2 < old_line ) {
+					cmd = inq_assignment( "<Up>" );
+					count = old_line - parm2;
+				} else {
+					cmd = inq_assignment( "<Down>" );
+					count = parm2 - old_line;
+				}
+
+				/* move to the designated error line */
+				for ( i=0; i<count; i++) execute_macro( cmd );
+				if( event == BTN1_CLICK ) exit();// close the error text window
+			}
+			drop_anchor(3);
+		}
+		case BTN2_CLICK:
+		case CLOSE_WIN:
+			exit();							// close the error text window
+
+      case SET_WIN:                 // close the error text window
+         if ( parm2 != inq_window() ) exit();
+
+		case VSCROLL:						// vertical scroll bar event
+			switch ( parm2 ){
+				case SB_BOTTOM:			// end of error text window
+
+				case SB_TOP:				// top of error text window
+
+				case SB_PAGEDOWN:{		// page down request
+					int size, i, status;
+					inq_window_size( size );
+					/* move to the designated error line */
+					status = 1;
+					for ( i=0; i<size, status; i++) {
+						status = execute_macro( inq_assignment( "<Down>" ) );
+					}
+					drop_anchor(3);
+				}
+				case SB_PAGEUP:{  		// page up request
+					int size, i, status;
+					inq_window_size( size );
+					/* move to the designated error line */
+					status = 1;
+					for ( i=0; i<size, status; i++) {
+						status = execute_macro( inq_assignment( "<Up>" ) );
+					}
+					drop_anchor(3);
+				}
+
+				case SB_LINEDOWN:			// next error down
+					 execute_macro( inq_assignment( "<Down>" ) );
+
+				case SB_LINEUP:			// next error up
+					 execute_macro( inq_assignment( "<Up>" ) );
+
+			}
+
+		case HSCROLL:						// horizontial scroll bar event
+			execute_macro( prev_mouse_action, event, modifier, parm2, parm3 );
+
+	}
+}
+
+
+/*
+**		_call_next:
+**
+**		This macro is used to call the _next_error function.	It checks to
+**	see if there is a file extension specific function first.  If not, it
+**	calls the generic function.
+*/
+
+int _call_next (string error_extension, string file_name)
+{
+	string	macro_name = "_next_error";
+
+	int	ret_code,
+			mark_type,
+			col;
+
+	if (mark_type = inq_marked ())
+		raise_anchor ();
+
+	if (inq_macro (error_extension + macro_name))
+		macro_name = error_extension + macro_name;
+
+	inq_position (NULL, col);
+	restore_position ();
+	ret_code = execute_macro (macro_name + " " + error_extension + " " + file_name);
+	save_position ();
+	move_abs (0, col);
+
+	if (mark_type)
+		drop_anchor (mark_type);
+
+	returns (ret_code);
+}
+
+/*
+**		_call_prev:
+**
+**		This macro is used to call the _prev_error function.	It checks to
+**	see if there is a file extension specific function first.  If not, it
+**	calls the generic function.
+*/
+
+int _call_prev (string error_extension, string file_name)
+{
+	string	macro_name = "_prev_error";
+
+	int	ret_code,
+			mark_type,
+			col;
+
+	if (mark_type = inq_marked ())
+		raise_anchor ();
+
+	inq_position (NULL, col);
+	restore_position ();
+	save_position ();
+
+	if (up ())
+		end_of_line ();
+
+	if (inq_macro (error_extension + macro_name))
+		macro_name = error_extension + macro_name;
+
+	restore_position (!(ret_code = execute_macro (macro_name + " " + error_extension + " " + file_name)));
+	save_position ();
+	move_abs (0, col);
+
+	if (mark_type)
+		drop_anchor (mark_type);
+
+	returns (ret_code);
+}
+
+void _error_cancel ()
+{
+	_cancel_errorfix = 1;
+	_exit ();
+}
+
+/*
+**		_next_error, _prev_error, _error_info:
+**
+**		These routines are the default routines for locating error
+**	information.  They can be enhanced with file extension specific
+**	error location functions that are written for a specific compiler.
+**
+**		The _next_error and _prev_error macros move the cursor to the
+**	next and previous error message, respectively.	They return TRUE
+**	if another error message is found, and FALSE otherwise.
+**
+**		_error_info takes a given line in the error buffer (located by
+**	the _next and _previous error routines) and returns the information
+**	needed by BRIEF to locate the error message.  It returns 0 if there
+**	is no error message, 1 if the error is a warning, and 2 if it's an
+**	error.  It also returns the line and column in the file the error
+**	corresponds to, as well as the message that should be displayed at
+**	the bottom of the window.
+*/
+
+/*
+**		_next_error, _prev_error:
+**
+**		Both of these routines are passed the extension of the file that
+**	has been compiled and the full file name.  Although the generic
+**	routines don't make use of this information, extension-specific
+**	routines could.
+*/
+
+int _next_error (~string)
+{
+	returns (search_fwd ("<*.[a-zA-Z][~ \t\n]@[ \t,(:][ \t]@{line }@\\c[0-9]", 1, 0));
+}
+
+int _prev_error (~string)
+{
+	returns (search_back ("<*.[a-zA-Z][~ \t\n]@[ \t,(:][ \t]@{line }@\\c[0-9]", 1, 0));
+}
+
+/*
+**		_error_info:
+**
+**		This routine parses a given error line and returns information
+**	about it.  It is passed the following parameters:
+**
+**		Parameter				Description
+**		---------				-----------
+**			0						The name of the file the error was in.
+**
+**		The following are write-only parameters passed back to the calling
+**	function:
+**
+**		Parameter				Description
+**		---------				-----------
+**			1						The line of the file the error was on.
+**			2						The column of the file the error was on.
+**									If 0 is passed back, the first non-blank
+**									character is assumed.
+**			3						The actual error message, minus any useless
+**									information.
+**
+**		Finally, this last parameter is the buffer identifier of the source
+**	buffer.
+**
+**		Parameter				Description
+**		---------				-----------
+**			4						The full file name of the file the errors are
+**									in.  This macro may reset this name if the
+**									errors are found in a different buffer.
+**
+**			5						The file that "owns" the errors -- could be
+**									different than parameter 4 if we're in an
+**									include file, and the error file is owned
+**									by a source file.
+**
+**		_error_info returns an integer corresponding to the level of the
+**	error encountered.
+**
+**		Error Code				Meaning
+**		----------				-------
+**			0						No error
+**			1						Warning error in source file
+**			-1 					Warning error in another file
+**			2						"Normal" error in source file
+**			-2 					"Normal" error in another file
+**			3						Actual line (not original) error in source file.
+**			-3						Actual line (not original) error in another file.
+**			4						Actual line (not original) warning in source file.
+**			-4						Actual line (not original) warning in another file.
+**
+**		This information is used by the next_error driver to determine
+**	how to display the message.
+*/
+
+int _error_info (string error_file, int, int, string, string file_name, string base_name)
+{
+	int	length,
+			position,
+			error_level,
+			error_line;
+
+	string	error_text;
+
+	if (!(error_line = atoi (read (10))))
+		if (read (1) == "0")
+			error_line = 1;
+		else
+			return (FALSE);
+
+	save_position ();
+	beginning_of_line ();
+	error_text = trim (ltrim (read ()));
+	restore_position ();
+
+	error_level = WARNING + !index (lower (error_text), "warning");
+
+	/*
+	**		If the error file name isn't found in the error text, we have to do
+	**	more work...
+	*/
+
+	if (!index (lower (error_text), lower (error_file)))
+		{
+		position = search_string ("<*\\c[~ \t\"()'`]+.[a-zA-Z][~ \t\n\"()'`]@[ \t,\"()'`:]", error_text, length);
+		error_file = substr (error_text, position, length - 1);
+
+		if (!index ("/\\", substr (error_file, 1, 1)) && substr (error_file, 2, 1) != ":")
+			file_name = add_to_path (substr (base_name, 1, rindex (base_name, substr (base_name, 3, 1)) - 1), error_file);
+		else
+			file_name = error_file;
+
+		error_level *= -1;
+		}
+	error_text = trim (ltrim (read ()));
+	error_text = substr (error_text, search_string ("['`\"a-zA-Z]", error_text));
+
+	put_parm (1, error_line);
+	put_parm (2, 0);
+	put_parm (3, error_text);
+	put_parm (4, file_name);
+	returns (error_level);
+}
+

@@ -1,0 +1,167 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**		Written by Dave Nanian and Michael Strickman.
+*/
+
+/*
+**		column.cb:
+**
+**		This file contains a set of macros that let perform block operations
+**	columns of text.	These macros are called by the standard replacement
+**	macros; this makes sure that the column functions aren't pulled in unless
+**	they're needed.
+*/
+
+#define REG_MARK	  1
+#define COL_MARK	  2
+#define LINE_MARK   3
+#define NI_MARK	  4
+#define NOTHING	  0
+#define REPLACE	  1
+#define REMOVE 	  2
+
+void gen_block (string function_name, string message);
+void _complete_col (int append);
+
+/*
+**		_col_copy, _do_col_copy:
+**
+**		This macro copies a marked area to another buffer.  It uses the
+**	generic block operation routine to loop through the marked lines.
+**	It then inserts these lines into a special buffer.  Once all the
+**	lines have been copied, this special buffer is copied to the scrap.
+*/
+
+void _col_copy (~int append)
+{
+	global int	col_buf = create_buffer ("Column", NULL, 1);
+
+	gen_block ("_do_col_copy", "Copying columns to scrap");
+	_complete_col (append);
+	raise_anchor ();
+	message ("Columns copied to scrap.");
+}
+
+int _do_col_copy (string line)
+{
+	int old_buf = set_buffer (col_buf);
+
+	if (!index (line, "\n"))
+		line += "\n";
+
+	insert (line);
+	set_buffer (old_buf);
+	returns (NOTHING);
+}
+
+/*
+**		_col_cut, _do_col_cut:
+**
+**		This macro cuts a marked area to another buffer.  It uses the
+**	generic block operation routine to loop through the marked lines.
+**	It then inserts these lines into a special buffer.  Once all the
+**	lines have been cut, this special buffer is copied to the scrap.
+*/
+
+void _col_cut (~int append)
+{
+	int	start_col;
+
+	col_buf = create_buffer ("Column", NULL, 1);
+	inq_marked (NULL, start_col);
+	gen_block ("_do_col_cut", "Deleting columns to scrap");
+	_complete_col (append);
+	raise_anchor ();
+	move_abs (0, start_col);
+	message ("Columns deleted to scrap.");
+}
+
+int _do_col_cut (string line)
+{
+	int	old_buf = set_buffer (col_buf);
+
+	if (!index (line, "\n"))
+		line += "\n";
+
+	insert (line);
+	set_buffer (old_buf);
+	returns (REMOVE);
+}
+
+/*
+**		_complete_col:
+**
+**		This routine puts the column scrap buffer onto the regular scrap
+**	and then deletes it.  If the append parameter is specified, it is passed
+**	through to copy.
+*/
+
+void _complete_col (int append)
+{
+	int	old_buf = set_buffer (col_buf);
+
+	top_of_buffer ();
+	drop_anchor (COL_MARK);
+	end_of_buffer ();
+	prev_char ();
+	copy (append);
+	set_buffer (old_buf);
+	delete_buffer (col_buf);
+}
+
+/*
+**		_col_paste, _do_col_paste:
+**
+**		This routine pastes the standard scrap as columnar information.
+*/
+
+void _col_paste ()
+{
+	col_buf = set_buffer (inq_scrap ());
+	top_of_buffer ();
+	drop_anchor (LINE_MARK);
+	end_of_buffer ();
+	gen_block ("_do_col_paste", "Inserting columns");
+	raise_anchor ();
+	set_buffer (col_buf);
+	message ("Columns inserted.");
+}
+
+int _do_col_paste (string line)
+{
+	int	scrap_buf = set_buffer (col_buf),
+			curr_col;
+
+	line = substr (line, 1, strlen (line) - 1);
+	inq_position (NULL, curr_col);
+	insert (line);
+	move_rel (1, 0);
+	move_abs (0, curr_col);
+	set_buffer (scrap_buf);
+	returns (NOTHING);
+}
+
+/*
+**		_col_delete, _do_col_delete:
+**
+**		This macro deletes a marked columnar area.  It uses the generic
+**	block operation routine to loop through the marked lines.  It then
+**	simply tells the routine to remove the information.
+*/
+
+void _col_delete ()
+{
+	int	start_col;
+
+	inq_marked (NULL, start_col);
+	gen_block ("_do_col_delete", "Deleting columns");
+	raise_anchor ();
+	move_abs (0, start_col);
+	message ("Columns deleted.");
+}
+
+_do_col_delete (...)
+{
+	returns (REMOVE);
+}

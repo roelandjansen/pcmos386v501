@@ -1,0 +1,362 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**		Written by Dave Nanian and Michael Strickman.
+*/
+
+/*
+**		wp.cb:
+**
+**		This file contains a set of macros that can help with very simple word
+**	processing applications.  The functions supported are word_wrap, centering,
+**	and paragraph reformatting, with a flexible right margin.  By default,
+**	word_wrap is turned on when this package is loaded.  The other functions
+**	can be invoked as they are needed, or can be assigned to any keys you
+**	choose.
+**
+**		These functions are NOT intended to replace a full-featured word processor.
+**	They are useful for letters and other short documents, and as a supplement
+**	to a text formatter.
+*/
+
+#define ADD_CHAR_MACRO	  0
+#define NEW_FILE_MACRO	  1
+#define DEFAULT_MARGIN	  70
+
+/*
+**		_init:
+**
+**		This macro starts the package by setting up word_wrap and initializing
+**	the margin.
+*/
+
+void _init ()
+{
+	global int	margin_val,
+					default_margin;
+
+	margin_val = default_margin = DEFAULT_MARGIN;
+}
+
+void wp ()
+{
+	error ("You must set BPACKAGES to turn on WP.");
+}
+
+/*
+**		_wp_on, _wp_off:
+**
+**		These macros are called to turn word processing on and off for specific
+**	files.  Note that an optional margin can be specified in the BPACKAGES
+**	line; the previous margin is restored when the current file is changed.
+*/
+
+string _wp_on (~int)
+{
+	if (!get_parm (0, margin_val))
+		margin_val = default_margin;
+
+	register_macro (ADD_CHAR_MACRO, "_word_wrap");
+	returns ("_wp_off");
+}
+
+void _wp_off ()
+{
+	unregister_macro (ADD_CHAR_MACRO, "_word_wrap");
+}
+
+/*
+**		center:
+**
+**		Centers the current line in the work area (the area between column 1
+**	and the current margin).
+*/
+
+void center ()
+{
+	string	text;
+
+	search_back ("<[ \\t]@\\c[~ \\t]");
+	text = read ();
+	text = substr (text, 1, strlen (text) - 1);
+	beginning_of_line ();
+	delete_to_eol ();
+	move_rel (0, (margin_val - strlen (text)) / 2);
+	insert (text);
+}
+
+/*
+**		word_wrap:
+**
+**		This macro is automatically invoked after each time that a character
+**	is typed.  It moves the cursor to the next line when it is past the
+**	margin, taking the current word with it if necessary.
+**
+**		Automatic invocation is done via the standard BPACKAGES interface.
+*/
+
+void _word_wrap ()
+{
+	int	col;
+
+	inq_position (NULL, col);
+
+	if (col > margin_val)
+		{
+		prev_char ();
+
+		if (!index (" \t", read (1)))
+			{
+			int	new_col,
+					space_between_words = 1;
+
+			search_back ("<|[ \\t][~ \\t]");
+			inq_position (NULL, new_col);
+
+			if (read (1) == "\t")
+				space_between_words = distance_to_tab ();
+
+			if (new_col == 1)
+				end_of_line ();
+
+			insert ("\n");
+
+			if (new_col != 1)
+				{
+				delete_char ();
+				move_rel (0, (col - new_col) - space_between_words);
+				}
+			}
+		else
+			next_char ();
+		}
+}
+
+/*
+**		margin:
+**
+**		Resets the current margin, prompting the user if necessary.
+*/
+
+void margin (int)
+{
+	get_parm (0, default_margin, "Enter margin: ");
+	margin_val = default_margin;
+}
+
+/*
+**		reform:
+**
+**		Reformats the currently marked area a line at a time.  The main
+**	loop goes through each line, adjusting it to the margin as necessary.
+**	If the line is too long, it splits it at the last space before the
+**	margin; it it's too short, it keeps joining the following lines to it,
+**	or parts of them if they are too long, until the line fits the margin.
+*/
+
+void reform ()
+{
+	string	last_char,
+				tab_reply;
+
+	int	old_buffer,
+			temp_buffer,
+			start_line,
+			start_col,
+			end_line,
+			end_col,
+			curr_line,
+			curr_col,
+			prev_line,
+			prev_col,
+			not_done,
+			tab_stop;
+
+	tab_reply = use_tab_char ("n");
+
+	message ("Reformatting paragraph...");
+
+	/*
+	**		If no paragraph marked, find ends of it at blank or indented lines.
+	*/
+
+	if (!inq_marked ())
+		{
+		end_of_line ();
+		move_rel (0, -1);
+
+		if (!search_back ("{<[ \t]+[~ \t\n]}|{\n @\n\\c}"))
+			top_of_buffer ();
+
+		drop_anchor ();
+		next_char ();
+
+		if (!search_fwd ("{\\c\n[ \t]+[~ \t]}|{\\c\n[ \t]@\n}"))
+			end_of_buffer ();
+		}
+	/*
+	**		Transfer marked area into a fresh buffer, then delete it.
+	*/
+
+	inq_marked (start_line, start_col, end_line, end_col);
+
+	save_position ();
+	beginning_of_line ();
+	tab_stop = distance_to_tab ();
+	restore_position ();
+
+	old_buffer = inq_buffer ();
+	set_buffer (temp_buffer = create_buffer ("Word Process", NULL, 1));
+	tabs (tab_stop + 1);
+	transfer (old_buffer, start_line, start_col, end_line, end_col);
+	set_buffer (old_buffer);
+	delete_block ();
+	move_abs (start_line, start_col);
+	set_buffer (temp_buffer);
+	top_of_buffer ();
+
+	/*
+	**		Loop through buffer a line at a time, shrinking or expanding
+	**	each line as necessary.
+	*/
+
+	while (!inq_position ())
+		{
+		end_of_line ();
+		inq_position (NULL, curr_col);
+
+		/*
+		**		If line is too long, split it.
+		*/
+
+		if (curr_col > margin_val)
+			{
+			move_abs (0, margin_val + 1);
+			search_back ("[ \t]");
+			insert ("\n");
+
+			while (" " == read (1))
+				delete_char ();
+
+			up ();
+			}
+		else
+			{
+			not_done = 1;
+
+			while (not_done)
+				{
+				left ();
+				last_char = read (1);
+
+				/*
+				**		Skip current character and leave two spaces after
+				**	.:!?
+				*/
+
+				curr_col += last_char != " ";
+				curr_col += index (".:!?", last_char) > 0;
+
+				/*
+				**		Stop if we don't need any more after punc.
+				*/
+
+				if (curr_col >= margin_val)
+					not_done = 0;
+				else
+					{
+					down ();
+					end_of_line ();
+					inq_position (prev_line, prev_col);
+
+					/*
+					**		If we need the entire next line, prepare for join.
+					*/
+
+					if (--prev_col <= margin_val - curr_col)
+						{
+						beginning_of_line ();
+
+						if (read () == "\n")
+							not_done = 0;
+
+						up ();
+						}
+					else
+						{
+						/*
+						**		Find the maximum amt. we can take.
+						*/
+
+						move_abs (0, 1 + (margin_val - curr_col));
+						search_back ("[ \t][~ \t]");
+						inq_position (curr_line);
+
+						/*
+						**		If the first word on the next line is
+						**	too long, we're done with the line.
+						*/
+
+						if (curr_line != prev_line)
+							not_done = 0;
+						else
+							{
+							/*
+							**		Split off line and clean up start of next.
+							*/
+
+							insert ("\n");
+							delete_char ();
+
+							/*
+							**		Go back up and prepare to join.
+							*/
+
+							move_rel (-2, 0);
+							}
+						}
+					/*
+					**		Now join the lines together if needed.
+					*/
+
+					if (not_done)
+						{
+						move_abs (0, curr_col);
+						delete_char ();
+						}
+					/*
+					**		Prepare to loop again.
+					*/
+
+					end_of_line ();
+					inq_position (NULL, curr_col);
+					}
+				}
+			}
+		/*
+		**		Read line into string and insert in other buffer.
+		*/
+
+		beginning_of_line ();
+		last_char = read ();
+		set_buffer (old_buffer);
+
+		if (last_char != "\n")
+			insert (last_char);
+
+		refresh ();
+		set_buffer (temp_buffer);
+		delete_line ();
+
+		if (read () == "\n")
+			delete_line ();
+		}
+	/*
+	**		Get rid of the temporary buffer and insert the remaining text.
+	*/
+
+	set_buffer (old_buffer);
+	delete_buffer (temp_buffer);
+	message ("Reformatting complete.");
+	use_tab_char (tab_reply);
+}

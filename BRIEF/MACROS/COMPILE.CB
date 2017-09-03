@@ -1,0 +1,555 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**		Written by Dave Nanian and Michael Strickman.
+*/
+
+/*
+**		compile.cb:
+**
+**		This file contains all of the standard BRIEF macros for compiling
+**	files.
+*/
+
+string add_to_path (string path, string name);
+string escape_re (string original, ~string);
+int next_error (~int action);
+int cc (string pass_string, ~string legal_extension, ~int check_warnings, ~int background, ~int continuation);
+void _cc_complete (int ret_code, string full_name, int check_warnings, string pass_string);
+int cm (...);
+int cb (...);
+
+extern int	_check_warnings,	//	Check for warnings in the compiler output?
+				_background;		//	Run the compiler in the background?
+
+/*
+**		compile_it:
+**
+**		This function automatically compiles the file in the current
+**	buffer.	It uses the "BC<extension>" environment variable to
+**	determine what to do with any given file.  If no "BC<extension>"
+**	environment variable exists for the specific file extension being
+**	compiled, compile_it checks to see if it's ".c", ".m" or ".asm".	If
+**	it's a macro file the "cm" macro is executed; if it's a C file, a
+**	generic "cc" command is used, and if it's an ASM file, the Macro
+**	Assembler is invoked.
+**
+**		Other compilers can be supported very easily.  Simply set a
+**	"BC<extension>" environment variable to the "pass string" you
+**	want to use.  For example, if you wanted to call the (fictitious)
+**	UnderWare C compiler, which has two passes called "under" and "ware",
+**	you'd use the command:
+**
+**		set bcc="under %s;ware %s"
+**
+**		You must place the pass string in quotes.  If you don't, compile_it
+**	calls a macro named whatever is in the pass string.  So, for example,
+**	if you accidently set your pass string using the command:
+**
+**		set bcc=under %s;ware %s
+**
+**		compile_it would call a macro named "under %s;ware %s".	This probably
+**	isn't what you want -- but this feature can be useful if you want to
+**	run some sort of custom macro for the file extension (compile_it does
+**	this when compiling cm files).
+**
+**		Also note that DOS requires you to double any % characters that
+**	appear in a batch file.  So if you were setting the BCC variable in
+**	your autoexec, you would use the line:
+**
+**		set bcc="under %%s;ware %%s"
+**
+**		Each pass begins with the name of the executable program that does
+**	that compilation pass.	That is followed by the a space, the special
+**	string "%s", which is replaced by the filename (with NO extension),
+**	and the multiple pass separation character ";".  If you want to put
+**	a ";" in your pass string, use "\;".
+**
+**		These special characters are very important -- don't forget them!
+**	Remember that the special "%s" string is only replaced by the filename,
+**	not the filename and the extension.  Up to seven of these can be specified
+**	in any given pass.  If your compiler requires the extension as well,
+**	place it after this string (e.g. "cc -c %s.c").
+**
+**		If you want to pass options to your compiler, you can place them
+**	either before or after the "%s".  Placing them before puts the option
+**	before the filename, and vice versa.
+**
+**		If your compiler doesn't return an error code, put an exclamation
+**	point in front of the first pass string (either inside or outside the
+**	quotes); this will override the current warnings_only setting and
+**	automatically check for errors in the compiler output.
+*/
+
+int compile_it (void)
+{
+	string	extension,		//	File extension of the current file.
+				command;			//	Command to be used to compile file.
+
+	inq_names (NULL, extension);
+	command = trim (ltrim (inq_environment ("BC" + upper (extension))));
+
+	if (command != "")
+		{
+		if (index (command, "\""))
+			{
+			int	loc,
+					background;
+
+			background = _background;
+
+			while (loc = index (command, "\""))
+				command = substr (command, 1, loc - 1) + substr (command, loc + 1);
+
+			if (substr (command, strlen (command), 1) == "&")
+				{
+				background = 1;
+				command = trim (substr (command, 1, strlen (command) - 1));
+				}
+			if ("!" == substr (command, 1, 1))
+				returns (cc (substr (command, 2), extension, 1, background));
+			else
+				returns (cc (command, extension, NULL, background));
+			}
+		else
+			{
+			int	check_warnings = _check_warnings;
+
+			if (substr (command, 1, 1) == "!")
+				{
+				check_warnings = 1;
+				command = substr (command, 2);
+				}
+			returns (execute_macro (command, command, check_warnings));
+			}
+		}
+	else
+		switch (extension)
+			{
+			case "m":
+				returns (cm (_check_warnings));
+
+			case "asm":
+				returns (cc ("masm %s\\;", extension));
+
+			case "c":
+				returns (cc ("cc -c %s.c", extension));
+
+			case "cb":
+				returns (cb (_check_warnings));
+
+			default:
+				{
+				error ("Can't compile: no BC%s environment variable.", upper (extension));
+				returns (-1);
+				}
+			}
+}
+
+/*
+**		warnings_only:
+**
+**		This macro toggles whether or not errors are searched for when a
+**	compile is done and the compiler returns "no errors".  Note that its
+**	value is saved in the state file.
+*/
+
+int warnings_only (~int)
+{
+	int	ret_code,
+			previous_value;
+
+	previous_value = _check_warnings;
+
+	if (!(ret_code = get_parm (0, _check_warnings)))
+		_check_warnings = !_check_warnings;
+
+	if (!ret_code || inq_called () == "")
+		message ("Compile warning detection %s.", _check_warnings ? "on" : "off");
+
+	returns (previous_value);
+}
+
+/*
+**		bgd_compilation:
+**
+**		This macro toggles whether or not compilation is done in the
+**	background under operating systems that support it.  Note that this
+**	value is saved in the state file.
+*/
+
+int bgd_compilation (~int)
+{
+	int	ret_code,
+			previous_value;
+
+	previous_value = _background;
+
+	if (!(ret_code = get_parm (0, _background)))
+		_background = !_background;
+
+	if (!ret_code || inq_called () == "")
+		message ("Background compilation %s.", _background ? "on" : "off");
+
+	returns (previous_value);
+}
+
+/*
+**		cc:
+**
+**		This routine compiles the file in the current buffer using the
+**	passed "pass string" and the BRIEF DOS command.  It needs a lot
+**	of memory to run -- either turn swapping on or start with at least
+**	256K and -M20.  Of course, this may vary depending with the size
+**	and memory requirements of the specific compiler you're using.
+**
+**		The "pass string" passed should be of the form:
+**
+**			pass_1 %s;pass_2 %s;...pass_n %s
+**
+**		The optional second parameter is an extended file type -- this is
+**	used by the "cm" and "cb" macros, and to compile other types of files
+**	(e.g. .asm).
+**
+**		If no pass string is specified, it defaults to a generic "cc"
+**	command.  If no extension is specified, it defaults to "c".
+*/
+
+int cc (string pass_string, ~string, ~int, ~int, ~int continuation)
+{
+	string	file_name,			//	The name of the file we're compiling.
+				legal_extension,	//	The extension of files we can compile.
+				path,					//	The path of the file we're compiling.
+				extension,			//	The extension of the file we're compiling.
+				command_line, 		//	The compile command line.
+				old_path,			//	The original path we were on.
+				error_file;			//	The file to put error information in.
+
+	int	loc, 						//	Generic index place holder.
+			length, 					//	Generic length place holder.
+			ret_code = 1,			//	Return code from DOS.
+			buffer_id, 				//	Buffer ID of error buffer.
+			check_warnings,		//	Examine result of compile for errors?
+			background;				//	Do compilation in background?
+
+	/*
+	**		We get the name of the file from inq_names and check to see
+	**	if it's a legal extension.
+	*/
+
+	if (!get_parm (1, legal_extension))
+		legal_extension = "c";
+
+	inq_names (path, extension, file_name);
+
+	if (extension != legal_extension)
+		error ("Current buffer is not a .%s file.", legal_extension);
+	else
+		{
+		/*
+		**		If the file has been modified, we want to make sure the
+		**	current version gets compiled, so we write it to disk.
+		**
+		**		Note that if the user does not specify a pass string, it
+		**	defaults to a generic "cc" command.
+		*/
+
+		if (pass_string == "")
+			pass_string = "cc -c %s.c";
+
+		if (!get_parm (2, check_warnings))
+			check_warnings = _check_warnings;
+
+		if (!get_parm (3, background))
+			background = _background;
+
+		version (old_path);
+
+		if (old_path != "OS/2")
+			background = 0;
+
+		if (!continuation && inq_modified ())
+			{
+			int	old_msg_level;
+
+			old_msg_level = inq_msg_level ();
+			set_msg_level (0);
+			ret_code = write_buffer ();
+			set_msg_level (old_msg_level);
+			}
+
+		if (ret_code > 0)
+			{
+			/*
+			**		Now we parse the filename off the path string,
+			**	making sure to handle the possible presence of forward
+			**	and backward slash characters.  We then replace the
+			**	file_name's ".c" with ".err" for redirection purposes.
+			*/
+
+			path = substr (path, 1, rindex (path, substr (path, 3, 1)));
+
+			if (strlen (path) > 3)
+				path = substr (path, 1, strlen (path) - 1);
+
+			file_name = substr (file_name, 1, index (file_name, ".") - 1);
+			error_file = file_name + ".err";
+			ret_code = 0;
+
+			/*
+			**		We want the .obj file to end up in the file's
+			**	directory, so we change to the directory where the
+			**	file is, saving the current directory.  We also make
+			**	the file's drive the default drive.
+			*/
+
+			getwd ("", command_line);
+			getwd (path, old_path);
+			old_path = substr (command_line, 1, 1) + substr (old_path, 2);
+			cd (path);
+			cd (substr (path, 1, 2));
+
+			/*
+			**		This loop goes through each pass of the compiler,
+			**	checks to see if the return code was OK, and, if so,
+			**	continues along.	If an error occurs, the loop exits
+			**	immediately.
+			*/
+
+			while (!ret_code && strlen (pass_string))
+				{
+				if (loc = search_string ("[~\\\\];", pass_string))
+					{
+					command_line = substr (pass_string, 1, loc);
+					pass_string = substr (pass_string, loc + 2);
+					}
+				else
+					{
+					command_line = pass_string;
+					pass_string = "";
+					}
+				command_line += " >&" + error_file;
+
+				while (loc = index (command_line, "\\;"))
+					command_line = substr (command_line, 1, loc - 1) + substr (command_line, loc + 1);
+
+				/*
+				**		Since environment variables don't allow "=" characters to
+				**	appear in them, we use "--" as an alias.
+				*/
+
+				while (loc = index (command_line, "--"))
+					command_line = substr (command_line, 1, loc - 1) + "=" + substr (command_line, loc + 2);
+
+				sprintf (command_line, command_line, file_name, file_name, file_name, file_name, file_name, file_name, file_name);
+				message ("%s", background ? command_line + " &" : command_line);
+
+				if (background)
+					{
+					string completion_rtn;
+
+					inq_names (file_name);
+					sprintf (completion_rtn, "_cc_complete \"%s\" %d \"%s\"", file_name, check_warnings, escape_re (pass_string, "\""));
+					dos (command_line, 0, completion_rtn);
+					break;
+					}
+				else if ((ret_code = dos (command_line, 0)) > 0)
+					next_error ();
+				else if (ret_code == 0 && check_warnings)
+					ret_code = next_error (2);
+				}
+			/*
+			** 		Finally, we restore the old directory.  If the
+			** 	compilation did not succeed, the next_error macro
+			** 	was called to place the cursor under the error.
+			**
+			** 		Otherwise, the temporary file is deleted and a
+			** 	message is printed.
+			*/
+
+			if (!background && ret_code <= 0)
+				{
+				del (error_file);
+
+				if (ret_code == 0)
+					message ("Compilation successful.");
+				}
+			cd (substr (old_path, 3));
+			cd (substr (old_path, 1, 2));
+			}
+		}
+	returns (ret_code);
+}
+
+/*
+**		_cc_complete:
+**
+**		This is the completion routine for background compilation.
+*/
+
+void _cc_complete (int ret_code, string full_name, int check_warnings, string pass_string)
+{
+	int	in_memory,
+			old_buf_id = inq_buffer (),
+			buf_id,
+			loc;
+
+	string	file_name,
+				extension;
+
+	/*
+	**		First, we check to see if the buffer being compiled
+	**	is in the buffer list.
+	*/
+
+	in_memory = (inq_buffer (full_name) != 0);
+
+	/*
+	**		If in_memory is true then the current buffer is set
+	**	to the buffer we're compiling.	Otherwise, we have to
+	**	read it into memory to prepare for a possible next_error.
+	*/
+
+	loc = strlen (full_name);
+
+	while (!index ("/\\", substr (full_name, loc, 1)))
+		--loc;
+
+	file_name = substr (full_name, loc + 1);
+
+	if (!in_memory)
+		if (buf_id = create_buffer (file_name, full_name))
+			set_buffer (buf_id);
+		else
+			error ("_cc_complete:  fatal error, can't edit %s.", file_name);
+
+	inq_names (NULL, extension);
+
+	if (!ret_code)
+		{
+		if (check_warnings)
+			ret_code = next_error (3);
+
+		if (!ret_code)
+			if (pass_string == "")
+				{
+				message ("Compilation of %s successful.", file_name);
+				del (substr (full_name, 1, rindex (full_name, ".")) + "err");
+				}
+			else
+				cc (pass_string, extension, check_warnings, 1, 1);
+		}
+	/*
+	** 	At this point, we know we can clean up.  First, we set
+	**	the current buffer to the one we started with.	Then, if we
+	**	temporarily edited the buffer we were compiling, we delete
+	**	it.
+	*/
+
+	set_buffer (old_buf_id);
+
+	if (!in_memory)
+		delete_buffer (buf_id);
+
+	if (ret_code)
+		{
+		beep ();
+
+		if (buf_id == 0 || old_buf_id == buf_id)
+			error ("Error compiling %s; press %s.", file_name, inq_assignment ("next_error", 1));
+		else
+			error ("Error compiling %s.", file_name, inq_assignment ("next_error", 1));
+		}
+}
+
+/*
+** 	cm:
+**
+** 	This macro compiles the macro in the current buffer (if there is one).
+**	If the compilation was successful, the macro is re-loaded (or loaded, as
+**	the case may be).  If the compilation failed, the errorfix macro
+**	is used to locate the problem in the .m file.
+**
+** 	Note that the "cc" macro is used to do most of the work.  This macro
+**	merely calls "cc" with the parameters required for compilation of a
+**	macro file, then loads the file if the compilation was successful.
+*/
+
+int cm (...)
+{
+	int	check_warnings,
+			curr_parm,
+			ret_code;
+
+	string	command_line = "cm";
+
+	for (curr_parm = 1 ; curr_parm >= 0 && !get_parm (curr_parm, check_warnings) ; curr_parm--);
+
+	if (curr_parm > 0)
+		get_parm (0, command_line);
+
+	command_line += " %s";
+
+	if (!(ret_code = cc (command_line, "m", check_warnings, 0)))
+		{
+		int	old_msg_level;
+
+		string	name;
+
+		inq_names (name);
+		name = substr (name, 1, rindex (name, ".") - 1);
+		old_msg_level = inq_msg_level ();
+		set_msg_level (3);
+		delete_macro (name);
+		set_msg_level (old_msg_level);
+		load_macro (name);
+		message ("Macro compiled and loaded.");
+		}
+	returns (ret_code);
+}
+
+/*
+** 	cb:
+**
+** 	This macro compiles the CBRIEF macro in the current buffer (if
+**	there is one).  If the compilation was successful, the macro is
+**	re-loaded (or loaded, as the case may be).  If the compilation failed,
+**	the errorfix macro is used to locate the problem in the .m file.
+**
+** 	Note that the "cc" macro is used to do most of the work.  This macro
+**	merely calls "cc" with the parameters required for compilation of a
+**	CBRIEF file, then loads the file if the compilation was successful.
+*/
+
+int cb (...)
+{
+	int	check_warnings,
+			curr_parm,
+			ret_code;
+
+	string	command_line = "cb";
+
+	for (curr_parm = 1 ; curr_parm >= 0 && !get_parm (curr_parm, check_warnings) ; curr_parm--);
+
+	if (curr_parm > 0)
+		get_parm (0, command_line);
+
+	command_line += " %s";
+
+	if (!(ret_code = cc (command_line, "cb", check_warnings, 0)))
+		{
+		int	old_msg_level;
+
+		string	name;
+
+		inq_names (name);
+		name = substr (name, 1, rindex (name, ".") - 1);
+		old_msg_level = inq_msg_level ();
+		set_msg_level (3);
+		delete_macro (name);
+		set_msg_level (old_msg_level);
+		load_macro (name);
+		message ("Macro compiled and loaded.");
+		}
+	returns (ret_code);
+}

@@ -1,0 +1,10 @@
+        Copy         ;copy
+         Cut         ;cut
+        Paste        ;paste
+       Buffers       ;buf_list 1
+    Copy & Append    ;copy 1
+    Cut & Append     ;cut 1
+       Delete        ;delete_char
+        Help         ;help
+      QuickHelp      ;qh
+      Routines       ;routines

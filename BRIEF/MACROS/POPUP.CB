@@ -1,0 +1,193 @@
+/*
+**		popup.cb:
+**
+**		Implements the pop-up menu interface.
+*/
+
+#include "dialog.h"
+#include "win_ctrl.h"
+
+void popup_menu (int kb_flags, int mse_y, int mse_x);
+int process_popup_menu (string buf_name, string file_name, ~int height, ~int width, ~int, ~int);
+int process_popup_event (int event, ...);
+
+string	_popup_la,			// Last action invoked from a pop-up menu
+			_popup_mn;			// Last menu displayed in a pop-up menu
+
+int		_popup_level,		// Number of nested menus we've displayed
+			_popup_flag,		// Non-zero if there's an action to be taken
+			_popup_x,			// Position of top-level popup menu
+			_popup_y;
+
+extern string search_path (string path, string filename);
+
+_init ()
+{
+	if (!inq_macro ("_remove_dialog_manager"))
+		load_macro ("dialog");
+}
+
+/*
+**		popup_menu:
+**
+**		Implements the popup menu interface for BRIEF.
+*/
+
+void popup_menu (int kb_flags, int ~, int ~)
+{
+	int	mse_y, mse_x;
+
+	if (get_parm (1, mse_y) == 0)
+		mse_y = -1;
+
+	if (get_parm (2, mse_x) == 0)
+		mse_x = -1;
+
+	_popup_flag = FALSE;		// Reset action flag (maybe use _popup_la?)
+
+	if (kb_flags & KB_ALT)
+	{
+		if (_popup_mn != "")
+		{
+			string buf_name, menu_name;
+
+			buf_name = substr (_popup_mn, 1, index (_popup_mn, "\xff") - 1);
+			menu_name = substr (_popup_mn, index (_popup_mn, "\xff") + 1);
+			process_popup_menu (buf_name, menu_name, NULL, NULL, mse_y, mse_x);
+		}
+	}
+	else if (kb_flags & KB_CTRL)
+		_popup_flag = TRUE;
+	else
+		process_popup_menu ("Pop-up Menu", "popup.mnu", NULL, NULL, mse_y, mse_x);
+
+	if (_popup_flag)
+	{
+		set_calling_name ("");
+		execute_macro (_popup_la);
+	}
+}
+
+int process_popup_menu (string buf_name, string file_name, ~int height, ~int width, ~int y, ~int x)
+{
+	/*
+	**		First, determine the actual width and height of the specified menu.
+	**	Then, compute the new X,Y based on the width and height of the menu.
+	*/
+
+	if (!search_string ("[:/\\\\]", file_name, NULL, TRUE))
+		file_name = search_path (_dialog_dir, file_name);
+
+	if (exist (file_name))
+	{
+		int		menu_buf_id, curr_buf,
+					screen_y, screen_x,
+					buf_is_loaded,
+					by;
+
+		/*
+		**		Save the last menu viewed.
+		*/
+
+		_popup_mn = buf_name + "\xff" + file_name;
+
+		buf_is_loaded = inq_buffer (file_name);
+
+		menu_buf_id = create_buffer (buf_name, file_name, TRUE);
+		curr_buf = set_buffer (menu_buf_id);
+
+		/*
+		**		Calculate the width and height of the menu and where to put it.
+		*/
+
+		top_of_buffer ();
+
+		if (search_fwd (";", FALSE))
+			inq_position (NULL, width);
+
+		if (width < 14)
+			width = 14;
+
+		end_of_buffer ();
+		inq_position (height);
+		top_of_buffer ();
+
+		inq_screen_size (screen_y, screen_x);
+
+		if (_popup_level == 0)
+		{
+			if (y == -1)// || get_parm (4, y) == 0)
+				y = (screen_y / 2) - (height / 2);
+
+			if (x == -1)// || get_parm (5, x) == 0)
+				x = (screen_x / 2) - (width / 2);
+		}
+		else
+		{
+			y = _popup_y + _popup_level;
+			x = _popup_x + _popup_level * 2;
+		}
+
+		screen_y -= 4;
+		screen_x -= 3;
+
+		if (screen_y < (y + height + 1))
+			y = screen_y - height;
+
+		if (y < 2) y = 2;
+
+		if (screen_x < (x + width))
+			x = screen_x - width;
+
+		if (_popup_level == 0)
+		{
+			_popup_x = x;
+			_popup_y = y;
+		}
+
+		set_buffer (curr_buf);
+
+		_popup_level++;
+
+		by = y + height + 1;
+
+		if (by > screen_y + 1)
+			by = screen_y + 1;
+
+		_process_menu (x, by, x + width, y, buf_name,
+							"Select an Item", NULL, menu_buf_id,
+							"process_popup_event", TRUE);
+
+		_popup_level--;
+
+		if (!buf_is_loaded)
+			delete_buffer (menu_buf_id);
+
+		returns (TRUE);
+	}
+	else
+		returns (FALSE);
+}
+
+int process_popup_event (int event, ...)
+{
+	if (event == DIALOG_PICK_MENU)
+	{
+		string action;
+
+		get_parm (2, action);
+
+		action = substr (action, index (action, ";") + 1);
+
+		if (index (action, "process_popup_menu"))
+			execute_macro (action);
+		else
+		{
+			_popup_la = action;
+			_popup_flag = TRUE;
+			push_back (key_to_int ("<Esc>"));
+		}
+	}
+
+	returns (TRUE);
+}

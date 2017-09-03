@@ -1,0 +1,717 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**		Written by Dave Nanian and Michael Strickman.
+*/
+
+#include "win_ctrl.h"
+
+/*		pvcs.cb:
+**
+**		This macro package makes BRIEF work quite well with PVCS.
+*/
+
+#define	READ_ONLY		0x01
+#define	FALSE				0
+#define	TRUE				1
+
+int	_vcs_buf;			//	Buffer that holds checked out logfile names.
+string default_mouse_handler;
+
+int _pvcs_run_cmd (string cmd_line);
+string _wp_on (~int margin_val);
+void _wp_off ();
+
+/*
+**		_pvcs_new:
+**
+**		This macro creates a workfile from a PVCS logfile if the file
+**	does not exist.
+*/
+
+string _pvcs_new (~int, ~int checklock)
+{
+	string	file_name,
+				path,
+				old_msg,
+				old_path,
+				old_drive,
+				just_name;
+
+	int	deletework,
+			curr_buf,
+			old_msg_level;
+
+	/*
+	**		First, we retrieve the name of the file we're trying to
+	**	obtain.	This name is split into a filename component and
+	**	a path component.  We then change to the drive and directory
+	**	of this file, since most version control systems need to be
+	**	run from there to work properly.
+	**
+	*/
+
+	if (!get_parm (0, deletework))
+		deletework = TRUE;
+
+	deletework = !!deletework;
+
+	if (deletework)
+		{
+		inq_names (file_name);
+
+		path = substr (file_name, 1, rindex (file_name, substr (file_name, 3, 1)));
+
+		if (strlen (path) > 3)
+			path = substr (path, 1, strlen (path) - 1);
+
+		just_name = substr (file_name, rindex (file_name, substr (file_name, 3, 1)) + 1);
+
+		old_msg_level = inq_msg_level ();
+		set_msg_level (0);
+		old_msg = inq_message ();
+		message ("Retrieving workfile %s...", just_name);
+		set_msg_level (old_msg_level);
+
+		getwd ("", old_drive);
+		getwd (path, old_path);
+		cd (path);
+		cd (substr (path, 1, 2));
+
+		/*
+		**		Note that since this file doesn't exist, we can do the get
+		**	without closing the original buffer first.
+		*/
+
+		if (checklock == FALSE && _pvcs_run_cmd ("get (" + just_name + ")") != 0)
+			message ("%s", old_msg);
+		else
+			{
+			int	size,
+					file_date,
+					file_time,
+					attribute;
+
+			/*
+			**		If the file has been successfully retrieved, we put its
+			**	name in the _vcs_buf along with its current date, time, size
+			**	and attribute.  This information is used later to determine
+			**	whether or not the file should be checked in.
+			*/
+
+			file_pattern (just_name);
+
+			if (!find_file (NULL, size, file_date, file_time, attribute))
+				attribute |= READ_ONLY;
+
+			/*
+			**		Note that if the file is read-only at this point, it's
+			**	probably because lock checking is enabled.  So, we try to
+			**	check the file out with a lock.
+			*/
+
+			checklock = checklock || (attribute & READ_ONLY);
+
+			if (checklock == FALSE || _pvcs_run_cmd ("get -l (" + just_name + ")") == 0)
+				{
+				if (!_vcs_buf)
+					{
+					_vcs_buf = create_buffer ("PVCS", NULL, 1);
+					register_macro (5, "_pvcs_exit");
+					}
+				curr_buf = set_buffer (_vcs_buf);
+
+				insert (file_name + "\n");
+
+				if (attribute & READ_ONLY)
+					{
+					file_pattern (just_name);
+					find_file (NULL, size, file_date, file_time, attribute);
+					insert ("DELETEWORK CHECKLOCK %d %d %d %d\n", size, file_date, file_time, attribute);
+					}
+				else
+					insert ("DELETEWORK NOCHECKLOCK %d %d %d %d\n", size, file_date, file_time, attribute);
+
+				delete_buffer (curr_buf);
+				set_buffer (create_buffer (just_name, file_name));
+				message ("");
+				}
+			else
+				{
+				dos ("attrib -r " + just_name + ">&nul");
+				del (just_name);
+				message ("%s", old_msg);
+				}
+			}
+		cd (old_path);
+		cd (substr (old_drive, 1, 2));
+		}
+	returns ("");
+}
+
+/*
+**		_pvcs_existing:
+**
+**		This macro creates a workfile from a PVCS logfile if the file
+**	is read only.
+*/
+
+string _pvcs_existing (~int, ~int checklock)
+{
+	string	file_name,
+				path,
+				old_msg,
+				old_path,
+				old_drive,
+				just_name;
+
+	int	attribute,
+			old_msg_level;
+
+	/*
+	**		First, we retrieve the name of the file we're trying to
+	**	obtain.	This name is split into a filename component and
+	**	a path component.  We then change to the drive and directory
+	**	of this file, since most version control systems need to be
+	**	run from there to work properly.
+	*/
+
+	inq_names (file_name);
+	file_pattern (file_name);
+
+	/*
+	**		Note that the file has to exist and be read only before this macro
+	**	does anything.  If it doesn't or isn't, we don't have anything to do.
+	*/
+
+	if (find_file (NULL, NULL, NULL, NULL, attribute) != 0 && (attribute & READ_ONLY))
+		{
+		path = substr (file_name, 1, rindex (file_name, substr (file_name, 3, 1)));
+
+		if (strlen (path) > 3)
+			path = substr (path, 1, strlen (path) - 1);
+
+		just_name = substr (file_name, rindex (file_name, substr (file_name, 3, 1)) + 1);
+
+		old_msg_level = inq_msg_level ();
+		set_msg_level (0);
+		old_msg = inq_message ();
+		message ("Retrieving workfile %s...", just_name);
+		set_msg_level (old_msg_level);
+
+		getwd ("", old_drive);
+		getwd (path, old_path);
+		cd (path);
+		cd (substr (path, 1, 2));
+
+		/*
+		**		First, we try to get the file without a lock.  This won't
+		**	fail due to lock checking; it can only fail because of other
+		**	errors.
+		**
+		**		Note that since the file exists, we must delete the buffer
+		**	before running get.  Otherwise, we might get file sharing
+		**	violations.
+		*/
+
+		delete_buffer (inq_buffer ());
+
+		if (checklock == FALSE && _pvcs_run_cmd ("get (" + just_name + ")") != 0)
+			message ("%s", old_msg);
+		else
+			{
+			int	size,
+					file_date,
+					file_time;
+
+			/*
+			**		If the file has been successfully retrieved, we put its
+			**	name in the _vcs_buf along with its current date, time, size
+			**	and attribute.  This information is used later to determine
+			**	whether or not the file should be checked in.
+			*/
+
+			file_pattern (just_name);
+			find_file (NULL, size, file_date, file_time, attribute);
+
+			/*
+			**		Note that if the file is read-only at this point, it's
+			**	probably because lock checking is enabled.  So, we try to
+			**	check the file out with a lock.
+			*/
+
+			checklock = checklock || (attribute & READ_ONLY);
+
+			if (checklock == FALSE || _pvcs_run_cmd ("get -l (" + just_name + ")") == 0)
+				{
+				if (!_vcs_buf)
+					{
+					_vcs_buf = create_buffer ("PVCS", NULL, 1);
+					register_macro (5, "_pvcs_exit");
+					}
+				set_buffer (_vcs_buf);
+
+				insert (file_name + "\n");
+
+				if (attribute & READ_ONLY)
+					{
+					file_pattern (just_name);
+					find_file (NULL, size, file_date, file_time, attribute);
+					insert ("NODELETEWORK CHECKLOCK %d %d %d %d\n", size, file_date, file_time, attribute);
+					}
+				else
+					insert ("NODELETEWORK NOCHECKLOCK %d %d %d %d\n", size, file_date, file_time, attribute);
+
+				message ("");
+				}
+			else
+				message ("%s", old_msg);
+			}
+		/*
+		**		Since we deleted this buffer above, we recreate it here, whether
+		**	or not we were able to check it out.
+		*/
+
+		set_buffer (create_buffer (just_name, file_name));
+		cd (old_path);
+		cd (substr (old_drive, 1, 2));
+		}
+	returns ("");
+}
+
+/*
+**		_pvcs_exit:
+**
+**		This macro registers another macro, which must run LAST!  This is
+**	because it deletes (or can delete) a lot of files that are being
+**	edited.
+*/
+
+void _pvcs_exit ()
+{
+	if (_vcs_buf)
+		register_macro (5, "__pvcs_exit");
+}
+
+__pvcs_exit ()
+{
+	string	just_name,
+				file_name,
+				path,
+				old_path,
+				cmd_line,
+				reply;
+
+	int	checklock,
+			deletework,
+			curr_buf,
+			ret_code,
+			old_msg_level,
+			file_date,
+			old_date,
+			file_time,
+			old_time,
+			size,
+			old_size,
+			attribute,
+			old_attribute;
+
+	set_buffer (_vcs_buf);
+	set_buffer (curr_buf = next_buffer (1));
+
+	/*
+	**		First, we want to delete all non-system buffers.  This ensures
+	**	that they're all closed and available for modification by PVCS.
+	*/
+
+	pause_on_error (1);
+
+	while (curr_buf != _vcs_buf)
+		{
+		if (!inq_system (curr_buf))
+			{
+			delete_buffer (curr_buf);
+			set_buffer (_vcs_buf);
+			}
+			
+		set_buffer (curr_buf = next_buffer(1));
+		}
+
+	top_of_buffer ();
+
+	old_msg_level = inq_msg_level ();
+	set_msg_level (0);
+
+	while ((file_name = read ()) != "\n")
+		{
+		file_name = substr (file_name, 1, strlen (file_name) - 1);
+		path = substr (file_name, 1, rindex (file_name, substr (file_name, 3, 1)));
+
+		if (strlen (path) > 3)
+			path = substr (path, 1, strlen (path) - 1);
+
+		/*
+		**		We keep around a bunch of information for each file that we
+		**	checked out of PVCS.  In addition to the date, time, size and
+		**	attribute value, we also have to "command words" that tell us
+		**	what condition the workfile was in to begin with.
+		*/
+
+		just_name = substr (file_name, rindex (file_name, substr (file_name, 3, 1)) + 1);
+		down ();
+		file_name = read ();
+		deletework = (substr (file_name, 1, index (file_name, " ") - 1) == "DELETEWORK");
+		file_name = substr (file_name, index (file_name, " ") + 1);
+		checklock = (substr (file_name, 1, index (file_name, " ") - 1) == "CHECKLOCK");
+		file_name = substr (file_name, index (file_name, " ") + 1);
+		old_size = atoi (file_name);
+		file_name = substr (file_name, index (file_name, " ") + 1);
+		old_date = atoi (file_name);
+		file_name = substr (file_name, index (file_name, " ") + 1);
+		old_time = atoi (file_name);
+		file_name = substr (file_name, index (file_name, " ") + 1);
+		old_attribute = atoi (file_name);
+		down ();
+
+		getwd ("", cmd_line);
+		getwd (path, old_path);
+		old_path = substr (cmd_line, 1, 1) + substr (old_path, 2);
+		cd (path);
+		cd (substr (path, 1, 2));
+
+		file_pattern (just_name);
+		find_file (NULL, size, file_date, file_time, attribute);
+
+		if (old_size != size || old_date != file_date || old_time != file_time || old_attribute != attribute)
+			{
+			if (reply != "q")
+				{
+				message ("Checking workfile \"%s\"...", just_name);
+				sprintf (cmd_line, "vdiff -q -t -r %s %s >&nul", just_name, just_name);
+
+				if ((ret_code = dos (cmd_line)) == 2)
+					{
+					if (reply != "g" && !get_parm (NULL, reply, ("Check in " + just_name) + " [yngq]? ", 1))
+						reply = "q";
+
+					if (strlen (reply) && index ("yg", lower (reply)))
+						{
+						int	num_lines,
+								num_cols,
+								comment_buf,
+								source_keyboard = inq_keyboard (),
+								old_msg_level;
+
+						/*
+						**		Note that this variable is initialized every time the
+						**	macro is called, even though it's global.
+						*/
+
+						global int	_pvcs_abort_pressed = FALSE;
+
+						string	exit_assignment = inq_assignment ("exit", 1),
+									window_msg;
+
+						/*
+						**		At this point, we know we're going to check in the
+						**	PVCS file.  So we create a window and center it on the
+						**	screen, and allow the user to enter a check-in comment.
+						**	Once they've completed the comment, we send it along to
+						**	PVCS.
+						*/
+
+						if (exit_assignment == "")
+							exit_assignment = "<Alt-x>";
+						else if (index (exit_assignment, "<-"))
+							exit_assignment = substr (exit_assignment, 1, index (exit_assignment, "<-") - 1);
+
+						sprintf (window_msg, "Enter comment, %s when finished, <Esc> to abort.", exit_assignment);
+
+						old_msg_level = set_msg_level (3);
+						set_buffer (comment_buf = create_buffer (just_name, "check_in.vcs"));
+						set_msg_level (old_msg_level);
+						tabs (9);
+
+						inq_screen_size (num_lines, num_cols);
+						num_cols /= 2;
+						num_lines /= 2;
+
+						set_ctrl_state( ZOOM_BTN, HIDE_CTRL);		// hide the zoom button for this window
+						create_window (num_cols - 38, num_lines + ((num_lines / 2) - 1),
+											num_cols + 37, num_lines - (num_lines / 2), window_msg);
+						set_ctrl_state( ZOOM_BTN, SHOW_CTRL);		// show the zoom button
+
+						/* save the current mouse event handler */
+						default_mouse_handler = inq_mouse_action();
+
+						/*
+						**		Here, we copy over assignments that are useful inside
+						**	the PVCS check-in window.  Note that we copy both the
+						**	assignments to _home and _end and beginning_of_line and
+						**	end_of_line:  this is because some people may have kept
+						**	the old-style assignments intact.
+						*/
+
+						keyboard_push ();
+						keyboard_typeables ();
+
+						copy_keyboard (source_keyboard,	"up",
+																	"down",
+																	"left",
+																	"right",
+																	"_home",
+																	"_end",
+																	"beginning_of_line",
+																	"end_of_line",
+																	"page_up",
+																	"page_down",
+																	"next_word",
+																	"previous_word",
+																	"search_fwd",
+																	"search_back",
+																	"search_again",
+																	"translate",
+																	"translate_back",
+																	"translate_again",
+																	"top_of_buffer",
+																	"end_of_buffer",
+																	"cut",
+																	"copy",
+																	"paste",
+																	"delete_char",
+																	"delete_line",
+																	"delete_to_eol",
+																	"delete_previous_word",
+																	"delete_next_word",
+																	"read_file",
+																	"quote",
+																	"undo",
+																	"insert_mode",
+																	"mark",
+																	"mark 2",
+																	"mark 3",
+																	"mark 4",
+																	"dos",
+																	"goto_line",
+																	"reform");
+
+						assign_to_key (exit_assignment, "exit y");
+						assign_to_key ("<Esc>", "_pvcs_abort");
+
+						/*
+						**		If there aren't already keys assigned to the normal
+						**	PVCS exit keys, we assign them here.  Old habits die
+						**	hard, and we're trying to make it easier for the user.
+						*/
+
+						if (inq_assignment ("<Ctrl-d>") == "self_insert")
+							assign_to_key ("<Ctrl-d>", "exit y");
+
+						if (inq_assignment ("<Ctrl-z>") == "self_insert")
+							assign_to_key ("<Ctrl-z>", "exit y");
+
+						if (inq_assignment ("<Ctrl-c>") == "self_insert")
+							assign_to_key ("<Ctrl-c>", "_pvcs_abort");
+
+						attach_buffer (comment_buf);
+
+						/* set the mouse handler to the default handler */
+						set_mouse_action( "mouse_pvcs1" );
+
+						_wp_on (70);
+						refresh ();
+						process ();
+						_wp_off ();
+						delete_window ();
+						keyboard_pop ();
+
+						if (_pvcs_abort_pressed == FALSE)
+							{
+							set_msg_level (3);
+							write_buffer ();
+							set_msg_level (old_msg_level);
+
+							set_buffer (_vcs_buf);
+							delete_buffer (comment_buf);
+
+							message ("Checking in " + just_name + "...");
+							dos ("put -M (" + just_name + ") <check_in.vcs >&nul");
+
+							del ("check_in.vcs");
+
+							if (deletework == FALSE && checklock == FALSE)
+								dos ("attrib +r " + just_name + " >&nul");
+
+							message ("");
+							}
+						else
+							set_buffer (_vcs_buf);
+						}
+					}
+				else if (ret_code == 0)
+					{
+					if (checklock == TRUE)
+						{
+						message ("Unlocking " + just_name + "...");
+						dos ("put -n (" + just_name + ") >&nul");
+						message ("");
+						}
+					else if (deletework)
+						del (just_name);
+					else
+						dos ("attrib +r " + just_name + " >&nul");
+					}
+				}
+			}
+		else if (checklock == TRUE)
+			{
+			message ("Unlocking " + just_name + "...");
+			dos ("put -n (" + just_name + ") >&nul");
+			message ("");
+			}
+		else if (deletework)
+			del (just_name);
+		else
+			dos ("attrib +r " + just_name + " >&nul");
+
+		cd (substr (old_path, 3));
+		cd (substr (old_path, 1, 2));
+		}
+	delete_buffer (_vcs_buf);
+}
+
+/*
+**		_pvcs_abort:
+**
+**		This little routine just tells the main check-in code that the
+**	user pressed Esc to abort the comment & check-in.
+*/
+
+void _pvcs_abort ()
+{
+	_pvcs_abort_pressed++;
+	exit ("y");
+}
+
+/*
+**		_pvcs_run_cmd:
+**
+**		This command runs a PVCS get command and checks for common errors.
+**	If the file isn't a logfile (etc.), no error box is displayed.  Otherwise,
+**	we display an error box and let the user see the "disaster in progress."
+*/
+
+int _pvcs_run_cmd (string cmd_line)
+{
+	int	ret_code;
+
+	if (ret_code = dos (cmd_line + " >&bvcs.tmp"))
+		{
+		if (ret_code > 0)
+			{
+			int	error_buf = create_buffer ("PVCS error", "bvcs.tmp", 1),
+					old_buf = set_buffer (error_buf);
+
+			if (!search_fwd ("{can't locate logfile}|{is not a directory}"))
+				{
+
+				/* save the current mouse event handler */
+				default_mouse_handler = inq_mouse_action();
+
+				keyboard_push ();
+				assign_to_key ("<PgUp>", "page_up");
+				assign_to_key ("<PgDn>", "page_down");
+				assign_to_key ("<Esc>", "exit");
+				assign_to_key ("<Home>", "top_of_buffer");
+				assign_to_key ("<End>", "end_of_buffer");
+				assign_to_key ("<Up Arrow>", "up");
+				assign_to_key ("<Down>", "down");
+
+				/* set the mouse handler to the default handler */
+				set_mouse_action( "mouse_pvcs2" );
+
+				set_ctrl_state( ZOOM_BTN, HIDE_CTRL);		// hide the zoom button for this window
+				create_window (2, 22, 78, 2, "PVCS error window -- Esc to exit");
+				set_ctrl_state( ZOOM_BTN, SHOW_CTRL);		// show the zoom button
+				attach_buffer (error_buf);
+				refresh ();
+
+				process ();
+
+				keyboard_pop ();
+				delete_window ();
+				}
+			delete_buffer (error_buf);
+			set_buffer (old_buf);
+			}
+		}
+	del ("bvcs.tmp");
+	returns (ret_code);
+}
+
+/*
+** mouse_pvcs1
+**
+** Handle mouse events for the pvcs check in window
+**
+** Mouse actions
+** CLOSE_WIN  - abort the check in , same as Esc
+** BTN1_CLICK  outside of the window - abort the check in
+**
+** All other events are sent to the previous mouse action handler.
+*/
+void mouse_pvcs1	(int event, 		// the event code
+						 int modifier,	  	// modifier keys
+						 int parm2,			// line or scroll bar code
+						 int parm3 )		// column or thumb position
+{
+
+	/* handle the events of interest */
+	switch ( event ){
+		case CLOSE_WIN:					// abort the check in 
+			_pvcs_abort();
+
+		case SET_WIN:						// click outside the window aborts check in 
+			if ( parm2 != inq_window() ) _pvcs_abort();
+
+		default:
+			/* let the previous event handler take care of the event */
+			execute_macro( default_mouse_handler, event, modifier, parm2, parm3 );
+
+	}
+}
+
+/*
+** mouse_pvcs2
+**
+** Handle mouse events for the pvcs error window
+**
+** Mouse actions
+** CLOSE_WIN  - close the window, same as Esc
+** BTN1_CLICK  outside of the window - close the window
+** let the default event handler process all the scrolling events
+** ignore all others.
+**
+** All other events are sent to the previous mouse action handler.
+*/
+void mouse_pvcs2	(int event, 		// the event code
+						 int modifier,	  	// modifier keys
+						 int parm2,			// line or scroll bar code
+						 int parm3 )		// column or thumb position
+{
+
+	/* handle the events of interest */
+	switch ( event ){
+		case CLOSE_WIN:					// abort the check in 
+			exit();
+
+		case SET_WIN:						// click outside the window aborts check in 
+			if ( parm2 != inq_window() ) exit();
+
+		case VSCROLL:
+		case HSCROLL:
+			/* let the previous event handler take care of the event */
+			execute_macro( default_mouse_handler, event, modifier, parm2, parm3 );
+
+	}
+}

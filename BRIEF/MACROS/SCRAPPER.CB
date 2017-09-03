@@ -1,0 +1,115 @@
+/*
+** 	BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+** 	Written by Dave Nanian and Michael Strickman.
+*/
+
+/*
+**		scrapper.cb:
+**
+**		This file saves the current scrap and scrap type to the state file
+**	on exit.  To use it, put the string "-mscrapper" (no quotes) after the
+**	"-mrestore" or "-mpwb" in your BFLAGS.  For example:
+**
+**		set bflags=-mrestore -mscrapper
+**
+**			- or -
+**
+**		set bflags=-mpwb -mscrapper
+*/
+
+extern	_save_state (),
+			_restore ();
+
+replacement _save_state ()
+{
+	int	scrap_eoln,
+			scrap_type,
+			scrap_buf;
+
+	if (scrap_buf = inq_scrap (scrap_eoln, scrap_type))
+	{
+		string	ext;
+
+		/*
+		**		If the state save buffer is a PWB state file, then remove old
+		**	scrap info and make the scrap text PWB compatible (make every line
+		** of the scrap a comment line).
+		*/
+
+		inq_names (NULL, ext);
+
+		if (ext == "sts")
+		{
+			int	state_buf = inq_buffer ();
+
+			set_buffer (scrap_buf);
+			top_of_buffer ();
+			translate ("<", ";", 1, 1);
+			set_buffer (state_buf);
+
+			save_position ();
+			top_of_buffer ();
+
+			if (search_fwd ("<[\t ]@\\[brief-scrap\\]", 1, 1))
+			{
+				drop_anchor ();
+				search_fwd ("\\[end-brief-scrap\\]\\c", 1, 1);
+				delete_block ();
+			}
+			restore_position ();
+		}
+
+		insert ("[brief-scrap]\n%d %d\n", scrap_eoln, scrap_type);
+		paste ();
+		insert ("[end-brief-scrap]\n");
+	}
+	returns (_save_state ());
+}
+
+replacement _restore ()
+{
+	_restore ();
+	top_of_buffer ();
+
+	if (search_fwd ("<\\[brief-scrap\\]>"))
+	{
+		int	scrap_eoln,
+				scrap_type;
+
+		string	line;
+
+		down ();
+		line = read ();
+		scrap_eoln = atoi (line);
+		scrap_type = atoi (substr (line, index (line, " ")));
+		down ();
+		drop_anchor (scrap_type);
+
+		search_fwd ("\\[end-brief-scrap\\]>");
+
+		if (scrap_type != 4)
+			prev_char ();
+
+		copy ();
+		set_scrap_info (scrap_eoln);
+
+		/*
+		**		If the state save buffer is a PWB state file, then remove the
+		** comment characters from the scrap text.
+		*/
+
+		inq_names (NULL, line);
+
+		if (line == "sts")
+		{
+			int	save_buf = inq_buffer (),
+					scrap_buf = inq_scrap ();
+
+			set_buffer (scrap_buf);
+			top_of_buffer ();
+			translate ("<;", "", 1, 1);
+			set_buffer (save_buf);
+		}
+	}
+}

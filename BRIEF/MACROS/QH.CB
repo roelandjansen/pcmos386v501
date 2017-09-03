@@ -1,0 +1,117 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**		Written by Dave Nanian and Michael Strickman.
+*/
+
+/*
+**		qh.cb:
+**
+**		This macro provides a basic interface between BRIEF and
+**	QuickHelp.  It allows you to call QuickHelp from within BRIEF,
+**	and it inserts the QuickHelp paste buffer into the BRIEF scrap
+**	if you pasted anything within QuickHelp.  The C identifier at the
+** cursor is passed to QuickHelp as a topic; if the topic is not found,
+** QuickHelp displays an error message and displays the main QuickHelp
+** screen.
+**
+**		To use this macro, add the following lines to your initials macro:
+**
+**		(autoload "qh" "qh")
+**		(assign_to_key "<Ctrl-h>" "qh")
+**
+**		When you recompile your initials macro and restart BRIEF,
+**	context-sensitive QuickHelp will be assigned to the <Ctrl-h> key.
+**
+**		Note that some versions of QuickHelp do not check what video page
+**	is currently being used.  If QuickHelp doesn't seem to pop-up properly,
+**	put the -p flag in your BFLAGS.
+*/
+
+string add_to_path (string path, string file_name);
+
+string _qh_get_id (void);
+void qh (string ~topic);
+void _qh_done (int ret_code);
+
+void qh (string ~)
+{
+	int		screen_lines;
+
+	string	topic,
+				command_line;
+
+	if (!get_parm (0, topic))
+		topic = _qh_get_id ();
+
+	/*
+	**		To change the amount of the BRIEF screen QuickHelp overlays, change
+	**	the screen percentage (currently 60%, see below).
+	*/
+
+	inq_screen_size (screen_lines);
+	sprintf (command_line, "qh -i%d %s >&nul", screen_lines * 60 / 100, topic);
+	_qh_done (dos (command_line));
+}
+
+void _qh_done (int ret_code)
+{
+	if (ret_code == 0)
+		{
+		string	paste_file = add_to_path (inq_environment ("TMP"), "paste.qh");
+
+		file_pattern (paste_file);
+
+		/*
+		**		If a paste file exists, copy it to the BRIEF scrap and delete
+		**	the file.
+		*/
+
+		if (find_file ())
+			{
+			int	curr_buf = inq_buffer (),
+					paste_qh_buf = create_buffer ("QuickHelp", paste_file, 1);
+
+			set_buffer (paste_qh_buf);
+			top_of_buffer ();
+			drop_anchor ();
+			end_of_buffer ();
+			copy ();
+			set_buffer (curr_buf);
+			delete_buffer (paste_qh_buf);
+			del (paste_file);
+			message ("QuickHelp findings copied to scrap.");
+			}
+		}
+	else
+		error ("QuickHelp could not locate that topic.");
+}
+
+/*
+**		Retrieve a 'C' identifier from the current buffer
+*/
+
+string _qh_get_id (void)
+{
+	int		identifier_len;
+
+	string	identifier;
+
+	save_position ();
+
+	/*
+	**		Find non-identifier char to left.
+	*/
+
+	search_back ("<|[~_$a-zA-Z0-9][_$a-zA-Z]", 1);
+	
+	/*
+	**		Find identifier char to right, or end of buffer.
+	*/
+
+	if ((identifier_len = search_fwd ("[_$a-zA-Z0-9]+", -1) - 1) > 0)
+		identifier = read (identifier_len);
+
+	restore_position ();
+	returns (identifier);
+}

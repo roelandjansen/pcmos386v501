@@ -1,0 +1,386 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**		Written by Dave Nanian and Michael Strickman.
+*/
+#include "win_ctrl.h"
+
+/*
+**		windows.cb:
+**
+**		This file contains all of the standard BRIEF macros for window
+**	manipulation.
+*/
+
+void display_file_name ();
+
+int	_zoom_buf;				//	Buffer zoom restore information is saved in.
+
+/*
+**		change_window:
+**
+**		This macro adds a file name display to the normal change_window
+**	function.
+*/
+
+replacement int change_window ()
+{
+	if (inq_called () != "")
+		returns (change_window ());
+	else
+		{
+		int	ret_code;
+
+		set_msg_level (0);
+
+		if ((ret_code = change_window ()) > 0)
+			display_file_name ();
+
+		returns (ret_code);
+		}
+}
+
+/*
+**		create_edge:
+**
+**		This macro sets colors for newly created windows.
+*/
+
+replacement int create_edge ()
+{
+	int	ret_code;
+
+	if ((ret_code = create_edge ()) > 0)
+		window_color ();
+
+	returns (ret_code);
+}
+
+/*		to_top:
+**
+**		This function moves the current line to the top of the window.
+*/
+
+void to_top ()
+{
+	int	curr_line;
+
+	inq_position (curr_line);
+	set_top_left (curr_line);
+}
+
+/*		to_bottom:
+**
+**		This function moves the current line to the bottom of the window,
+**	or as close as it possibly can (line number one must stay at the top
+**	of the window).
+*/
+
+void to_bottom ()
+{
+	int	curr_line,
+			num_lines;
+
+	inq_position (curr_line);
+	inq_window_size (num_lines);
+
+	if (above_eq (curr_line, num_lines))
+		set_top_left (curr_line - (num_lines - 1));
+	else
+		set_top_left (1);
+}
+
+/*
+**		center_line:
+**
+**		This macro attempts to center the given line in the current window.
+**	If the line cannot be centered because it is too close to the top of
+**	the window, it is left in the same place.
+*/
+
+void center_line ()
+{
+	int	curr_line,
+			num_lines,
+			top_line;
+
+	inq_position (curr_line);
+	inq_window_size (num_lines);
+	++num_lines;
+	num_lines /= 2;
+	top_line = curr_line - num_lines;
+
+	if (below (top_line, curr_line) && top_line != 0)
+		set_top_left (top_line);
+	else
+		set_top_left (1);
+}
+
+/*
+**		screen_up:
+**
+**		This macro scrolls the screen up by one line, leaving the cursor on
+**	the same line, if possible.
+*/
+
+void screen_up ()
+{
+	int	curr_line,
+			top_line;
+
+	inq_top_left (top_line);
+	inq_position (curr_line);
+
+	move_abs (++top_line, 0);
+
+	if (!inq_position ())
+		{
+		if (above (top_line, curr_line))
+			curr_line = top_line;
+
+		set_top_left (top_line);
+		}
+	move_abs (curr_line, 0);
+}
+
+/*
+**		screen_down:
+**
+**		This macro scrolls the screen down by one line, leaving the cursor
+**	on the same line, if possible.
+*/
+
+void screen_down ()
+{
+	int	curr_line,
+			top_line,
+			num_lines;
+
+	inq_top_left (top_line);
+	inq_position (curr_line);
+	inq_window_size (num_lines);
+
+	if (top_line != 1)
+		{
+		set_top_left (--top_line);
+
+		if (above_eq (curr_line, top_line + num_lines))
+			move_abs (top_line + num_lines - 1, 0);
+		}
+}
+
+/*
+**		left_side:
+**
+**		This macro moves the cursor to the left side of the window.
+*/
+
+void left_side ()
+{
+	int	shift;
+
+	inq_window_size (NULL, NULL, shift);
+	move_abs (0, shift + 1);
+}
+
+/*
+**		right_side:
+**
+**		This macro moves the cursor to the left side of the window.
+*/
+
+void right_side ()
+{
+	int	num_cols,
+			shift;
+
+	inq_window_size (NULL, num_cols, shift);
+	move_abs (0, num_cols + shift);
+}
+
+/*
+**		zoom_window:
+**
+**		This function zooms and unzooms windows.
+*/
+
+void zoom_window (void)
+{
+	/*
+	**		Create the zoom buffer if we haven't already.
+	*/
+
+	if (!_zoom_buf)
+		_zoom_buf = create_buffer ("Zoom Buf", NULL, 1);
+
+	/*
+	**		Note that we can't do anything when there's an overlapped window
+	**	on the screen.
+	*/
+
+	if (!inq_window_info ())
+		{
+ 		int	start_win_id = inq_window (),
+				curr_win_id = start_win_id,
+				old_buf_id = set_buffer (_zoom_buf),
+				curr_buf_id,
+				lx,
+				by,
+				rx,
+				ty,
+				cursor_line,
+				cursor_col,
+				top_line,
+				top_col,
+				bg_color;
+
+		string	file_name;
+
+		/*
+		**		If there's more than one window on the screen, we zoom it to
+		**	full screen.  Otherwise, we unzoom (if there's any zoom info).
+		*/
+
+		top_of_buffer ();
+
+		if (next_window () != curr_win_id)
+			{
+			/*
+			**		Delete all the information in the buffer (previous zooms).
+			*/
+
+			drop_anchor ();
+			end_of_buffer ();
+			delete_block ();
+
+			/*
+			**		Loop through each window, saving its window information
+			**	if unzoom is done.
+			*/
+
+			do
+				{
+				inq_window_info (curr_win_id, curr_buf_id, lx, by, rx, ty);
+
+				if (curr_buf_id)
+					{
+					set_buffer (curr_buf_id);
+					inq_names (file_name);
+					inq_top_left (top_line, top_col, curr_win_id, cursor_line, cursor_col);
+					set_buffer (_zoom_buf);
+					insert ("file=%s %u %u %u %u %d %d %d %d %d\n", file_name,
+												top_col, top_line, cursor_col, cursor_line,
+												lx, by, rx, ty, inq_window_color (curr_win_id));
+					}
+				curr_win_id = next_window (curr_win_id);
+				}
+			while (curr_win_id != start_win_id);
+
+			/*
+			**		Now, destroy and recreate the current window full screen.
+			*/
+
+			bg_color = inq_window_color (start_win_id);
+			inq_screen_size (by, rx);
+			display_windows (0);
+			curr_win_id = create_tiled_window (1, by - 3, rx - 2, 1, old_buf_id);
+			set_ctrl_state( ZOOM_BTN, SHOW_ZOOMED, curr_win_id ); 
+			window_color (bg_color, curr_win_id);
+			display_windows (1);
+			set_window (curr_win_id);
+			}
+
+		/*
+		**		If there's information to unzoom, we restore the previous
+		**	window layout.
+		*/
+
+		else if (trim (read ()) != "")
+			{
+			int	loc,
+					curr_top_line,
+					curr_top_col,
+					curr_cursor_line,
+					curr_cursor_col,
+					window_to_select,
+					select_first;
+
+			string	file_line,
+						curr_file_name;
+
+			/*
+			**		First, we get information about the current buffer.  If
+			**	we've switched buffers, or if we've moved, we use this
+			**	information to reposition/reselect the current window when
+			**	we've unzoomed.
+			*/
+
+			set_buffer (old_buf_id);
+			inq_names (curr_file_name);
+			inq_top_left (curr_top_line, curr_top_col, curr_win_id, curr_cursor_line, curr_cursor_col);
+			set_buffer (_zoom_buf);
+			select_first = !search_fwd ("file=" + curr_file_name + " ", 0);
+			top_of_buffer ();
+			display_windows (0);
+
+			/*
+			**		For each saved window, we recreate it and reattach the
+			**	buffer that used to be there, if it's available.
+			*/
+
+			while ((file_line = trim (read ())) != "")
+				{
+				loc = rindex (file_line, " ");
+				bg_color = atoi (substr (file_line, loc + 1));
+				loc = rindex (substr (file_line, 1, loc - 1), " ");
+				ty = atoi (substr (file_line, loc + 1));
+				loc = rindex (substr (file_line, 1, loc - 1), " ");
+				rx = atoi (substr (file_line, loc + 1));
+				loc = rindex (substr (file_line, 1, loc - 1), " ");
+				by = atoi (substr (file_line, loc + 1));
+				loc = rindex (substr (file_line, 1, loc - 1), " ");
+				lx = atoi (substr (file_line, loc + 1));
+				file_line = substr (file_line, 1, loc - 1);
+				loc = rindex (file_line, " ");
+				cursor_line = atoi (substr (file_line, loc + 1));
+				loc = rindex (substr (file_line, 1, loc - 1), " ");
+				cursor_col = atoi (substr (file_line, loc + 1));
+				loc = rindex (substr (file_line, 1, loc - 1), " ");
+				top_line = atoi (substr (file_line, loc + 1));
+				loc = rindex (substr (file_line, 1, loc - 1), " ");
+				top_col = atoi (substr (file_line, loc + 1));
+
+				file_name = trim (ltrim (substr (file_line, 6, loc - 6)));
+
+				curr_buf_id = inq_buffer (file_name);
+
+				/*
+				**		If we're working with the current buffer and haven't yet
+				**	found the window that contains it, or we're dealing with a
+				**	file that's no longer part of the set, we use the buffer
+				**	that was current when we started the unzoom operation.
+				*/
+
+				if ((!window_to_select && (select_first || curr_buf_id == old_buf_id)) || curr_buf_id == 0)
+					{
+					top_line = curr_top_line;
+					top_col = curr_top_col;
+					cursor_line = curr_cursor_line;
+					cursor_col = curr_cursor_col;
+					curr_buf_id = old_buf_id;
+					}
+				curr_win_id = create_tiled_window (lx, by, rx, ty, curr_buf_id);
+				set_top_left (top_line, top_col, curr_win_id, cursor_line, cursor_col);
+				window_color (bg_color, curr_win_id);
+
+				if (!window_to_select && curr_buf_id == old_buf_id)
+					window_to_select = curr_win_id;
+
+				down ();
+				}
+			display_windows (1);
+			set_window (window_to_select);
+			}
+		set_buffer (old_buf_id);
+		}
+}

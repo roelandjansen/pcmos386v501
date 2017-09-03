@@ -1,0 +1,17 @@
+void copyrite ()
+/*
+	Insert a copyright notice at the beginning of the current line. 
+	After the copyright notice is inserted the cursor is positioned
+	at the beginning of the line following "All rights reserved."
+
+	You can assign this macro to a key using:
+		(assign_to_key "<Ctrl-F1>" "copyrite" )
+	This should be placed in your initials macro along with a command to
+	load the copyrite macro.  The command is :
+		(load_macro "copyrite" )
+*/
+{
+	beginning_of_line();
+	insert ( "  Copyright 1990 SDC Partners II L.P.\n" );
+	insert ( "  All rights reserved.\n" );
+}

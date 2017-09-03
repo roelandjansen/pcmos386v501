@@ -1,0 +1,910 @@
+/*
+**		BRIEF -- Basic Reconfigurable Interactive Editing Facility
+**
+**		Written by Dave Nanian and Michael Strickman.
+**
+**		pascal.cb:
+**
+**		Smart indenting and template editing for Pascal.
+**
+**    History:
+**		12/10/90 Jim Rodriquez - move assign_to_keys from _init macro
+**										 to smart_first macro to conserve
+**										 memory.
+**
+*/
+
+#define FALSE			  0
+#define TRUE			  1
+
+#define MIN_ABBREV	  1
+
+#define PAS_SKIP_PAT   "{{(\\*+{[~*]|{[~(]\\*}}@\\*)}|{\\{[~{}]@\\}}|{\n[ \t]@[0-9]+:}|[ \xc\t\n]}@"
+
+#define ABBR_LIST 	  "~BEGIN~CASE~CONST~ELSE~FOR~FUNCTION~IF~LABEL~PROCEDURE~PROGRAM~REPEAT~TYPE~UNTIL~VAR~WHILE~WITH~"
+#define TERMINAL_LIST  "~THEN~ELSE~DO~OF~REPEAT~RECORD~"
+
+#define NESTING_LIST   "~BEGIN~END~UNTIL~"
+#define INC_NEST_POS   7
+
+#define KW_LOWER		  0
+#define KW_UPPER		  1
+#define KW_MIXED		  2
+
+#define MAX_COL		  20736
+#define NEG_MAX_COL	  -20736
+
+extern void slide_in ();
+extern void open_line ();
+extern int .c_previous_word ();
+extern int .c_next_word ();
+
+/*
+** 	Function Prototypes
+*/
+
+string .pas_smart_first (~int, ~int, ~int);
+string .pas_template_first (~int, ~int, ~int, ~int, ~int);
+void 	 .pas_indent ();
+int 	 .pas_indent_level (~int);
+void 	 .pas_first_nonwhite ();
+int 	 .pas_outdent_to_match (string, int, string);
+void 	 .pas_abbrev ();
+string .pas_keyword_cvt (string);
+void 	 .pas_reindent (string text, int curr_indent_level);
+void 	 .pas_expand_block (string);
+void 	 .pas_expand_pair (string);
+int	 .pas_next_word ();
+int 	 .pas_previous_word ();
+
+/*
+**		Allocate the global variables and set up the keymaps.
+*/
+
+int	_pas_smart,
+		_pas_template,
+		_pas_alt_template,
+		_pas_keyword_case,
+		_pas_indent_begin,
+		_pas_indent_block,
+		_pas_indent_first,
+		_pas_min_abbrev;
+
+
+/*
+**		Turn on smart indenting for Pascal.  This macro is designed to
+**	be run the first time a file is edited, but may also be run from
+**	the command line.
+**
+**	Parameters:
+**		0 -- TRUE if BEGIN and END should be indented when used to
+**			delimit blocks.  Does not affect the outermost BEGIN/END
+**			of a procedure.
+**		1 -- TRUE if the contents of a block should be indented.
+**		2 -- TRUE if the outermost BEGIN/END of a procedure, the starts
+**			of any nested procedures, and the VAR/CONST/TYPE/LABEL
+**			declarations associated with a procedure should be indented.
+**
+**	Defaults:  1 0 1
+*/
+
+string .pas_smart_first (~int, ~int, ~int)
+{
+   if (first_time())
+   {
+	   keyboard_push ();
+	   assign_to_key ("<Enter>", ".pas_indent");
+	   assign_to_key ("<Tab>", "slide_in");
+	   assign_to_key ("<Shift-Tab>", "slide_out");
+	   _pas_smart = inq_keyboard ();
+	   keyboard_pop (1);
+   }
+	use_local_keyboard (_pas_smart);
+	_pas_indent_begin = TRUE;
+	_pas_indent_block = FALSE;
+	_pas_indent_first = TRUE;
+
+	get_parm (0, _pas_indent_begin);
+	get_parm (1, _pas_indent_block);
+	get_parm (2, _pas_indent_first);
+	returns ("");
+}
+
+/*
+**		Turn on template editing for Pascal.  This macro is designed to
+**	be run the first time a file is edited, but may also be run from
+**	the command line.
+**
+**	Parameters:
+**		0 - 2 are the same as for smart indenting.
+**		3 -- the minimum length of abbreviations that should be expanded.
+**			For example, if this is 2, wh<Space> will expand to a WHILE
+**			loop, and wi<Space> will expand to a WITH block, but w<Space>
+**			will be left alone.	Set this parameter to 0 if you want
+**			to selectively expand templates by pressing <Tab>.
+**		4 -- controls case of expanded keywords.	If this is 0, w<Space>
+**			expands to "while"; if 1, it expands to "WHILE"; and if 2,
+**			it expands to "While".
+**
+**	Defaults:  1 0 1 1 1
+*/
+
+string .pas_template_first (~int, ~int, ~int, ~int, ~int)
+{
+	_pas_indent_begin = TRUE;
+	_pas_indent_block = FALSE;
+	_pas_indent_first = TRUE;
+	_pas_min_abbrev = MIN_ABBREV;
+	_pas_keyword_case = KW_UPPER;
+
+	get_parm (0, _pas_indent_begin);
+	get_parm (1, _pas_indent_block);
+	get_parm (2, _pas_indent_first);
+	get_parm (3, _pas_min_abbrev);
+	get_parm (4, _pas_keyword_case);
+
+   if (first_time())
+   {
+	   keyboard_push ();
+	   assign_to_key ("<Enter>", ".pas_indent");
+	   assign_to_key ("<Tab>", ".pas_abbrev");
+	   assign_to_key ("<Shift-Tab>", "slide_out");
+	   assign_to_key ("<Ctrl-s>", "just_space");
+	   _pas_alt_template = inq_keyboard ();
+	   keyboard_pop (1);
+	   keyboard_push ();
+	   assign_to_key ("<Enter>", ".pas_indent");
+	   assign_to_key ("<Tab>", "slide_in");
+	   assign_to_key ("<Shift-Tab>", "slide_out");
+	   assign_to_key ("<Space>", ".pas_abbrev");
+	   assign_to_key ("<Ctrl-s>", "just_space");
+	   _pas_template = inq_keyboard ();
+	   keyboard_pop (1);
+   }
+	if (_pas_min_abbrev == 0)
+	{
+		use_local_keyboard (_pas_alt_template);
+		_pas_min_abbrev = MIN_ABBREV;
+	}
+	else
+		use_local_keyboard (_pas_template);
+	returns ("");
+}
+
+/*
+**	These definitions are used as Pascal "language sensitive" word patterns
+*/
+int .pas_next_word ()
+{
+	returns (.c_next_word ());
+}
+
+int .pas_previous_word ()
+{
+	returns (.c_previous_word ());
+}
+
+/*
+**		.pas_indent:
+**
+**		This macro does syntax-sensitive indenting ("smart indenting") for
+**	Pascal language files.
+*/
+
+
+void .pas_indent ()
+{
+	int	curr_line, 					//	Line cursor is on when called.
+			code_line, 					//	Line where last code char is found.
+			code_indent_level,		//	Current indent level, in tab stops.
+			prev_indent_level,		//	Indent level of previous line.
+			code_trail,					//	The last code character.
+			prev_trail,					//	Last code char before code_line.
+			single_stmt,				//	TRUE if probably single statement.
+			matched_begin,				//	TRUE if END of BEGIN/END.
+			scratch;						//	Temporary integer.
+
+	string	following_string,		//	Remainder of line being split.
+				code_text, 				//	Trimmed text of code line.
+				token,						//	Tokenized version of line.
+				prev_text; 				//	Trimmed text of previous line.
+
+	/*
+	**		Initialize.
+	*/
+
+	inq_position (curr_line, NULL);
+	prev_indent_level = code_indent_level = 0;
+	code_trail = prev_trail = '\;';
+
+	/*
+	**		If we're in overstrike mode, we act as if we were at the
+	**	end of the line when the command was invoked.
+	**
+	**		If we're in insert mode, we may have to split the line.
+	*/
+
+	if (!inq_mode ())
+		end_of_line ();
+
+	/*
+	**		If line is being split, cut text to following_string.
+	**	Leave all trailing whitespace except the newline.
+	*/
+
+	else if (read (1) != "\n")
+		{
+		following_string = ltrim (read ());
+		following_string = substr (following_string, 1, strlen (following_string) - 1);
+		delete_to_eol ();
+		}
+	/*
+	**		Find the last "code" character; skip back over whitespace and
+	**	comments until we get something different.  The cursor will be
+	**	left on the next character from the "different" one; we do a
+	**	(prev_char) to get to the code character.  (If it fails, we're
+	**	at the top of the buffer.)
+	*/
+
+	search_back (PAS_SKIP_PAT, -2);
+
+	/*
+	**		Remember which line we found the code character on.  Classify
+	**	the code character by looking it up in a string, and save
+	**	a "tokenized" version of the whole line.
+	*/
+
+	if (prev_char ())
+		{
+		/*
+		**		We save the identity of the last code character on
+		**	the "code line".
+		*/
+
+		inq_position (code_line);
+		code_trail = atoi (read (1), 0);
+
+		/*
+		**		Find the first non-white character on the line, so
+		**	we may determine its indenting level.	Save the
+		**	text of the line for later parsing.
+		*/
+
+		.pas_first_nonwhite ();
+		code_indent_level = .pas_indent_level ();
+		code_text = trim (read ());
+
+		/*
+		**		Find the last code line before this, as well as its
+		**	last code character and whether or not it contains
+		**	Pascal keywords that affect indenting.
+		*/
+
+		if (up ())
+			{
+			end_of_line ();
+
+			if (search_back (PAS_SKIP_PAT, -2) && prev_char ())
+				{
+				prev_trail = atoi (read (1), 0);
+				.pas_first_nonwhite ();
+				prev_indent_level = .pas_indent_level ();
+
+				/*
+				**		See if this preceding line should be
+				**	followed by a single indented line.  If we see
+				**	IF...THEN, ELSE, WHILE...DO, FOR...DO, or
+				**	WITH...DO, the code line is a single
+				**	statement, unless it's a BEGIN.
+				**
+				**	We check to see if the last token on the
+				**	line is a DO, ELSE, or THEN.
+			  	*/
+
+				prev_text = trim (read ());
+
+				switch (upper (substr (prev_text, rindex (" " + prev_text, " "))))
+					{
+					case "THEN":
+					case "ELSE":
+					case "DO":
+						++single_stmt;
+					}
+				}
+			}
+		/*
+		**		Get the first token on the code line.	This assumes
+		**	that tokens are separated by spaces.
+		*/
+
+		token = upper (substr (code_text, 1, index (code_text + " ", " ") - 1));
+		}
+	/*
+	**		Move to the beginning of the line the cursor was originally on.
+	**	Occasionally, we have to adjust its indent level.	However,
+	**	if the line contains no code, we don't need to worry about it.
+	*/
+
+	move_abs (curr_line, 1);
+
+	if (code_line == curr_line)
+		{
+		if (! (index (ABBR_LIST, token) || index (TERMINAL_LIST, token)))
+			if (rindex (upper (code_text), "BEGIN"))
+				{
+				token = "BEGIN";
+				prev_trail = ' ';
+				++code_indent_level;
+				}
+
+		/*
+		**		We align the first BEGIN of a procedure, as well as
+		**	VAR, TYPE, CONST, and LABEL declarations and nested
+		**	procedures, with the declaration.  If _pas_indent_first
+		**	is TRUE, we indent one level from the declaration.
+		**	The first BEGIN is signaled by a preceding semicolon.
+	   */
+
+		switch (token)
+			{
+			case "BEGIN":
+			case "VAR":
+			case "TYPE":
+			case "CONST":
+			case "LABEL":
+			case "PROGRAM":
+				{
+				/*
+				**		By default, we will align this line with the last.
+		  		*/
+
+				code_line = prev_indent_level;
+
+				/*
+				**		If we have a BEGIN that starts a block (no semicolon
+				**	before it) and _pas_indent_begin is TRUE, we leave
+				**	the line alone.  If _pas_indent_begin is FALSE, the
+				**	default is right.
+				*/
+
+				if (token == "BEGIN" && prev_trail != '\;')
+					{
+					if (_pas_indent_begin)
+						code_line = code_indent_level;
+					}
+				/*
+				**	Try to align with the declaration.  Don't align
+				** nested procedures or declarations.  
+				*/
+
+				else 
+					switch (upper (substr (prev_text, 1, index (prev_text + " ", " ") - 1)))
+						{
+						/*
+						**		The default works for PROCEDURE, FUNCTION,
+						**	and PROGRAM unless _pas_indent_first is TRUE.
+					 	*/
+
+						case "PROCEDURE":
+						case "FUNCTION":
+						case "PROGRAM":
+							if (_pas_indent_first)
+								++code_line;
+
+						/*
+						**		VAR, CONST, TYPE, and LABEL are no problem.
+						*/
+
+						case "VAR":
+						case "CONST":
+						case "TYPE":
+						case "LABEL":
+							nothing ();
+
+						/*
+						**		Other declarations are probably indented
+						**	a level from where we want to be.
+						*/
+
+						default:
+							--code_line;
+
+						}
+				if (code_indent_level != code_line)
+					.pas_reindent (code_text, code_indent_level = code_line);
+				}
+			/*
+			**		Outdent an END so it's flush with the last BEGIN, CASE,
+			**	or RECORD that is not too highly indented.
+			*/
+
+			case "END;":
+			case "END":
+			case "END.":
+				{
+				/*
+				**		We put END in the search pattern so that nested
+				**	blocks are handled OK.
+				*/
+
+				matched_begin = .pas_outdent_to_match ("<|[ \\t]{BEGIN}|{RECORD}|{CASE}|{END[.;]@}[ \\t\\n{(]", code_indent_level, code_text);
+				code_trail = '\;';
+				}
+			/*
+			**		Outdent an UNTIL until it aligns with a logical REPEAT.
+			*/
+
+			case "UNTIL":
+				{
+				.pas_outdent_to_match ("<|[ \\t]{REPEAT}|{UNTIL}[ \\t\\n{(]", code_indent_level, code_text);
+				code_trail = '\;';
+				}
+			}
+		}
+
+	/*
+	**		Move to the next line, inserting a new line below the current
+	**	one if in insert mode.
+	*/
+
+	if (inq_mode ())
+		{
+		end_of_line ();
+		insert ("\n");
+		}
+	else
+		down ();
+
+	if (code_indent_level < 0)
+		code_indent_level = 0;
+
+	/*
+	**		Now we calculate where to put the cursor on the next line.
+	**	The actual algorithm for the default indenting style is:
+	**
+	**		If the previous code line ended in a keyword that expects a
+	**	single statement, and the code line was not a keyword,
+	**	we assume the code line was the full statement and we
+	**	move the cursor out one level.
+	**
+	**		If the code line was a BEGIN, and _pas_indent_block is TRUE,
+	**	we indent a level.
+	**
+	**		If the code line ended in another keyword, we move the
+	**	cursor in a level instead.
+	*/
+
+	if (single_stmt)
+		{
+		if (token != "BEGIN")
+			{
+			if (index (TERMINAL_LIST, "~" + (upper (substr (code_text, rindex (" " + code_text, " "))) + "~")))
+				++code_indent_level;
+			else
+				--code_indent_level;
+			}
+		else if (_pas_indent_block)
+			++code_indent_level;
+		}
+	/*
+	**		If we're not dealing with a possible single statement, but
+	**	the code line was a BEGIN, we look at _pas_indent_block as
+	**	above and decide how to indent that way.
+	**
+	**		If the line began with an END, we outdent the cursor, unless
+	**	_pas_indent_begin was FALSE.
+	**
+	**		Declarations force an indent, as do procedure declarations
+	**	when _pas_indent_begin is TRUE.
+	**
+	**		All other cases use the default rule, which is to indent if
+	**	the last token was a special keyword, and not to indent otherwise.
+	*/
+
+	else
+		switch (token)
+			{
+			case "BEGIN":
+			case "RECORD":
+				if (_pas_indent_block)
+					++code_indent_level;
+
+			/*
+			**		An END corresponding to a RECORD or a CASE should
+			**	leave the cursor under the END (never outdented).
+	  		*/
+
+			case "END;":
+			case "END.":
+				if (_pas_indent_begin && matched_begin)
+					--code_indent_level;
+
+			case "END":
+				{
+				if (_pas_indent_begin && matched_begin)
+					--code_indent_level;
+
+				if (index (upper (code_text), "ELSE"))
+					++code_indent_level;
+				}
+			case "VAR":
+			case "CONST":
+			case "TYPE":
+			case "LABEL":
+				++code_indent_level;
+
+			case "PROCEDURE":
+			case "FUNCTION":
+			case "PROGRAM":
+				if (_pas_indent_first)
+					++code_indent_level;
+
+			default:
+
+				/*
+				**		We indent when a line ended in THEN, ELSE, DO, OF,
+				**	REPEAT, or RECORD.  This works well except when a
+				**	comment line ends in one of these keywords.	We also
+				**	indent when a line ends in BEGIN and _pas_indent_block
+				**	is TRUE (the line is apparently IF..THEN BEGIN or
+				**	a similar construct, since it's not BEGIN by itself).
+				*/				 	
+
+				if (code_trail != '\;')
+					{
+					sprintf (code_text, "~%s~", upper (substr (code_text, rindex (" " + code_text, " "))));
+
+					if (index (TERMINAL_LIST, code_text))
+						++code_indent_level;
+
+					if (code_text == "~BEGIN~")
+						code_indent_level += _pas_indent_begin + _pas_indent_block;
+					}
+			}
+	/*
+	**		Move to the new position.
+	**
+	**		If we cut characters from the previous line, reinsert them.
+	*/
+
+	move_abs (0, .pas_indent_level (code_indent_level));
+
+	if (following_string != "")
+		{
+		save_position ();
+		insert (following_string);
+		restore_position ();
+		}
+}
+
+/*
+**		Maps between indent levels (in tab stops) and column positions in a
+**	file.  Column 1 to just before the first tab stop is level 0; from
+**	the first to just before the second tab stop is level 1; etc.
+**
+**		If a parameter is passed, we treat it as an indent level, and we
+**	calculate the column corresponding to it.  Otherwise, we calculate
+**	the indent level corresponding to the current column.
+*/
+
+int .pas_indent_level (~int)
+{
+	int	curr_col,
+			level,
+			lev_to_col;
+
+	save_position ();
+	curr_col = 1;
+
+	if (get_parm (0, lev_to_col))
+		{
+		beginning_of_line ();
+
+		while (level < lev_to_col)
+			{
+			move_abs (0, curr_col += distance_to_tab ());
+			++level;
+			}
+		level = curr_col;
+		}
+	else
+		{
+		inq_position (NULL, lev_to_col);
+		beginning_of_line ();
+
+		while ((curr_col += distance_to_tab ()) <= lev_to_col)
+			{
+			move_abs (0, curr_col);
+			++level;
+			}
+		}
+	restore_position ();
+	returns (level);
+}
+
+/*
+**		Moves the cursor to the first character on the current line that
+**	is not a space or a tab.
+*/
+
+void .pas_first_nonwhite ()
+{
+	beginning_of_line ();
+	next_char (strlen (read ()) - strlen (ltrim (read ())));
+}
+
+/*
+**		Outdents an END or UNTIL line until it pairs up with another keyword
+**	(BEGIN, CASE, RECORD, REPEAT).  If the match is of a BEGIN, and
+**	_indent_begin is TRUE, the cursor is reindented to one tab stop
+**	right of the matching line.
+**
+**	Parameters:
+**		0 -- the search pattern.
+**		1 -- the current indenting level.
+**		2 -- the trimmed text of the line being outdented.
+**
+**	Returns:
+**		TRUE if we matched a BEGIN, FALSE otherwise.
+**
+**	Puts the new indenting level, if it changes, back into parameter 1.
+*/
+
+int .pas_outdent_to_match (string match_pattern, int curr_indent_level, string trim_text)
+{
+	int	new_indent_level,
+			column,
+			nesting,
+			matched_begin;
+
+	save_position ();
+	nesting = 1;
+
+	/*
+	**		Repeat until nesting is zero, or until we can't find another
+	**	keyword in the search pattern.  END and UNTIL increase the
+	**	nesting level; other keywords decrease it.
+  	*/
+
+	while (nesting)
+		{
+		move_abs (0, MAX_COL);
+
+		if (!(up () && search_back (match_pattern, 1, 0))) 
+			{
+			restore_position ();
+			return (FALSE);
+			}
+		if ((matched_begin = index (NESTING_LIST, upper (ltrim (read (4))))) > INC_NEST_POS)
+			++nesting;
+		else
+			--nesting;
+		}
+	/*
+	**		We have found the matching line, so we can reuse nesting.
+	*/
+
+	inq_position (NULL, nesting);
+	.pas_first_nonwhite ();
+	inq_position (NULL, column);
+	new_indent_level = .pas_indent_level ();
+	restore_position ();
+
+	/*
+	**		If we are indenting BEGIN and END, and we found a matching
+	**	BEGIN that was not alone on a line, we assume we have something
+	**	like IF X THEN BEGIN and we position the END one level in
+	**	from the IF.
+	*/
+
+	if (_pas_indent_begin && (matched_begin && nesting > column))
+		++new_indent_level;
+
+	if (new_indent_level != curr_indent_level)
+		{
+		.pas_reindent (trim_text, new_indent_level);
+		put_parm (1, new_indent_level);
+		}
+	returns (matched_begin);
+}
+
+/*
+**		.pas_abbrev:
+**
+**		This macro performs template expansion for Pascal.  When it is
+**	invoked, the characters before the cursor are checked to see if
+**	they are the start of a Pascal keyword, preceded by a space or a
+**	tab, and followed only by whitespace.	If a match is found, the
+**	remainder of the statement is filled in automatically.
+**
+**		Expansion is only done when we're at or past the end of the
+**	line, and when the line is less than 8 characters long.	This
+**	makes expansion faster and avoids unwanted expansion.
+*/
+
+void .pas_abbrev ()
+{
+	int	done;
+
+	/*
+	**		Expand only when we're at the end of the line.
+	*/
+
+
+	if (read (1) == "\n")
+		{
+		int	loc;
+
+		string	line;
+
+		/*
+		**		Get a trimmed representation of the line into a string.
+  		*/
+
+		save_position ();
+		beginning_of_line ();
+		loc = strlen (line = upper (trim (ltrim (read ()))));
+
+		/*
+		**		Only do template expansion if the trimmed version
+		**	of the line is at least _pas_min_abbrev characters long,
+		**	at most 8 characters long, matches an expansion in
+		**	ABBR_LIST, and is shorter than that token.  We do all
+		**	comparisons in upper case.
+	  	*/
+
+		if ((loc <= 8 && loc >= _pas_min_abbrev) && (done = index (ABBR_LIST, "~" + line)))
+			{
+			string	completion;
+
+			/*
+			**		Extract the full, expanded keyword from the
+			**	abbreviation list, and make sure it's longer
+			**	than the abbreviation.
+			*/
+
+			completion = substr (ABBR_LIST, ++done);
+			completion = substr (completion, 1, index (completion, "~") - 1);
+
+			/*
+			**		Delete the abbreviation from the buffer, and
+			**	replace it with the expanded version.
+			*/
+
+			if (loc < strlen (completion))
+				{
+				.pas_first_nonwhite ();
+				delete_to_eol ();
+				insert (.pas_keyword_cvt (completion));
+
+				/*
+				**		Handle the special cases for each keyword.
+				*/
+
+				switch (completion)
+					{
+					case "BEGIN":
+						.pas_expand_block ("END");
+
+					case "IF":
+						.pas_expand_pair ("THEN");
+
+					case "WHILE":
+					case "FOR":
+					case "WITH":
+						.pas_expand_pair ("DO");
+
+					case "ELSE":
+					case "VAR":
+					case "CONST":
+					case "TYPE":
+					case "LABEL":
+						open_line ();
+
+					case "REPEAT":
+						.pas_expand_block ("UNTIL ");
+
+					case "CASE":
+						{
+						save_position ();
+						.pas_expand_block ("END");
+						delete_line ();
+						restore_position ();
+						.pas_expand_pair ("OF");
+						}
+					default:
+						insert (" ");
+					}
+				}
+			else
+				done = FALSE;
+			}
+		restore_position (!done);
+		}
+	/*
+	**		If we couldn't expand an abbreviation, we perform the
+	**	normal task associated with the key that called us: insert
+	**	a space, or shift a marked block.
+  	*/
+
+	if (!done)
+		if (inq_local_keyboard () == _pas_alt_template)
+			slide_in ();
+		else
+			self_insert ();
+}
+
+/*
+**		Converts keywords into the user-specified preferred case.
+*/
+
+string .pas_keyword_cvt (string keyword)
+{
+	switch (_pas_keyword_case)
+		{
+		case (KW_UPPER):
+			returns (upper (keyword));
+
+		case (KW_LOWER):
+			returns (lower (keyword));
+
+		case (KW_MIXED):
+			returns (upper (substr (keyword, 1, 1)) + lower (substr (keyword, 2)));
+	  }
+}
+
+/*
+**		Repositions a line at a specified indent level.
+**
+**	Parameters:
+**		0 -- the text of the line to reindent.
+**		1--the new indent level.
+*/
+
+void .pas_reindent (string text, int curr_indent_level)
+{
+	beginning_of_line ();
+	delete_to_eol ();
+	move_abs (0, .pas_indent_level (curr_indent_level));
+	insert (text);
+}
+
+/*
+**		Adds a matching keyword below the expanded template, at the same
+**	indent level; then inserts a line between the pair and leaves the
+**	cursor on it.	Since inserting a line may reindent the current
+**	line, it does this in a strange order.
+*/
+
+void .pas_expand_block (string keyword)
+{
+	int	column;
+
+	open_line ();
+	save_position ();
+	move_rel (-1, NEG_MAX_COL);
+	.pas_first_nonwhite ();
+	inq_position (NULL, column);
+	move_rel (1, NEG_MAX_COL);
+	insert ("\n");
+	move_abs (0, column);
+	insert (.pas_keyword_cvt (keyword));
+	restore_position ();
+}
+
+/*
+**		Expands a keyword pair, positioning the cursor between the two
+**	keywords.
+*/
+
+void .pas_expand_pair (string keyword)
+{
+	save_position ();
+	insert ("  " + .pas_keyword_cvt (keyword));
+	restore_position ();
+	right ();
+}
+
+
+
+

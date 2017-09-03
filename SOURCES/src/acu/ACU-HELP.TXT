@@ -1,0 +1,748 @@
+$$PC-MOS-INSTALL
+  Select this option to move to the Install
+Menu from which you may select to partition
+and format your hard disk, and/or to install
+the PC-MOS files on your hard disk.
+
+$$PC-MOS-SYSGEN
+  Select this option to move to the menu
+from which you may select to build or
+make changes to the configuration file
+for your system.
+
+  This option will build a new CONFIG.SYS
+file on the drive where you installed
+PC-MOS, or it will modify an existing
+file with your changes.
+
+$$SYSGEN-EDIT-MOS
+  This option takes you to the menu from
+which you may select the available PC-MOS
+configuration features.
+
+$$SYSGEN-EDIT-DEVICES
+  This option takes you to a menu from which
+you may install or make changes to any of
+the necessary device drivers for your system.
+
+$$SYSGEN-SAVE-EXIT
+  This option saves any of the information
+you set up in the CONFIG.SYS file and exits
+the program.
+
+  The CONFIG.SYS file contains the new
+information you have set up, but you must
+restart your computer to activate the new
+information.
+
+$$SYSGEN-ABANDON-EXIT
+  This option exits the install program
+without saving any of the information
+you have entered.
+
+  If a CONFIG.SYS file existed when you
+began this program, it is left unchanged.
+
+$$ED_MOS-MEMORY-MGMT
+  This option lets you set up the memory
+management information necessary for PC-MOS
+to function properly.
+
+  You should select this option to set up
+the memory information for your system.
+
+$$ED_MOS-VIDEO-CONFIG
+  This option lets you set up the correct
+video type for your system.
+
+  You should select this option to set up
+the necessary video information.
+
+$$ED_MOS-DISK-CACHE
+  This option lets you set up disk caching
+to improve the speed of file processing on
+your system.
+
+  This option is not necessary for the proper
+functioning of PC-MOS, but it may improve the
+performance of your system.
+
+$$ED_MOS-MISC
+  This option lets you define the country for
+proper display of the date, time and currency
+as well as other advanced features.
+
+  You should select this option to properly
+set up the PC-MOS features for your system.
+
+$$MEMDEV
+  Select the processor or memory management
+driver you are using in your computer:
+
+  NONE - no memory management (PC-AT/XT)
+  $286N.SYS - an 80286 processor
+  $GIZMO.SYS - an AT GIZMO memory card
+  $CHARGE.SYS - an ALL CHARGE CARD
+  $386.SYS - an 80386 processor
+
+  You may press ENTER to select the
+processor found when you started up your
+computer, or select the memory management
+driver you are using.
+
+$$MEMDEV-OPT
+  Select the type of computer you are
+using, or select NONE if your computer
+is not on the following list.
+
+  Compaq 386/20e
+  IBM PS/2 (all models)
+  System with EMULEX hard drive
+  IBM XT Personal Computer
+  System with SCSI or ESDI drive
+
+$$FREEMEM
+  FREEMEM specifies high memory areas not
+used by your system that MOS can use. Select:
+
+  AUTO - to have PC-MOS automatically find
+         your FREEMEM areas for you.
+MANUAL - to manually specify memory ranges
+         (press F2-OPTIONS and select MANUAL
+         for a list of addresses).
+  NONE - if you do not have memory management,
+         or if there are no free memory ranges
+         in your computer.
+
+$$FREEMEM-EDIT
+  This option requires advanced knowledge
+of hardware memory locations in you system.
+We suggest that you use the AUTO option
+unless you specifically know your video
+address space and hardware BIOS locations.
+
+  Specify the memory ranges between A0000
+and F0000 that are not in use by hardware
+devices and are available or MOS to use.
+For example, if you have VGA video adapter
+and an ESDI controller with an active BIOS
+area from CC000 to D0000, your FREEMEM
+should be specified as follows:
+
+  C8000  CC000
+  D0000  F0000
+
+$$VTYPE
+  Select your computer's video type:
+
+  0 - EGA or VGA
+  1 - Monochrome
+  2 - CGA (not recommended)
+  3 - CGA (not recommended)
+  4 - CGA (you must also select YES for the
+      next "Fill foreground" option)
+  5 - Hercules or a VNA system that has
+      EGA/VGA at the host
+
+$$VTYPE-FILL
+  You must have Monochrome, Hercules or CGA
+at the host to use this option. Select:
+
+   YES - if the video type at your host
+         computer is the same as the video
+         type at workstations.
+
+    NO - if you have EGA or VGA at the host,
+         or if the video type at your host
+         and at workstations is different.
+
+$$CACHE-SIZE
+  The CACHE option lets you set up disk
+caching to speed up processing. In general,
+your cache size should be set as 256 times
+the number of users or tasks you will have
+on your system. For example:
+
+   256 x 3 users (or tasks) = 768 cache size
+
+  Try to be reasonable with the cache size.
+If it is too large there may be no benefit.
+
+$$CACHE-LIST
+  Enter the letter of each drive that will
+make use of disk caching. For example:
+
+  ABCD caches drives A to D.
+
+  You may select the ALL option to cache all
+available drives, but only if you do not have
+a network on your system. You should NEVER
+cache a network drive!
+
+$$CACHE-UNIT
+  Select 2KB for the cache unit size. Other
+sizes are available as advanced features and
+for future expansion.
+
+$$FIRSTW
+  FIRSTW and LASTW work together to improve
+disk performance by deferring write operations.
+
+  For FIRSTW specify, in seconds, the maximum
+length of time that data may accumulate in
+the cache before it is written to disk.
+
+  We suggest 10 seconds for FIRSTW. If FIRSTW
+and LASTW are set to 0, then write caching is
+not used.
+
+$$LASTW
+  LASTW, if used, should be less than FIRSTW.
+It forces data to be written from the cache if
+the specified number of seconds elapses after
+data was last written to the cache.
+
+  We suggest 2 seconds for LASTW. If FIRSTW and
+LASTW are set to 0, then write caching is not
+used. Remember to wait at least 2 seconds after
+writing to disk before rebooting, turning off
+your computer, or removing a diskette!
+
+$$8087=YES
+  Select the correct option for the math
+coprocessor in your computer:
+
+  YES - only if multiple applications will
+        be using the math coprocessor in
+        your computer at the same time.
+
+   NO - if applications will not be sharing
+        the math coprocessor.
+
+$$COUNTRY
+  This option sets the correct format for
+date, time, currency symbol, and numbering.
+
+  Press F2 to select the country where this
+system will run and the correct country code
+will appear.
+
+$$ACTIVE-TASKS
+  As accurately as possible, enter the maximum
+number of tasks (or user) you expect to run at
+any one time.
+
+  The system will then calculate the amount of
+the System Memory Pool (SMP) for your computer.
+
+  SMP is a fixed amount of memory that MOS uses
+to dynamically supervise all tasks and track
+all activity on your computer.
+
+$$ADD-SMP
+  This option lets you place additional space
+in the System Memory Pool (SMP). This may be
+necessary if you need to load large (or many)
+device drivers, or to open a large number of
+files.
+
+  Enter any additional amount of SMP that you
+need to allocate for your system.
+
+$$ED_DEV-EMS-DRIVER
+  This option lets you install an EMS driver
+to emulate the Expanded Memory Specification
+(EMS) standard.
+
+  This option is only necessary if you will
+be using an application program that requires
+the EMS standard and you do not have the
+EMS hardware.
+
+  The EMS driver will use FREEMEM space and
+therefore take away from available task size.
+
+  An arrow appears on the menu in front
+of any device that is already installed.
+
+$$EMS-ON
+  This option lets you load a device driver
+that emulates the Lotus-Intel-Microsoft
+Expanded Memory Specification (EMS) version
+4.0 & 3.2. Select one of the following:
+
+  YES - if you need to load this driver.
+   NO - if you do not need this driver.
+
+$$EMS-SIZE
+  Enter the amount of extended memory (in
+kilobytes) that will be converted to expanded
+memory.
+
+  This amount must be a multiple of 16K and
+may be from 64K to the available amount of
+memory in your system.
+
+  The EMS driver will use FREEMEM space and
+therefore take away from available task size.
+
+$$EMS-PAGE-FRAME
+  Enter the hex memory address for the
+Expanded Memory Manager to use as its
+page frame or 'window' into the addressing
+space.
+
+  This page frame must be exactly 64K in
+size and must be located in the 00000 to
+F0000 range.
+
+  The default hex address is E0000.
+
+$$ED_DEV-SERIAL-DRIVER
+  This option lets you install a serial
+device driver for attaching additional
+serial ports to your computer. The
+additional ports may be used to attach
+workstations, printers or other devices.
+
+  An arrow appears on the menu in front
+of any device that is already installed.
+
+$$SERIAL-PORT-DRIVER
+  The $SERIAL.SYS driver sets up a standard
+buffered interface to ports in order to use
+more than two serial ports for attaching
+workstations or other peripheral devices.
+
+  If you will be using only the standard
+serial ports, COM1 and COM2, DO NOT install
+this driver. Select:
+
+  YES - if you need to install this driver.
+   NO - if you do not need this driver.
+
+$$SERIAL-PORT-OPTIONS
+  Select one of the following:
+
+  YES - if you need to install more than two
+        serial ports for your system, or to
+        use ports other than COM1 and COM2.
+
+   NO - if you are using only the standard
+        ports, COM1 and COM2.
+
+$$SERIAL-PORT-#
+  You can define the options for ports 1
+through 24.
+
+  Enter the number of the port you want
+to define.
+
+$$SERIAL-PORT-ADDRESS
+  Enter the address to use for this port.
+The port address may be from 0 to 8000.
+If no entry is made for this option, the
+system defaults to:
+
+   03f8 (COM1) for port 1, and
+   02f8 (COM2) for port 2.
+
+$$SERIAL-PORT-IB
+  Enter the number of bytes to use for the
+input buffer for this port.
+
+  The input buffer may be from 32 bytes to
+65,536 bytes for each individual port.
+
+  This option defaults to 64 bytes if an
+entry is not made.
+
+$$SERIAL-PORT-OB
+  Enter the number of bytes to use for the
+output buffer for this port.
+
+  The output buffer may be from 16 bytes to
+65,536 bytes for each individual port.
+
+  This option defaults to 1024 bytes if an
+entry is not made.
+
+$$SERIAL-PORT-HS
+   Select the appropriate mode of handshaking
+for this port. The available options are:
+
+  N - None (the default when no entry is made)
+  D - DTR (data terminal ready, data set ready)
+  X - XOFF (receiver controlled on and off)
+  P - XPC (receiver controlled on and off using
+      different characters: 65H=xon, 67H=off)
+  R - results in RTS (request to send, clear
+      to send) protocol
+
+$$SERIAL-PORT-IN
+  Enter 2 through 7 for the interrupt level
+for this port. If an entry is not made, the
+system defaults to:
+
+  4 for port 1, and
+  3 for port 2.
+
+  Some serial adapters that provide multiple
+ports may use only one interrupt for all
+ports' addresses.
+
+$$SERIAL-PORT-CN
+  This option sets communication for a
+local or remote terminal. The available
+options are:
+
+  L - defines a Local (directly connected)
+      terminal
+  R - defines a Remote terminal connected
+      through a modem.
+  T - defines a remote terminal connected
+      through a modem, but with the TASK-
+      RESTART option. This option will
+      automatically restart a task if a
+      connection is broken and the carrier
+      detect signal drops.
+
+$$ED_DEV-MOUSE-DRIVER
+  This option lets you install a driver
+for using a mouse device on your system.
+
+  An arrow appears on the menu in front
+of any device that is already installed.
+
+$$MOUSE-INSTALL
+  Select one of the following:
+
+  YES - if you will be using a mouse with
+        your computer. You must also use
+        the MOUSE.COM program that is
+        provided with your mouse.
+
+   NO - if you do not intend to use a mouse.
+
+$$ED_DEV-PIPE-DRIVER
+  This option lets you install up to 25
+pipe devices for piping information between
+tasks.
+
+  This feature is only necessary if you have
+a need for intertask communications.
+
+  An arrow appears in front of any device
+that has already been installed.
+
+$$PIPE
+  Select the pipe device you want to set up
+and press ENTER. There are a total of 25
+pipes devices you can define.
+
+  An arrow appears on the menu in front
+of any device that is already installed.
+
+$$PIPE-INSTALLED
+  Select one of the following:
+
+  YES - to install this pipe device.
+
+   NO - if you do not want to install this
+        pipe device.
+
+$$PIPE-NAME
+  You may use the name displayed for this
+pipe, or enter a different name of up to
+eight alphanumeric characters.
+
+  The first character of the name must be
+a letter from A to Z.
+
+$$PIPE-SIZE
+  The pipe size may be from 1 to 18384 bytes
+of memory. Because the pipe device uses
+memory from the SMP, make the size as small
+as is practical for your system.
+
+  This pipe size will default to 64 bytes if
+an entry is not made.
+
+$$PIPE-EOF
+Select one of the following:
+
+  YES - to have the pipe device send an "end
+        of file" message when you attempt to
+        read an empty pipe device. Otherwise,
+        the task requesting the read will sit
+        in a waiting state.
+
+   NO - if an "end of file" message is not
+        necessary.
+
+$$ED_DEV-RAMDISK-DRIVER
+  This option lets you install a driver
+that allocates extended memory to be used
+as a virtual disk.
+
+  Select to install this driver only if
+you need a RAM disk on your system.
+
+  The RAM disk driver will use FREEMEM
+space and therefore take away from
+available task size.
+
+  An arrow appears on the menu in front
+of any device that is already installed.
+
+$$RAMDRIVE-INSTALLED
+Select one of the following:
+
+  YES - to install a RAMDISK that uses
+        extended memory as a virtual disk.
+   NO - if you do not want to install a
+        RAMDISK.
+
+  If you install a RAMDISK, you will access
+it using the next available drive letter on
+your system. For example, if you install a
+RAMDISK on a system that has hard drives C
+and D, the RAMDISK is accessed as drive E.
+
+$$RAMDRIVE-SIZE
+  Enter the amount of extended memory to use
+for the RAMDISK. This amount can be from one
+kilobyte to 16 megabytes.
+
+  This option will default to 64 kilobytes if
+an entry is not made.
+
+  The RAM disk driver will use FREEMEM
+space and therefore take away from
+available task size.
+
+$$RAMDRIVE-ADDRESS
+  Enter the buffer address to use for paging
+the RAMDISK. The address must be on a 4K
+boundary with the last three digits zeros.
+
+  This option will default to B4000 if an
+entry is not made.
+
+  NOTE: Be sure the default address or address
+you specify is not used by MOS as free memory.
+
+$$ED_DEV-KEYBOARD-DRIVER
+  This option lets you install a driver to
+recognize the character set used by the
+keyboard on your computer.
+
+  This feature is set for United States and
+is only necessary if you need to set the
+keyboard for a different country.
+
+  An arrow appears on the menu in front of
+this option if a keyboard driver other than
+United States is selected.
+
+$$ED_KEYB-DESCRIPTION
+  Select the keyboard driver for the country
+where this system is being used.
+
+  This option sets the correct keyboard driver
+to recognize the character set where this
+system will run.
+
+$$ED_DEV-VNA-DRIVER
+  This option lets you set the features
+for using VNA and IONA on your system.
+
+  Select this option only if you are
+setting up a PC-MOS system to run with
+VNA or IONA.
+
+  An arrow appears on the menu in front
+of any device that is already installed.
+
+$$VNA-I/O-ADDRESS
+  Enter the I/O address that you selected
+with switch SW4 on the VNA motherboard. The
+address must be between 0100 and 03F0 hex,
+and must fall on a 10-byte boundary.
+
+  Press the F2-OPTIONS key for a list of
+valid addresses to select from.
+
+$$VNA-INT-LEVEL
+  Enter the interrupt level that you selected
+with switch SW1 on the VNA motherboard.
+
+  If you are running on an XT compatible,
+this value ranges from 0 to 7. If you are
+running on an AT compatible, this value
+ranges from 0 to 15.
+
+  Check the VNA Installation Guide and your
+computer's user manual for more information
+on which interrupts are available for use.
+
+$$IONA-INSTALLED
+Select one of the following:
+
+  YES - if you are installing IONA on your
+        system.
+   NO - if you are not installing IONA.
+
+$$SYSTEM-PATH
+  Enter the drive and directory that
+contain your PC-MOS program files if not
+correct as indicated.
+
+  This should be the drive and directory
+that you copied the program files to during
+installation.
+
+$$IONA-PARALLEL-ADDRESS
+  A Parallel base address must be specified
+when parallel port support is required at
+the workstations.
+
+  Specifying the base address defines the
+addresses for all four parallel ports on
+the IONA board.
+
+  These can not be the same as or overlap
+the VNA I/O address range you selected.
+
+$$IONA-SERIAL-ADDRESS
+  A Serial address must be specified in
+order to use the workstation serial ports
+on the IONA interface units.
+
+  The address must be between 0100 and
+03F0 hex, and must fall on a 32-byte
+boundary.
+
+  No addresses in that 32-byte range may
+be used for the VNA I/O address or the
+Parallel base address!
+
+  Press the F2-OPTIONS key for a list of
+valid addresses to select from.
+
+$$IONA-INT-LEVEL
+  Enter the interrupt level that you selected
+with switch SW3 on the IONA motherboard.
+
+  If you are running on an XT compatible,
+this value ranges from 0 to 7. If you are
+running on an AT compatible, this value
+ranges from 0 to 15.
+
+  Check the VNA & IONA Installation Guides
+and your computer's user manual for more
+information on which interrupts are available
+for use.
+
+$$IONA-SERIAL-IB-SIZE
+  Enter the number of bytes to use for the
+input buffer for this port.
+
+  The input buffer may be from 16 bytes to
+65,536 bytes for each individual port.
+
+  This option defaults to 16 bytes if an
+entry is not made, which is best for most
+installations.
+
+$$IONA-SERIAL-OB-SIZE
+  Enter the number of bytes to use for the
+output buffer for this port.
+
+  The output buffer may be from 16 bytes to
+65,536 bytes for each individual port.
+
+  This option defaults to 16 bytes if an
+entry is not made, which is best for most
+installations.  Note that a serial terminal
+workstation may require a larger OB size.
+
+$$IONA-SERIAL-HANDSHAKE
+  Select the appropriate mode of handshaking
+for this port. The available options are:
+
+  N - None (the default when no entry is made)
+  D - DTR (data terminal ready, data set ready)
+  X - XOFF (receiver controlled on and off)
+  P - XPC (receiver controlled on and off using
+      different characters: 65H=xon, 67H=off)
+  R - results in RTS (request to send, clear
+      to send) protocol
+
+$$IONA-SERIAL-TERMINAL
+  This option sets communication for a
+local or remote workstation. The available
+options are:
+
+  L - defines a Local (directly connected)
+      workstation
+  R - defines a Remote workstation connected
+      through a modem.
+  T - defines a remote workstation connected
+      through a modem, but with the TASK-
+      RESTART option. This option will
+      automatically restart a task if a
+      connection is broken and the carrier
+      detect signal drops.
+
+$$IONA-MODEM-HANDSHAKE
+  When using the workstation serial ports
+on the IONA interface units, you must decide
+whether or not you need full RS-232 hardware
+handshaking support.  If full serial support
+is chosen, the workstation parallel port is
+not available. Therefore,
+
+  Choose "NO" for Limited Serial/Full
+Parallel support:
+
+    This is best for most situations and
+    allows support for both the parallel
+    port and a serial mouse or serial
+    terminal workstation.
+
+  Choose "YES" for Full Serial/NO Parallel
+support:
+
+    This is only required for certain
+    cases of modem and serial printer
+    interfacing.
+
+  NOTE: This program sets all four IONA
+workstations to the same option - all
+YES or all NO.  If necessary you can set
+each workstation independently.
+
+  See the instructions on the /MS operand,
+interface unit DIP switch, and IONA board
+switch SW4 in your IONA Installation Guide.
+
+$$WELCOME-SCREEN
+  This  Auto-Configuration  Utility will
+build  a CONFIG.SYS  file (or  modify an
+existing CONFIG.SYS file) to set up your
+system configuration under PC-MOS.
+
+  You  will be  able to  set up  various
+parameters, such  as: memory management,
+video configuration, and disk caching.
+
+  You  will  also  be  able  to  install
+various device drivers,  such as: serial
+port, mouse, EMS, and RAM Disk drivers -
+as well  as special drivers  for VNA and
+IONA hardware.
+
+  Use the following  menus to select and
+set up the system options that you need.
+

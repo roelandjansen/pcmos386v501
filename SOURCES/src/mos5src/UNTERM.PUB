@@ -1,0 +1,85 @@
+
+Public  snot_install, segna, segnamono, svnaplus, svgnaplus, slash, ddtvga
+Public  egnanm, enddrvr0, ewsoff, directptr, speedptr, request, strat, inter
+Public  notinit, inter0, inter1, tfn, bgnvid2, bgnvid, endvid, endtfn, scbptr
+Public  scbofs, scbseg, mcdcbios, ddtmc, saveds, savebx, savevid, savevram
+Public  mctcb, kbsize, kbirq, serirq, numport, egnacur, lastport, portoff
+Public  basedxxd, baseexxd, wsmask, vmemcall, orig1a, orig38, child, tocount
+Public  ws0ismc, slashp, slashs, slashc, slashb, kbbios, ws0vga, WSSwitch
+Public  HiResGraph, SaveDSPort, setws, setws1, bankout, skipout, bankin
+Public  bankin1, bankin1a, bankin1b, bankin2, bankin3, egaterm, egnafj00
+Public  egnafn1, dobeeper, egnafn1a, egnafn2, egnafn2a, egnafn3, egnafn3a
+Public  egnafn3b, egnafn4, egnafn5, egnafnx, beeper, setmode, smok, setvna
+Public  nonio, endio, dosetmode, setm0a, setm0b, monotbl, herctbl, setmono
+Public  sethcard, sethrc1, setherc, seth1, register, reg0b, reghires, regvna
+Public  regvna1, regcont, dontupit, regws, regs0, regsbad, regsx, VidInit
+Public  VINotVGNA, boot_prep, vc2, keybd_irq, keybd_loop, keybd_skip
+Public  keybd_next, keybd_novna, keybd_end, keybd, kbd1, kbd2, kbd3, kbempty
+Public  kbset, kbover, doleds, setleds, dleds, kaloop, kaexit, kaloop2, kaexit2
+Public  initkb, erroraa, setup8042, send_ff, go_ahead, gkeylp1, gkeyok1
+Public  gkeylp2, errorkb, initkba, skips8259, outcmd, ocloop, ocloop2, ocexit
+Public  outdata, odloop, odexit, getkey, gkloop, gkexit, getch, gkloop2
+Public  gkloop3, gkfound, gkout, getfa, get55, unregister, unr1, inkbdata
+Public  kbdat0, inkbdx, outkbctl, outkb1, outkb2, outkbx, prch, prstr, prstrlp
+Public  prserr, prsdone, print_status, getlptbase, prchar, prn000, prn005
+Public  prn010, prnerror, prnexit, sername, txdat, rxdat, divll, divlm, iereg
+Public  enmsi, enlsi, entei, endri, iireg, noint, lcreg, divla, stbrk, mcreg
+Public  stot2, stot1, strts, stdtr, lsreg, tsre, thre, brki, frerr, paerr
+Public  overr, drdy, msreg, carst, rngst, dsrst, ctsst, carch, trlri, dsrch
+Public  ctsch, true, false, serial, emulink, mos, DISABLE_CPUSPEED, clr_set_irq
+Public  serial_irq, serial_loop, serial_int, serial_done, serial_skip
+Public  serial_next, serial_novna, serial_end, HandleCoRes, SkipCoRes
+Public  GetCurPort, GCPSkip, GCPExit, noofboards, processport, lastoffset
+Public  lastsegment, noofstations, serialtable, tempextra, finalstage
+Public  install14, setint14, donein14, laststage, iesetup, notplus, statloop
+Public  ieskip, sinitloop, sserialins, sbuffloop, sskipbuff, InitLPT, InitLPTLp
+Public  processegna, setwsbl, pnot8ports, lnot8ports, pegnaskip, processserial
+Public  psercont, psset, psskip, pshsnotn, pshsnotr, pshsnotd, pshsnotx, hsdone
+Public  pscnnotl, pscnnotr, cndone, nextseg, $$UNTERM_DATA, ofsws, ib_option
+Public  ob_option, hs_option, cn_option, end_of_serial, end_of_cmd, bad_base
+Public  dup_base, bad_keyirq, bad_irq, bad_serirq, dup_key_ser, bad_port
+Public  dup_port, bad_port8, bad_ib, dup_ib, bad_ob, dup_ob, bad_hs, dup_hs
+Public  bad_cn, dup_cn, bad_serial, base_not_install, no_port, no_serial, comma
+Public  irq10, irq11, irq15, errtab, errlen, opttab, curbase, curserial, ddtmsg
+Public  ddtnins, ddtins, ddtains, msgbmice, dmsgkey, dmsgkey2, dmsgser
+Public  dmsgser2, dmsgnser, VirtualBios, dmsgnhr, dmsgcon, dmsgbase, dmsghas
+Public  dmsges, dmsghs, dmsgvs, dmsgand, dmsgws, msgpos, msgstart, msgbase
+Public  dbase, msgserial, dserial, basecrlf, msgcrlf, errmsg, mbadbas, mdupbas
+Public  mbadkey, mbadser, mdupirq, mbadp4, mbadp8, mduppt, mbadib, mbadob
+Public  mbadhs, mbadcn, mdupib, mdupob, mduphs, mdupcn, mbadopt, nobase
+Public  nosport, mustser, hslist, cnlist, irqlist, optlist, wordten, definput
+Public  defoutput, defhsoption, defcnoption, moudriver, vgnarom, vgdriver
+Public  vgbiostab, vgpatchtab, UNTERM_BIOS_DATA, VGNA_BIOS_DATA, VGNA_Handle
+Public  VGNA_Banks, carddefs, off10, seg10, savecur, savectype, VGNAIns
+Public  VGNACount, VGNASwitch, V8514Switch, UnPortTable, ddtinit, nobios
+Public  sddierror, sddhires, continit, miceok, wehavevgna, dorombios, doinitv
+Public  unskipbios, skbiossw, setbiosset, skbiosset, NoVidChk, noswtbios
+Public  ddtskmc, ddierror, dder01, dispstatmsg, dconlp2, dcon5, dcon6, dcon7
+Public  dcon8, dcon9, dcon10, dcon11, dcon12, dispascii, dasciil, dasciie
+Public  dispconfig, dcon1, dcon2, dcon3, dcon3a, dcon4, dconlp1, dispemsg
+Public  demnoerror, demerror, demnstart, demnserial, demcont, initparse
+Public  iparloop, iparnob, iparnoc, iparnos, iparnog, iparexit, iploop, ipend
+Public  skipblanks, skiploop, blankend, skipcomma, commaerror, testlist
+Public  testloop, testbad, parsedigit, digitlp, notdigit, parsehex, hexloop
+Public  notnumber, sethex, hexdone, badhex, hexend, setdefault, sdloop
+Public  initialize, newdefault, testboard, not8port, sbadcard, tbdone, setboard
+Public  sbloop1, sbskip0, sbskip1, sbloop2, notvnaplus, notvgnaplus, chkbase
+Public  cbloop, cbdup, cbtest, cbdone, getoption, gopt1, gopt2, goptfound
+Public  goptbad2, goptbad, gopterr, parseport, notport, cport, pp1, cport1
+Public  noserial, dupport, bport, bport2, pportend, processib, errorib, badib
+Public  iberror, processob, errorob, badob, oberror, processhs, badhs, errorhs
+Public  processcn, badcn, parsebase, base1, nobaseerr, basebad, baseerror
+Public  parseirq, irqerror, parsefirst, fc0, fckeybad, fc1, okser, okser2
+Public  fcserbad, firstok, nosirq, firstdup, firsterror, firstend, parseserial
+Public  serialloop, sportloop, sokoption, serialnext, serialtest, serialend
+Public  serialerr, parsecmd, parselp, parseend, chkmouse, nomouse, installirq
+Public  set8259, configboard, setierloop, skipier, cbkbloop1, cbkbloop2
+Public  skipkbloop, cbnoserial, cbnotirq11, cbset, cbsset, enablefirst, skipeoi
+Public  configdriver, cdrvskip, cdrvloop, paradise16bit, skipparadise
+Public  checkcoexist, dovnatest, iscoexist, noncoexist, WaitVert, wvert
+Public  VGACoExist, is_coexist, initstation, dostation, donoswt, initbios
+Public  ibloop1, ibloop2, ibskip0, ibskip1, ibvnaplus, ibskip, ibmaster
+Public  skipwsswt, CreatePortInfo, CPILoop, CPILoop1, CPISet, CPISkip
+Public  setegnaoffsets, cstats, not8s, cstloop, cstskip, iwsloop, directloop
+Public  dlnot8, dlloop, dlnotins, hextab, bintohex, bclear, bhloop, temparea
+

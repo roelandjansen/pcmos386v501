@@ -1,0 +1,50 @@
+
+Public  shareretry, shareticks, tcbstart, tcbtype, tcbtcbpn, tcbtcbpp, tcbid
+Public  tcbncadr, tcbbegad, tcbendad, tcbpri, tcbslice, tcbwait, tcbstat
+Public  tcbpoll, tcberrcod, tcbprgnm, tcbibase, tcbibsiz, tcbloop, tcbkshft
+Public  tcbkshf2, tcbmode, tcbpage, tcbcols, tcbrows, tcbscln, tcbpgln, tcbpgst
+Public  tcbcpos, tcbctyp, tcbpal, tcbomode, tcbwinpo, tcbvram, tcbvidh1
+Public  tcbvidp1, tcbvidw2, tcbtfbpf, tcbcdbpf, tcbcdbpc, tcbndriv, tcbcdriv
+Public  tcbdta, tcboldpsp, tcboldmbpf, tcbvflg, tcbbrk, tcbntry, tcbttry
+Public  tcbauxbt, tcbauxct, tcbspltm, tcbspool, tcblptxl, tcbclass, tcbuser
+Public  tcbcdft, tcbcmap, tcbctxp, tcbsp, tcbstkp, tcbsvsp, tcblagcnt, tcbmmhdl
+Public  tcbmmpgs, tcbvmhdl, tcbvmpgs, tcbems, tcb87sav, tcbpritm, tcbmcount
+Public  tcbwtax, tcbwtcx, tcbwinfo, tcbwtflg, tcbcamon, tcbbaseg, tcberrvol
+Public  tcbretc, tcbapv0a, tcbapv0b, tcbapv0c, tcbapv0d, tcbapv0e, tcbapv0f
+Public  tcbapv70, tcbapv71, tcbapv72, tcbapv73, tcbapv74, tcbapv75, tcbapv76
+Public  tcbapv77, tcbkbcnt, tcbkbfst, tcbkbfct, tcbkbmax, tcbkbax, tcbkbcx
+Public  tcbkbtck, tcbkeyrdy, tcbnxtdd, tcbscrdd, tcbaltnum, tcbktggl, tcbkbctl
+Public  tcblastky, tcblscan, tcbalt999, tcbi9seg, tcbi9flg, tcbmoskey
+Public  tcbtrapcd, tcbprt61, tcbfsavr, tcbnoget, tcbvrtim, tcbptmr, tcbcmode
+Public  tcbega, tcbspskp, tcbprndx, tcbprprt, tcbtoax, tcbtocx, tcbauxtm
+Public  tcbspltp, tcbspltc, tcbllser, tcb$hdr, tcb$ca, tcb$asi, tcb$iq, tcb$ef
+Public  tcb$tcp, tcb$kp, tcb$hb, tcb$er, tcb$ebp, tcb$eb, tcbdevhdr, tcbdnum
+Public  tcbpcnt, tcbconfg, tcb%ebuf, tcb%ecol, tcb%blen, tcbtsk38, tcbparm2e
+Public  tcborig8, tcborig1c, tcbmready, tcbcrit24, tcbhold, tcbpscan, tcblocker
+Public  tcbslcnt, tcb_machine_name, tcb_machine_id, tcb_malloc_strategy
+Public  tcbversn, tcb15ax, tcb15cx, tcbbbsy, tcbdbsy, tcbiretry, filler
+Public  tcbin10, tcb13once, tcboclass, tcbodriv, tcbrstok, tcbkbrate, tcbkbcmd
+Public  tcbkbstg, tcb15supr, tcbconly, tcbtctst, tcbtctnd, tcbpspoff, tcbpsp
+Public  tcbtext2e, tcbnest13, tcbchn13, tcbbdbwf, tcbdbwax, tcbdbwcx, tcbcon417
+Public  tcbd40f, tcbtslnst, tcb24nest, tcbchdr, tcbcday, tcbsav24, tcbhdl24
+Public  tcbtpfrm, tcbpost, tcb%sb0a, topsb0a, tcb%rs0a, tcb%rp0a, tcb%cp0a
+Public  tcb%rs3f, tcb%rp3f, tcb%cp3f, tcb%dbuf, tcb%cbot, tcb%stcl, tcb%nstln
+Public  tcb%lref, tcb%maxc, tcb%maxl, tcb%dlen, tcb%ltc, tcb%ttc, tcb%nmxb
+Public  tcb%stgc, tcb%insf, tcb%flgs, tcbbrkfg, tcbnest, tcborgsp, tcbsreg
+Public  tcbcondd, tcbdlofs, tcbdlseg, tcbdcofs, tcbdcol, tcbport, tcbbaud
+Public  tcbpreseg, tcbactseg, tcb%sb3f, topsb3f, tcbmport, tcbmtimer, tcbmouse
+Public  tcbupoll, tcbparnt, tcbautoe, tcbshare, tcbflimit, tcblock, tcbdpmi
+Public  tcbdpmisel, TCBBATNM, tcb_malloc_mark, tcbcacer, fillerx, tcbirqcnt
+Public  tcbcrit, tcbstation, tcbtsrflg, tcbvidad, tcbaltac, tcbaltacf, tcbaltdn
+Public  tcbnest9, tcbchn9, tcbnest8, tcbchn8, tcbfwake, tcbsiorb, tcbsafe28
+Public  tcbvidset, tcbunreg, tcbl43, tcbl40, tcbpamfg, tcbpripn, tcbcntxpt
+Public  tcbt3x4, tcbtchigh, tcbtclow, tcbcount, tcbexec3d, tcbopen60, tcbstate
+Public  tcbuserarea, tcbvideo, tcbattend, tcbirqpn, tcbirqsec, tcbwpend, tcbpam
+Public  tcbcrtio, tcb03b8, tcb03bf, tcbtccnt, tcbswflg, tcbswitch, tcbbpcnt
+Public  tcblsttl, tcbkbansi, tcbkbanlow, tcbkbanhi, tcbkboff, tcbemsseg
+Public  tcbddjmp1, tcbddjmp2, tcbreboot, tcbwatch, tcbansi, tcbdidkey, tcb$wrap
+Public  tcbinmos, tcb28cnt, tcb28timer, tcbequip, tcbflush, tcb3c2, tcbmbpf
+Public  tcbdpbpf, tcbsftptr, tcbclkdev, tcbcondev, tcbsecsiz, tcbdpbpo
+Public  tcbdinfo, tcbfcbptr, tcblastdrv, tcbddpf, tcb_com_hold, tcbegapal
+Public  tcbno24, fillerz, stksiz, tcbminstk, tcbstack, tcblen
+

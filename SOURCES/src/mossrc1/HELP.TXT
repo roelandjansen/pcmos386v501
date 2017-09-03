@@ -1,0 +1,1798 @@
+Form:	8087=yes
+
+Type:	Intrinsic.  (Configuration)
+
+	In order for more than one application to use a math coprocessor
+	simultaneously in a multi-tasking environment the 8087=yes command
+	statement must be entered in your CONFIG.SYS file.
+
+	The statement form is always 8087=yes regardless of whether you are
+	using an 8087, 80287, or 80387 math co-processor.
+Form:	.ABORT
+
+Type:	Intrinsic.  (Batch File)
+
+	.ABORT stops all processing within a batch file.  Batch file
+	processing will be completely terminated regardless of any nested
+	batch files.
+
+	.ABORT is generally used with the .IF command to test for various
+	conditions, which must be true or false, for processing to
+	continue.
+Form:	.ADDDEV n³t,device
+
+Type:	Extrinsic.  (General)
+
+	.ADDDEV lets you add a device driver at any time, without having to
+	reboot your computer.  You may make a driver active on the whole
+	system or only in a specific task.  For n enter a number
+	representing the amount of memory MOS requires for the driver in
+	kilobytes, i.e. 1 for 1024 bytes, 2 for 2048 bytes, etc.  For
+	example, to add a pipe device, you could enter:
+
+		.ADDDEV 2,$PIPE.SYS PIPE3,2048
+
+	MOS will check if there is sufficient memory to run the device.  If
+	so, the PIPE3 character device is added with a 2048 byte buffer.
+
+	Use the t operand, instead of n, if you want the device to be
+	active only in the task in which the .ADDDEV command is being
+	entered.
+Form:	.ADDTASK memsizeK,{task ID},{class},{startup},term ID,
+	port,baud rate}
+
+Type:	Extrinsic.  (Multi-Tasking/Multi-User)
+
+	The .ADDTASK command lets you create a memory partition.  When you
+	first boot MOS, only partition 0 in base memory is available.  You
+	must add each partition you want on the system.  A comma is used as
+	a delimiter between operands.  Include .ADDTASK in your
+	AUTOEXEC.BAT file to automatically add partitions when you boot.
+
+	You must enter the amount of memory to allocate to the task, at
+	least 32K, but large enough to facilitate the application to be run
+	in the partition.  Enter up to two digits for the task ID number to
+	assign to the partition.  Zero is reserved for the partition in
+	base memory.  You may also assign a security class to the
+	partition.  It defaults to a blank class if not entered.
+
+	You may enter a startup batch file name (up to 8 characters) for
+	the task.  The file must be on the root directory of the drive from
+	which the .ADDTASK command is invoked.  Enter only the file name
+	with NO drive identifier, directory name, or extension.
+
+	In a multi-user environment, enter the file name of the terminal
+	device driver for the partition, without the .SYS extension. 
+	Terminal device drivers must be defined with the DEVICE= command
+	statement in your CONFIG.SYS file.
+
+	For multi-user environments, also enter the port the device is
+	connected to, and the baud rate for communications.  There is no
+	default for these two operands.  The $SERIAL.SYS device driver that
+	defines serial ports must be defined with a DEVICE= command
+	statement in your CONFIG.SYS file. 
+Form:	.ALIAS d: {d:}{dirname}{/d}
+
+Type:	Extrinsic.  (General)
+
+	.ALIAS lets you substitute a drive letter for a directory name. 
+	This is useful for access directories several levels removed from
+	the root.  You may assign floppy disk drive letters A and B, but
+	NOT an existing hard disk drive letter such as C.
+
+	For example, if you have the directory:
+
+		\wp\mywp\myfiles\mywork
+
+	you may use .ALIAS to assign access to the MYWORK directory with an
+	unused drive letter.  If drive letter E is not used, you could
+	enter:
+
+		.ALIAS e: c:\wp\mywp\myfiles\mywork
+
+	Entering .ALIAS with no operands displays all active assignments. 
+	The /d operand can be used to delete a specified alias drive or
+	delete all aliases if no drive is specified.
+Form:	.AUTOCD filename
+
+Type:	Intrinsic.  (Batch File)
+
+	.AUTOCD recovers the current drive and directory that was saved
+	with redirection to an output file from within a batch file.  This
+	command is useful with utility batch files or applications that
+	call for a change of drive and directory.
+
+	See the batch files chapter of your User Guide for an example.
+Form:	.BATECHO on³off
+
+Type:	Intrinsic.  (Batch File)
+
+	.BATECHO controls the initial state of .ECHO in batch files.  .ECHO
+	ON is the default, which means that all commands in the batch file
+	will be displayed on the video screen as they are being executed. 
+	You may turn .ECHO off at the beginning of a batch file by entering
+	.ECHO OFF as the first statement.  If you use a .BATECHO off
+	statement in your AUTOEXEC.BAT file, .ECHO will automatically be
+	off when you start any batch file. 
+
+	Entering .BATECHO with no operand displays the current state of
+	.ECHO.
+
+	If .BATECHO is off you may still display the commands within a
+	batch file when it executes by using an ECHO ON statement.  If a
+	nested batch file is then invoked, .BATECHO off will prevail for
+	the nested batch file.   
+Form:	.BREAK on³off
+
+Type:	Intrinsic.  (General)
+
+	.BREAK instructs MOS to check for CTRL BRK or CTRL C keyboard
+	sequences during processing.  CTRL BRK instructs MOS to halt
+	processing.
+
+	With .BREAK off, only a few program calls are sensitive to .BREAK. 
+	With .BREAK on, most calls are sensitive to .BREAK, and you have a
+	better chance to break out of a program.  (With .BREAK on, your
+	system may run a little slower since every operating system call
+	will check for .BREAK.)
+  
+	Entering .BREAK with no parameters displays the current setting for
+	.BREAK.
+Form:	CACHE=nnnn,{unit},{firstw},{lastw},{drives}
+
+Type:	Intrinsic.  (Configuration)
+
+	CACHE lets you set up disk caching to speed up file processing on
+	your computer.  It gives you the ability to fine tune your system
+	by establishing the size of the cache, and how often read requests
+	are written to the disk.  Disk caching is noticeably faster than
+	accessing data directly from disk.  (The BUFFERS statement has been
+	replaced by the CACHE statement.)
+
+	Since the CACHE statement is somewhat complicated, you should refer
+	to your User Guide for a complete explanation and examples.
+
+	For nnnn, enter the total size of the cache in kilobytes.  This is
+	the total amount of memory reserved for caching read and write
+	requests.  Defaults to 16K if not specified.
+
+	For unit, enter the size in kilobytes of one unit of data that may
+	be read at one time.  This is the size of each individual buffer in
+	the cache.  Defaults to 2K if not specified.
+
+	For firstw, enter the maximum number of seconds that are to elapse
+	before writing data from the cache to disk, i.e. how long any data
+	may be held in memory.  Enter a 0 if you do not want to use this
+	operand.
+
+	For lastw, enter the maximum number of seconds to elapse after the
+	last write request before all data is physically written to the
+	disk from the cache.  After the specified number of seconds without
+	any write requests, all data in the cache will be physically
+	written to disk.  However, if another write request occurs before
+	time expires, lastw will reset and start timing over again before
+	writing any data to disk.  Enter a 0 if you do not want to use this
+	operand.
+
+	For drives, enter the letter of each drive to make use of the
+	cache.  Use a comma as a delimiter between each drive letter, for
+	example: C,D,E.  Leaving this operand blank causes MOS to use
+	caching on all available drives.  (Do NOT leave this operand blank
+	if network drives other than LANLink network drives are active.)
+
+	IMPORTANT CACHING RULES:
+
+	1.  NEVER open a floppy disk drive door with the drive light on.
+
+	2.  NEVER reboot or turn off your computer without first running
+	    MOSADM CACHE OFF or being POSITIVE that you've waited the
+	    lesser of firstw or lastw seconds following the last time
+	    anything was done on the system.
+
+	3.  If you don't understand items 1 and 2, or anything else about
+	    firstw and lastw, always set them both to 0.
+
+	4.  NEVER cache a network drive.  Only cache drives local to each
+	    machine.
+Form:	.CALL label
+	.
+	.
+	.
+	:label
+	.RETURN
+
+Type:	Intrinsic.   (Batch File)
+
+	.CALL/.RETURN lets you create subprocesses within a batch file by
+	redirecting the order in which commands execute.  You may redirect
+	processing to any line within the file if it is preceded by a
+	label.  When a .CALL command is encountered, execution proceeds
+	with the first statement following the specified label.  When a
+	corresponding .RETURN command is found, processing is redirected
+	back to the command following the .CALL statement.  Each .CALL
+	statement must have a .RETURN statement, or the file will not
+	execute properly.
+
+	A label can be a unique character string up to eight characters
+	long.  You must use a colon before the label when it precedes a
+	line to which processing is directed.  However, do not use a colon
+	with the label in the .CALL statement.
+Form:	.CD \path
+
+Type:	Intrinsic.  (General)
+
+	You may create several levels of directories in MOS.  To change
+	from one directory to another, you may enter the complete directory
+	name while at the root directory as follows:
+
+		.CD MYTEXT\MYFILES\LETTERS
+
+	If you are not at the root you must enter a preceding backslash
+	with the first level of directory in the path:
+
+		.CD \MYTEXT\MYFILES\LETTERS
+
+	The following command returns you to the root directory on your
+	current drive regardless of the level of directory you are in:
+
+		.CD \
+Form:	.CLASS dirname c
+
+	.CLASS pd
+
+Type:	Extrinsic.  (Security)
+
+	.CLASS lets you assign or change the security class of a directory. 
+	You may also use .CLASS to display or change the partition class
+	and user default output class of the partition you are currently
+	accessing.  Once you assign a class other than one to which you
+	have access, you cannot access the directory.  (You must use the
+	.COPY command to assign or change the security class of a file.)
+
+	c is the letter of the new class you want to assign.  For pd, enter
+	the letters of the security class to assign to the current
+	partition (p) and the current user's default output class (d) in
+	either upper or lower case characters.  You may enter an asterisk
+	(*) in either or both positions to display the current partition
+	class and/or default output class.  You may delete one or both
+	security classes by entering the underline character (_) in place
+	of the corresponding operand.
+
+	The partition class is originally assigned in the .ADDTASK command. 
+	The default output class is originally assigned as the default
+	class of the user who signed on in the partition.
+Form:	.CLS
+
+Type:	Intrinsic.  (General)
+
+	.CLS clears the current display on the video screen, and positions
+	the system prompt at the top of the screen.
+
+	You may want to include the .CLS command in your AUTOEXEC.BAT file
+	so you always start with a clean screen when you boot your system. 
+Form:	.COMMAND {d:}{\path} {/c string³/p}
+
+Type:	Intrinsic.  (General)
+
+	Entering .COMMAND at the system prompt lets you leave the current
+	command processor, leaving it dormant, and move to a new layer of
+	the command processor.  The new layer carries a copy of the
+	environment with it.  This is useful for testing strings of data
+	that you want to set into the environment.  You may then exit from
+	this new layer of the command processor and return to the previous
+	unchanged layer by entering .EXIT at the prompt.
+
+	The /c string lets you pass a string to the new layer and then
+	return to the current command processor.  /p makes the new layer of
+	the command processor permanent in memory.  You cannot exit back to
+	the current layer when you use the /p operand.  You must reboot
+	your computer to remove this new permanent layer.
+
+	The COMSPEC= statement in the current environment identifies the
+	new command processor that is loaded.  Invoking a duplicate command
+	processor reduces available memory.
+Form:	.COMPFILE filename filename
+
+Type:	Extrinsic.  (General)
+
+	.COMPFILE lets you compare the contents of one file to that of
+	another file one byte at a time.  For example, you could enter:
+
+		.COMPFILE A:MYFILE.TXT C:MYFILE.TXT
+
+	If any discrepancies are found, MOS will display a message similar
+	to the following:
+
+		OFFSET        FILE1        FILE2
+		------        -----        -----
+	       0000000H      61  'a'      EOF N/A
+
+	The position of the discrepancy is expressed as "0000000H", meaning
+	the hexadecimal offset position in the first file.  If there are no
+	discrepancies, MOS displays the following message when the
+	comparison is complete:
+
+		No differences encountered in the two files
+Form:	.COPY filename {/a³/b}{d:\path\}{filename} {/a³/b}{/v}{/c³/cn³/c-}
+
+Type:	Intrinsic.  (General)
+
+	The .COPY command lets you create a copy of a file or a group of
+	files.  You may copy a file and give the copy a different name, or
+	give it the same name on a different drive or directory.  You may
+	copy several files into one file, or copy a file from or to a
+	device.  .COPY may also be used to assign or change the security
+	class of a file.    
+
+	Wildcards may be used in both the original and new file names. 
+	.COPY preserves the user ID and dates and times of creation and
+	last update in the new file.  The security class is preserved
+	unless you include the "/c" operand in the command. 
+
+	/a is used with ASCII files.  If /a is used with the original file,
+	MOS copies to the end of file character, not the physical end of
+	the file.  If /a is used with the new file, MOS places an end of
+	file character at the end of the copy.  MOS uses a CTRL Z as an end
+	of file character.
+
+	/b is used with binary files.  If /b is used with the original
+	file, MOS ignores any end of file characters.  If /b is used with
+	the new file, MOS will not place an end of file character on the
+	new file. 
+
+	Use /v to verify each aspect of the copy operation to be sure the
+	information may be read from the copy.
+
+	Enter /cn, where n is a security class of A to Z, to assign a
+	specific security class to the file.  Use /c- to remove an existing
+	security class, and assign the file a blank class.  Use /c to
+	change the class of the file to your current default output class.
+Form:	COUNTRY=nnn
+
+Type:	Intrinsic.  (Configuration)
+
+	The COUNTRY command statement establishes the format used for the
+	date, time, currency symbol, and number format for currency decimal
+	positions.  These are set by entering the three digit telephone
+	system code for your country.  MOS defaults to using 001, the USA
+	code, if the COUNTRY command statement is not found in the
+	CONFIG.SYS file.
+
+	The codes supported by MOS are:
+
+		Australia         061      Middle East       785
+		Belgium           032      Netherlands       031
+		Canada (French)   002      Norway            047
+		Denmark           045      Portugal          351
+		Finland           358      Spain             034
+		France            033      Sweden            046
+		Germany           049      Switzerland       041
+		Italy             039      United Kingdom    044 
+		Israel            972      United States     001
+Form:	.DATE {mm-dd-yy}
+
+Type:	Intrinsic.  (General)
+
+	.DATE sets the internal MOS system date in the format defined by
+	the COUNTRY command statement.  The default form is mm (month) dd
+	(day) and yy (year).
+
+	Entering .DATE without any operands displays the current date, and
+	allows you to optionally enter a new date, as follows:
+
+		Wed 11-11-87 is the current date 
+		New date is (mm-dd-yy):
+
+	You may enter a new date, or just press ENTER to leave the date
+	unchanged.
+Form:	.DEBUG {filename operands}
+
+Type:	Extrinsic.  (Debug)
+
+	.DEBUG is an advanced tool that lets you examine the execution of a
+	program in memory.  If you write new programs, or modify existing
+	programs, .DEBUG lets you examine values in memory as the program
+	executes, and search for any problems or "bugs".
+
+	You may automatically load a specific program into .DEBUG at the
+	default CS:100 address by including the filename with the .DEBUG
+	command.  Also include any operands required to run the program,
+	such as drive specifications or data files.  For example:
+
+		.DEBUG test.com data.fil
+
+	Note that if this were an .EXE file, it would automatically be
+	loaded at the address specified in the header of the file.
+ 
+	You may load a program at a specific address if you enter .DEBUG
+	without a file name, use the name command (N) to name the input
+	file, and then use the load command (L) with a specific address at
+	which to load the named input file.
+
+	While in .DEBUG, you can use the .DEBUG HELP command to display a
+	list of available .DEBUG commands by entering a ? at the prompt,
+	which is ].
+Form:	DESNOW=yes³no
+
+Type:	Intrinsic.  (Configuration)
+
+	Some color adapter boards cause a snow-like display when writing to
+	the video screen.  DESNOW will correct this condition by using
+	special logic for rewriting to the video screen.
+
+	Video output will be slightly slower with DESNOW on.  If the DESNOW
+	command statement is not in your CONFIG.SYS file, the special logic
+	is not used.
+Form:	DEVICE={d:}{\path\}filename {operands}
+
+Type:	Intrinsic.  (Configuration)
+
+	DEVICE allows you to load device drivers to install support for
+	non-standard devices.  You can have any number of device command
+	statements set up in the CONFIG.SYS file.  The standard MOS device
+	drivers are automatically loaded.
+
+	There are optional device drivers supplied with MOS that you must
+	define with a DEVICE command statement in the CONFIG.SYS file if
+	you want to use them.  There are also other non-industry standard
+	device drivers that you may need to enter.  For example, one for a
+	hard disk that is not bootable with MOS.
+
+	You can also use the .ADDDEV (add device) and .REMDEV (remove
+	device) commands at the MOS system prompt to add or remove certain
+	drivers without having to reboot your computer.  See .REMDEV and
+	.ADDDEV for further information.
+Form:	.DIR {\path} {/d}{/sn³/se³/sd³/ss}{/a}{/w}{/p}
+
+Type:	Intrinsic.  (General)
+
+	.DIR displays the contents of a directory.  There are several
+	operands that let you customize your directory listing.  Only one
+	sort option may be active at a time.  Wildcard characters are
+	permitted to display specific groups of files.
+
+		/d - includes only directories in the display.
+		/a - includes hidden and system files in the list.
+		/w - displays only the names of the files in the
+		     directory in an 80-column wide format.
+		/p - displays the directory 24 lines (one screen)
+		     at a time.
+	       /sn - sorts the display alphabetically by file name.
+	       /se - sorts the display alphabetically by file extension.
+	       /sd - sorts the display by date and time last updated,
+		     with the oldest date and time appearing first.
+	       /ss - sorts the display by file size, with the smallest
+		     file appearing first.
+Form:	.DIRMAP {\path}{/f}{/a}
+
+Type:	Extrinsic.  (General)
+
+	.DIRMAP scans a disk and displays the directories on that disk
+	along with the current number of files and total bytes used in each
+	directory.  Filenames in each directory may optionally be included
+	in the display.  For example:
+
+		.DIRMAP C:\WORK\JIM /f
+
+	would display the WORK directory as well as the WORK\JIM
+	subdirectory and the name of each file in the WORK\JIM
+	subdirectory.  The /a operand can be used to include a list of only
+	those files in the directories which have the archive attribute
+	set.
+
+	Entering .DIRMAP without any operands displays the directories on
+	the default drive, beginning at the root directory.
+Form:	.DISKCOPY d: d:
+
+Type:	Extrinsic.  (General)
+
+	.DISKCOPY copies the entire contents of one diskette onto another
+	diskette.  The files and directories on the copy appear in the same
+	order as they do on the original.  A boot sector, if present, will
+	also be copied.
+
+	If you have two diskette drives, use the following command:
+
+		.DISKCOPY (source drive): (target drive):
+
+	If you only have one diskette drive, use the following command and
+	swap the original and destination diskettes in that one drive until
+	the entire copy is complete:
+
+		.DISKCOPY a: a:
+
+	If the entire contents of the original diskette could not be copied
+	into memory in one pass, you will be prompted to swap diskettes
+	until the contents of the original diskette is completely copied
+	onto the destination diskette.
+Form:	.DISKID {d:}{name}
+
+Type:	Extrinsic.  (General)
+
+	.DISKID lets you assign an 11-character name to a diskette or hard
+	disk.  If you enter a name as part of the command form, MOS assigns
+	the name to the disk as the .DISKID and then returns to the system
+	prompt.
+
+	Entering .DISKID without a name displays whether or not the disk
+	already contains a name.  You may then type a different name, or
+	press ENTER to display a message asking if you want to delete the
+	current name.  You must respond with a Y (yes) or an N (no) to
+	continue.
+
+	The .DISKID is displayed by the .DIR and .VERIFY commands.
+Form:	.DOT {on³off}
+
+Type:	Intrinsic.  (General)
+
+	The .DOT command is included with MOS to let you control the
+	checking for a preceding period with MOS commands.  This period
+	controls where, and in what order, MOS will look for the command to
+	execute.  (See "Invoking Commands" in Chapter 5 of the MOS User
+	Guide.)
+
+	Each time you boot MOS, the .DOT command defaults to OFF, and MOS
+	will not expect a period to precede commands.
+
+	The preceding period can be used to keep the MOS command names from
+	being confused with files or executable programs that have the same
+	name.  If you want the preceding periods to be required with
+	commands you may enter the .DOT on command.  You should then enter
+	the period with all MOS commands, but not the command statements
+	used in the CONFIG.SYS file.
+
+	You may place the .DOT on command in your AUTOEXEC.BAT file if you
+	always want the preceding period required.
+  
+	Entering .DOT with no operands will display the current setting of
+	the .DOT command.
+Form:	.ECHO on³off
+
+	.ECHO message
+
+Type:	Intrinsic.  (Batch File)
+
+	When .ECHO is on, batch file statements are displayed on the screen
+	as they execute.  .ECHO off prevents this display, but does not
+	inhibit the display of any messages in the file.  MOS defaults to
+	.ECHO on at bootup.  Entering .ECHO with no operand will indicate
+	whether .ECHO is on or off.   
+
+	.ECHO is also useful in sending messages to the video screen.  You
+	may enter up to 121 characters to display on the screen when the
+	file is executed.
+Form:	.ED filename {/v}
+
+Type:	Extrinsic.  (Editor)
+
+	The MOS Editor provides an easy way for you to create new files or
+	modify existing files.  There are two modes of editing that you may
+	select to use, the Command Mode and the Visual Mode.
+
+	The MOS Editor is invoked by entering .ED, plus the filename to
+	edit, at the system prompt.  The /v operand will cause you to enter
+	.ED in the  Visual Mode, rather than the default Command Mode.
+
+	The Command Mode displays the file on your screen with line
+	numbers.  You can create or modify the file one line at a time by
+	invoking commands associated with a specific line number.  Any
+	activity to the file does not appear on the screen until you re-
+	display the file.
+
+	While in the Command Mode, you may enter H on the command line to
+	display a help screen of the available Command Mode commands.
+
+	The Visual Mode is similar to a word processor in that you may edit
+	screens of text.  The file displays without line numbers, and the
+	cursor is positioned within the text.  You can move anywhere in the
+	file to add or delete text, copy a line, delete a line, page
+	through screens, etc.  In the Visual Mode, all activity appears on
+	the screen as it occurs.
+
+	While in the Visual Mode, you may press CTRL - Q to display a help
+	screen of the available Visual Mode editing keys.
+Form:	.ENVSIZE nnnn
+
+Type:	Intrinsic.  (General)
+
+	The .ENVSIZE command lets you specify the minimum size of your
+	environment.  You may use this command to reserve space for your
+	environment.
+
+	You must specify a size operand as part of the .ENVSIZE statement. 
+	The default is 128 bytes.  .ENVSIZE is ideally included in your
+	AUTOEXEC.BAT file.  For example:
+
+		.ENVSIZE 256
+
+	.ENVSIZE must be specified prior to loading any resident programs,
+	such as the MOS Print Spooler, or you may find the space you could
+	reserve for your environment diminished.
+
+	Any new .ENVSIZE command will overwrite the space allocation you
+	made with an .ENVSIZE statement in your AUTOEXEC.BAT file.
+Form:	.ERASE {\path} {filename} {/v³/y}
+
+Type:	Intrinsic.  (General)
+
+	.ERASE deletes a file or group of files from a disk.
+
+	Include the drive and directory if not the current defaults. 
+	Wildcards are permitted in the filename.
+
+	/v displays a verification prompt that lets you select whether or
+	not to erase each file.
+
+	/y enters a "y" response to the "Erase all files" prompt when you
+	delete the entire contents of a directory.
+Form:	.EXCEPT (filename ...) DO command³batfile
+
+	.EXCEPT CANCEL
+
+Type:	Intrinsic.  (General)
+
+	.EXCEPT DO lets you exclude a file or a group of files from a
+	command.  You may use .EXCEPT DO with a command, batch file, or
+	with any programs or applications that use filename operands rather
+	than operating directly on the disk.  Be careful using .EXCEPT DO
+	because it offers a global functionality with destructive commands. 
+	.EXCEPT CANCEL is used to cancel the .EXCEPT command when used in a
+	batch file, freeing the file or group of files for use with other
+	commands.
+
+	All filenames must be enclosed in parentheses.  Wildcard characters
+	are permitted.  You must enter a comma or space as a delimiter
+	between filenames.  You may enter as many filenames as space
+	permits on the command line.  Do not enter a drive or a path with
+	any file names you enter in the group.
+
+	You may enter any operands associated with the command you want to
+	perform, including the drive and path for the file or group of
+	files.  Do not include the .BAT extension of the batch file to
+	perform on the file or group of files.
+
+Form:	.EXPORT filename d: {/s} {/i} {/a} {/y}
+
+Type:	Extrinsic.  (General)
+
+	.EXPORT creates a compressed copy of one or more files for backup
+	purposes.  .EXPORT is similar to the .COPY command, but data is
+	compressed and a header is placed at the beginning of the exported
+	file.  .EXPORT will also spread files across multiple diskettes. 
+	Diskettes must already be formatted.  You may only reinstate
+	exported files with the .IMPORT command.
+
+	Include the drive and/or directory with the name of the file, if
+	not the current default.  Wildcards are permitted.  Entering only
+	the directory name will export all files in the default or
+	specified directory.  If not specified, MOS defaults to drive A for
+	the drive that contains the target disk.
+
+	Use /s to include all files in any sub-level directories.
+
+	Use /i to export only files which have the archive attribute set,
+	i.e. files that have been changed since the last .EXPORT operation.
+
+	Use /a to cause the exported files to be appended to any existing
+	files on the first archive disk.
+
+	Use /y to automatically enter a "y" to the "Ready to continue
+	(Y/N)?" prompt, which begins the .EXPORT process.
+Form:	.FILEMODE {+R³-R³+A³-A} filename
+
+Type:	Extrinsic.  (General)
+
+	.FILEMODE lets you change the "read-only" or "archive" attributes
+	of a file.  The read-only attribute determines whether or not a
+	file may be modified.  The archive attribute is used with the
+	.EXPORT command to indicate whether or not a file has been changed
+	since the last time it was .EXPORTed.  Running .EXPORT clears the
+	archive attribute.  You may use .FILEMODE without any operands to
+	display the current read-only setting of a file.
+
+	+R sets the file attribute to read-only.  -R removes the read-only
+	attribute.  +A sets the archive attribute of a file.  -A removes
+	the archive attribute setting.  Wildcards are permitted in the
+	filename.
+
+	The .DIR command displays the current attribute settings of a file. 
+	An asterisk (*) appears following the last updated time for any
+	file that has the archive attribute set.  An R appears following
+	the time of last update for any file that has the read-only
+	attribute set.
+Form:	.FLUSH
+
+Type:	Intrinsic.  (Batch File)
+
+	.FLUSH mimics the action of pressing CTRL PgDn to clear the command
+	recall buffer.  This prevents someone from viewing your previous
+	keystrokes.
+
+	MOS contains a command recall buffer that lets you retrieve your
+	previous command entries.  The up arrow retrieves entries beginning
+	with the newest entry in the buffer.  The down arrow retrieves
+	beginning with the oldest entry.
+
+	SIGNOFF automatically clears the buffer.  However, if you're not
+	signed on under MOS Security, you may use .FLUSH to clear the save
+	buffer.  It may be useful to include .FLUSH in a batch file you
+	invoke when you finish working in MOS.
+Form:	.FOR %%character IN (group) DO command {%%character} 
+
+Type:	Intrinsic.  (Batch File)
+
+	.FOR IN DO lets you repeat the execution of a command for each
+	member of a user-defined group.  Members of the group will be
+	processed sequentially for the command specified.  Use a space as a
+	delimiter between the items that comprise the group.  If the group
+	is comprised of filenames with wildcards, the sequence of execution
+	will occur in the order in which files matching the wildcard
+	definition are encountered.  The group may contain commands, file
+	names, replaceable operands or any constants you specify, and must
+	be enclosed in parentheses.
+
+	%%character is replaced by a member of the group and must be
+	preceded by %% when used in a batch file.  A single character in
+	the range A-Z should be used.  If the command is entered at the
+	system prompt instead of in a batch file, only one % is necessary.
+Form: 	.FORMAT d: {/4³/7³/8} {/v}
+
+Type:	Extrinsic.  (General)
+
+	You must .FORMAT a new disk before you can write or read
+	information to it.  You may use .FORMAT with hard or floppy disks. 
+	CAUTION - .FORMAT will erase all existing information on a disk.
+
+	The /v operand lets you enter a disk ID of up to 11 characters.
+
+	The diskette format options are:
+
+	  Drive		No operand           Use Operand
+	---------	----------         ----------------
+	360K 5-1/4"	360K Disk          /8 for 320K Disk
+	1.2M 5-1/4"	1.2M Disk          /4 for 360K Disk
+	720K 3-1/2"	720K Disk
+	1.4M 3-1/2"	1.4M Disk          /7 for 720K Disk
+
+	If you want to make the disk bootable, you must use the .MSYS
+	command to place the boot sector on the disk.  You must also copy
+	the MOS system file, $$MOS.SYS, and the command processor files,
+	$$SHELL.SYS and COMMAND.COM to the formatted disk for it to be
+	bootable. 
+Form:	FREEMEM=none³m,n
+
+Type:	Intrinsic  (Configuration)
+
+	FREEMEM allows you to specify what memory address ranges above 640K
+	(C0000) and below 1 megabyte (100000) are not used by hardware. 
+	MOS relocates itself to these memory ranges, leaving more memory
+	available for application program use.
+
+	Enter the beginning address (m) and ending address (n) of the free
+	memory range.  These must be byte addresses, in hexadecimal form. 
+	FREEMEM=none tells MOS that no FREEMEM range is available.
+
+	If the free memory is fragmented, up to five FREEMEM command
+	statements can be defined in the CONFIG.SYS file.
+
+	NOTE:  If you have an EGA device driver, an EMS device driver or a
+	RAM disk driver in your CONFIG.SYS file, you may need to set
+	FREEMEM to avoid a conflict of address assignments.
+Form:	.GOTO label
+
+Type:	Intrinsic.  (Batch File)
+
+	.GOTO redirects processing within a batch file to the line
+	immediately following a specified label.  Processing then continues
+	from that point.  Labels are not displayed during execution.
+
+	The label may be a unique character string up to eight characters
+	long.  You must use a colon before the label where it precedes the
+	line to which processing is directed.  However, do NOT use a colon
+	with the label in the .GOTO statement.
+Form:	.HDSETUP
+
+Type:	Extrinsic.  (Installation)
+
+	If your computer system is new, you must prepare the hard disk for
+	use with MOS.  The .HDSETUP command loads a menu from which you can
+	select various options for setting up and maintaining the hard
+	disk - such as create, activate, de-activate or delete a logical
+	disk.
+
+	Place the PC-MOS BOOT DISK in drive A and boot your computer.  Then
+	enter .HDSETUP at the system prompt.
+
+	The .HDSETUP menu will appear on your screen.  Most options from
+	this menu have built-in default values.  You may use the defaults,
+	or override them to meet your specific system needs.
+Form:	.HELP {command}
+
+Type:	Extrinsic  (General)
+
+	You may use .HELP at any time to display an on-line explanation of
+	a MOS command.  If you do not enter a specific command name as an
+	operand, a menu listing all MOS commands will display.
+
+	At the menu, use the arrow keys to move the highlighted bar to the
+	command you want.  Press ENTER to select the highlighted command. 
+	Use the arrow keys, PgUp/PgDn, and HOME/END keys to move about
+	within each command description.
+
+	The plus (+) key or minus (-) key on the numeric key pad will move
+	you to the next or previous command's help screen respectively,
+	without returning to the menu.  Press ESC to return to the .HELP
+	menu.  Press ESC at the .HELP menu to return to the system prompt.
+Form:	.IF {NOT} condition command
+
+Type:	Intrinsic.  (Batch File)
+
+	You may use .IF to set up true/false processing.  Any MOS command
+	is permitted.  .IF allows three types of conditions:  error levels,
+	character strings, and EXIST statements.  If a statement is true
+	processing occurs - if it is false, it does not.
+
+	The command forms for the three types of conditions are:
+
+		.IF ERRORLEVEL number command
+
+		.IF STRING == STRING command
+
+		.IF EXIST filename command
+
+	You may also use the NOT operand to test for the opposite of the
+	specified condition.  For example:
+
+		.IF NOT EXIST TEST1.DOC .ABORT
+
+	See the Batch Files chapter of your User Guide for examples.
+Form:	.IMPORT {d:}filename {d:\path\} {/y}
+
+Type:	Extrinsic.  (General)
+
+	.IMPORT must be used to restore and decompress files that were
+	backed up with the .EXPORT command.  .IMPORT lets you reinstate a
+	single file, a group of files, a single directory or a group of
+	directories.  You may import files to any location, which need not
+	be the directory from which they were exported.
+
+	If {d:} is not specified, MOS defaults to drive A for the drive
+	that contains the files to import.
+
+	Enter the name of the file to import. Wildcards are permitted. 
+	Include all levels of a directory name to begin the import with a
+	specific directory.
+
+	For d:\path\, enter the drive and path of the target directory
+	where the import is to begin.  /y automatically enters a "y" for
+	the first prompt that appears instructing you to insert an archive
+	disk and press any key to continue.  You must respond to subsequent
+	prompts to insert archive disks.
+Form:	.INSERT
+
+Type:	Intrinsic.  (Batch File)
+
+	MOS recognizes two modes of command line editing -- Typeover and
+	Insert.  Typeover mode is destructive and types over existing
+	entries.  Insert mode inserts characters into an existing command
+	line entry.
+
+	If you don't include .INSERT in your AUTOEXEC.BAT file, MOS
+	defaults to the Typeover mode, recognized by its underlined cursor. 
+	You may then switch to Insert mode by pressing the INS key.  The
+	Insert mode is identified by the block cursor.
+Form:	.KEY %%a IN (set of keys) DO command %%a
+
+Type:	Intrinsic.  (Batch File)
+
+	.KEY gives you the ability to prompt for a keystroke from within a
+	batch file and take action dependent upon the key which was
+	pressed.  The .KEY command is often used with either .GOTO, .CALL,
+	or the name of a user-defined batch file. Each of these commands
+	may be used to redirect processing within a batch file.
+
+	The replaceable operand, %%a (any character from A to Z), specifies
+	to which point processing is to be directed.
+
+	(set of keys) is a group or range of keys which you want to invoke
+	the action.  The keys in a group must be separated by a delimiter
+	such as a comma or a space.  The group may include A - Z, 0 - 9, F1
+	- F10, SP (for a space), and CR (for a carriage return).  If you
+	specify a range of keys, they must be separated by a hyphen.  This
+	function is not case sensitive.
+
+	You may couple .KEY with the .TEXT/.ENDTEXT commands to create a
+	menu that will be displayed when a batch file is executed.  .KEY
+	may also be used to execute other batch files.  See the Batch Files
+	chapter of your User Guide for examples.
+Form:	.KEYMAP {d:} {filename}
+
+Type:	Extrinsic.  (Multi-Tasking/Multi-User)
+
+	The .KEYMAP command lets you assign strings of data to selected
+	keys.  You may save the key assignments in a file so they may be
+	used again at a later time.  .KEYMAP lets you assign an escape
+	sequence to a specific key, or create your own macros.  For
+	example, if a word processor uses CTRL K D to save a file, you
+	could assign the string CTRL K D to the F1 key.
+
+	Entering .KEYMAP at the system prompt invokes the key assignment
+	session.  Follow the screen prompts through the session to complete
+	your new key assignments.
+
+	When finished, enter a filename in which to save your assignments,
+	or press ENTER if you do not want to save.  Use the file extension
+	.KEY to help you identify these files.  Saved assignments may be
+	recalled for use at a later time.  For example, the command to use
+	the assignments in the SAMPLE.KEY file is:
+
+		.KEYMAP SAMPLE.KEY
+
+	If you have more than one file of key assignments, always load the
+	largest one first, if you don't any smaller file is overwritten. 
+	The .KEYMAP function will use a small amount of memory in a
+	partition, usually about 2K.
+
+	You may find it useful to create an empty key assignment file that
+	you can load, such as NULL.KEY, for removing key assignments in a
+	partition.
+Form:	.MD \path
+
+Type:	Intrinsic.  (General)
+
+	MOS lets you create multiple levels of directories, beginning from
+	the root directory.  You may create as many levels of directories
+	as you wish so long as the full directory name does not exceed 64
+	characters.
+
+	When entering the .MD command use the complete name of the
+	directory including all levels of directories that precede it, plus
+	the drive letter if not the current drive.
+
+	You may only make one level of directory at a time.  For example,
+	you may set up a directory called MYDIR at the root directory of a
+	disk.  From the MYDIR directory you may make another directory
+	called MYINFO.  From MYINFO you may make yet another directory
+	called MEMOS.  This directory is three levels deep and the
+	directory name is 21 characters long, as follows:
+
+		\MYDIR\MYINFO\MEMOS
+Form:	MEMDEV = {d:}{\path\}filename {/p} {/e} {/x}
+
+Type:	Intrinsic.  (Configuration)
+
+	You must tell MOS which type of system you have for it to function
+	properly.  MEMDEV specifies a System Driver, which tells MOS what
+	type of hardware capabilities are in your computer system.  The
+	MEMDEV statement must be part of the configuration set up in your
+	CONFIG.SYS file.  There may be other system drivers besides those
+	provided with PC-MOS/386.
+
+	Enter the letter of the drive from which the system driver is to be
+	loaded.  If not specified, MOS defaults to the current drive. 
+	Enter the path of the directory from which the system driver is to
+	be loaded.  If not specified, MOS defaults to the root directory.
+
+	Enter the complete file name of the system driver used for your
+	computer system.  There is no default.  The system drivers supplied
+	with MOS are $386.SYS, $GIZMO.SYS, $CHARGE.SYS, $ALL.SYS, and
+	$286N.SYS.  Use $386.SYS if your computer system has 80386
+	capability.  Use $GIZMO.SYS if your computer has an AT GIZMO memory
+	expansion board.  Use $CHARGE.SYS if you have a Charge Card in your
+	system, or $ALL.SYS if you use an All Card.  Use $286N.SYS if you
+	have an 80286-based computer with NO memory management card
+	installed.
+
+	The last three operands are necessary only if you have a hard disk
+	that uses the DMA (Direct Memory Access) channel.  Use /p if the
+	device driver is running on an IBM PS/2 Model 50, 60, or 80 with a
+	hard disk.  Use /e if your computer has an Emulex hard disk.  Use
+	/x if you have an IBM PC-XT with a hard disk.
+Form:	.MORE
+
+Type:	Extrinsic.  (General)
+
+	.MORE is a filter that massages standard input to produce standard
+	output in 24 line increments.  The standard output displays on the
+	video screen with the message, CONTINUED..., on every 25th line. 
+	Pressing any key causes the next 24 line increment of standard
+	output to display.
+
+	For example, you may use the .TYPE command to send the contents of
+	TEXT.DOC to standard output.  The standard output may be redirected
+	as standard input to the .MORE command.  .MORE filters TEXT.DOC and
+	sends it to the video screen as its standard output, 24 lines at a
+	time.  The command to accomplish this is:
+
+		.TYPE TEXT.DOC | .MORE
+
+	You may press CTRL C or CTRL BRK to stop the display and return to
+	the system prompt.
+Form:	.MOS (function)
+
+Type:	Extrinsic.  (Multi-Tasking/Multi-User)
+
+	You may display a list of the utility functions available in .MOS
+	by entering .MOS at the system prompt.  Individual functions are
+	invoked at the system prompt by entering .MOS, a space, followed by
+	the function name and any operands.  (Only the first three
+	characters of the function name are required.)
+
+	A utility function is active only for the partition you are in when
+	the function is invoked.  Include functions that you always want
+	active in the startup batch file for that partition.
+
+	The utility functions are:
+
+	.MOS MAP - displays a partition map.
+
+	.MOS DIS - disables task in keyboard checking loop.
+
+	.MOS NODIS - returns keyboard checking to its normal state.
+
+	.MOS USEIRQ n {hhhh} - reserves an interrupt for an application.
+
+	.MOS FREEIRQ n {hhhh} - releases interrupt reserved by an
+		application.
+
+	.MOS IRQ - displays a list of interrupts currently reserved.
+
+	.MOS WAIT - wait for event before continuing.  The event may be a
+		number of seconds, up to 99999, or a specific date and/or
+		time.
+
+	.MOS VMODE mode - sets the video mode for terminals.  It affects
+		only the workstation where invoked.  EGA and VGA modes are
+		available only at the main console.  Valid modes are:
+
+		MONO - Monochrome
+		CGA  - CGA Color Graphics 80 Column 
+		C40  - CGA Color Graphics 40 Column 
+		HG1  - 32K Hercules type 1 support
+		HG2  - 64K Hercules type 2 support
+		E43  - 43 Line EGA Main Console
+		EGA  - Multi-tasking EGA Graphics 80 Column
+		E40  - Multi-tasking EGA Graphics 40 Column
+		VGA  - Multi-tasking VGA Graphics 80 Column
+		V40  - Multi-tasking VGA Graphics 40 Column
+
+	.MOS SERINIT n,r,p,b,s - initializes a specific serial port by the
+		port number defined with the $SERIAL.SYS device driver. 
+		The port attributes are:  n - the port number, r - the baud
+		rate, p - the parity (N-none, E-even or O-odd), b - the
+		number of data bits, and s - the number of stop bits.
+
+	.MOS ROUTE LPTn to COMn - redirects printer I/O to a COM port.
+
+	.MOS ROUTE LPTn to LPTn - redirects printer I/O to a different
+		printer.
+
+	.MOS ROUTE LPTn to TERM - redirects printer I/O to a terminal
+		printer.
+
+	.MOS ROUTE LPTn to NOTERM - cancels previous command that
+		redirected output to a terminal printer.
+
+	.MOS RESIZE nnnK - adjusts the size of the partition you are
+		currently working in.  nnnK is the size of the partition in
+		kilobytes.  The size must be set to a minimum of 32K.
+
+	.MOS INFO - brings up a display that indicates specifically where
+		in memory certain key components of the system are loaded.
+
+	.MOS DSPORT n - disables a port from control of the $SERIAL.SYS
+		driver for use by a communications package.
+Form:	.MOSADM (function)
+
+Type:	Extrinsic.  (Multi-Tasking/Multi-User)
+
+	The .MOSADM command provides some extra utilities that you may not
+	want to make available to all users.  You may assign the
+	.MOSADM.COM file a security class to allow only the system
+	administrator access to them.
+
+	You may display a list of these functions on your screen by
+	entering .MOSADM at the system prompt.  Specific functions are
+	invoked by entering .MOSADM, a space, followed by the function name
+	and any necessary operands.  (Only the first three characters of
+	the function name are required.)  Functions are active only for the
+	partition you are in when the function is invoked.
+
+	The .MOSADM utility functions are:
+
+	.MOSADM SLICE n {task} - sets the partition time slice to n.  The
+		default is one time tick (1), or about 1/18 of a second of
+		processing time for each partition in turn.  Include the
+		task ID number to change the value for a partition other
+		than the current partition.  A practical limit is 4 time
+		ticks.  If you enter 0, it will disable the partition.
+
+	.MOSADM PRI n {task} - sets the partition priority, to a number in
+		the range of 0 to 7.  7 is the highest priority.  PRI gives
+		absolute control over the amount of processing time
+		received, whereas SLICE is relative.  The default priority
+		is 2.  Include the task ID number to change the value for a
+		partition other than the current partition.
+
+	.MOSADM CACHE on³off - turns disk caching on or off for the entire
+		system.  A CACHE= statement must first be entered in your
+		CONFIG.SYS file for disk caching to be active on your
+		system.
+
+	.MOSADM SWITCH on³off {taskid} - turns on and off the capability to
+		switch in and out of a task.  You may use this feature for
+		security purposes, or for better handling of video cards
+		not currently supported under MOS.  If you do not specify a
+		task number, the command is invoked for the current task.
+Form:	.MSORT {/r³/a}{/dd:\path\}{/fn³/+n}{/fn,n}{/m}{<infile}{>outfile}
+
+Type:	Extrinsic.  (General)
+
+	.MSORT lets you sort records in a file on a field-by-field basis. 
+	Records may be up to 5000 bytes long, and must occupy one line with
+	a hard carriage return at the end of the line.  It is not necessary
+	to separate the fields by spaces or commas.
+
+	You may sort characters in the file in true ASCII order (/a) or
+	reverse order (/r).  If /a is not specified, characters in the
+	range of decimal 128 to 226 will be sorted in a "weighted" format. 
+	You may also specify the starting column number of the field on
+	which the records will be sorted (/fn) and the number of characters
+	in the string (n).  The /m option displays several messages that
+	you may find helpful during lengthy sorts.
+
+	.MSORT creates a temporary work file, on the default or specified
+	drive/path, to hold the sorted data.  The resulting sorted output
+	will display on the video screen, unless you specify a file (the
+	outfile) for the resulting output.  You can use the .MORE command
+	to display the output file one screen at a time.
+Form:	.MSYS d:
+
+Type:	Extrinsic.  (General)
+
+	.MSYS writes a boot sector on a disk.  This is one of the steps in
+	creating a bootable MOS disk.
+
+	NOTE:  You must also copy the system file, $$MOS.SYS, and the
+	command processor files, $$SHELL.SYS and COMMAND.COM, to the disk
+	before it is truly bootable.
+Form:	.NEXT
+
+Type:	Intrinsic.  (Batch File)
+
+	.NEXT makes it possible to use more than ten replaceable operands
+	in a batch file by shifting the operands one position to the left. 
+	Whenever you use .NEXT you will lose access to the current value
+	assigned to the first operand (%0), as shown below:
+
+		%O %1 %2 %3 %4 %5 %6 %7 %8 %9
+		 a  b  c  d  e  f  g  h  i  j
+
+		.NEXT
+		 b  c  d  e  f  g  h  i  j  k
+
+	This permits you to add the k operand from the command line. 
+Form:	.ONLY (filename filename ...) DO command³batfile
+
+	.ONLY CANCEL
+
+Type:	Intrinsic.  (General)
+
+	The .ONLY command lets you limit the action of a command or
+	subsequent sequence of commands to a specified file or group of
+	files.  You may use .ONLY with MOS commands, batch files, or with
+	any applications that use filename operands rather than operating
+	directly on the disk.  .ONLY CANCEL is used to cancel the .ONLY
+	command when used in a batch file, freeing the files in its group
+	for operation with other commands.  Be careful using .ONLY with
+	destructive commands, since it offers a global functionality.
+
+	All filenames must be enclosed in parentheses.  Wildcard characters
+	are permitted.  You must use a comma or space as a delimiter
+	between filenames.  You may enter as many filenames as space
+	permits on the command line.  No drive or path specifications are
+	permitted.
+
+	You may enter any operands associated with the command, including
+	the drive and path for the file or group of files.  Do not include
+	the .BAT extension of the batch file to perform on the file or
+	group of files.
+Form:	.PATH {d:}{dirname}{;...}
+
+Type:	Intrinsic.  (General)
+
+	The .PATH command specifies the drives and directories MOS is to
+	search for the executable command file when you enter a command.
+
+	Any number of drive and directory entries may be included with the
+	.PATH command.  Use a semicolon (;) to link together a series of
+	drives and directories.  Place the .PATH command in your startup
+	batch files to specify the path each time you boot MOS.  Place the
+	directories with your most frequently used commands first.
+
+	Entering .PATH without any operands displays the current path
+	setting.  Entering .PATH ; deletes the current path.  (the space
+	and semicolon after .PATH are necessary parts of this command). 
+	Entering a new .PATH replaces the current path.
+Form:	.PAUSE {message}
+
+Type:	Intrinsic.  (Batch File)
+
+	.PAUSE temporarily halts processing within a batch file and
+	displays the message, "Press a key when ready."  You must then
+	press a key to continue processing, or break out of the batch file
+	with CTRL-BRK or a CTRL C.
+
+	You may also use .PAUSE to display a message (of up to 120
+	characters) in addition to the "Press any key to continue" message. 
+	The message will not be displayed unless .ECHO is on.
+Form:	.PRINT {d:}\path\ {/c³*}
+
+Type:	Extrinsic.  (Print Spooler)
+
+	The .PRINT command lets you invoke the print processor and specify
+	the drive and path of the directory to check for print files.  The
+	.PRINT command should be invoked in a partition that is dedicated
+	to the printing of spooled reports.  A print processing menu
+	displays in that partition.  Files are printed based on their
+	status, which you may control from the menu.
+
+	If you enter the starting print class /c, only files that have that
+	class will print.  The default print class is A.  Enter /* to print
+	all files no matter what print class they have. 
+
+	The drive and directory entered for the .PRINT command must be the
+	same as the drive and directory entered with the .SPOOL command. 
+	If not specified, MOS defaults to the current drive.
+
+	If you have two printers, you may create more than one directory
+	for spooling printer output.  You must invoke the .PRINT command in
+	a dedicated partition for each of these directories.  Use the
+	.SPOOL command to define the directory to which each partition will
+	send printer output.
+
+	NOTE:  The .PRINT and .SPOOL commands must never be invoked in the
+	same partition.
+Form:	.PROMPT {$b}{$d}{$e}{$g}{$h}{$i}{$l}{$n}{$p}{$q}{$t}   
+	{$u}{$v}{$_}{$$}{$x}{text}
+
+Type:	Intrinsic.  (General)
+
+	.PROMPT lets you change the appearance of the MOS system prompt. 
+	The default prompt is [d:\], the current drive and directory
+	enclosed in brackets.  The $ serves as a special delimiter for the
+	.PROMPT operands.  You may use any of the following operands and/or
+	any characters to create a different prompt:
+
+		$b - displays the | character.
+
+		$d - displays the system date in the format chosen by the
+		     COUNTRY command statement.
+
+		$e - displays the ESCape character.  Primarily used with
+		     the ANSI mode of operation.
+
+		$g - displays the > character.
+
+		$h - sends a destructive backspace to the current prompt.
+
+		$i - displays the task ID number of the current partition. 
+
+		$l - displays the < character.
+
+		$n - displays the letter of the current default drive.
+
+		$p - displays the current default drive and directory.
+
+		$q - displays the = character.
+
+		$t - displays the system time, in the format chosen by the
+		     COUNTRY command statement.
+
+		$u - displays the user ID of the user signed on in the
+		     current partition, if any.
+
+		$v - displays the operating system name and version number.
+
+		$_ - ends current prompt line and continues the prompt on
+		     the next line.
+
+		$$ - displays a single $.
+
+		$x - includes leading delimiters in the prompt.  Enter $
+		     and an x or any other character not used as the second
+		     character in the previous operands.
+
+	Enter .PROMPT in the partition without any operands to return the
+	prompt to the default.  The first entry with the .PROMPT command
+	cannot contain a delimiter, such as a space, comma, etc.
+Form:	.RD \path
+
+Type:	Intrinsic.  (General)
+
+	.RD lets you remove an empty directory from the system.  Enter the
+	complete name of the directory, including the drive letter and/or
+	any preceding levels of directories.
+
+	You must delete all files in the directory before it can be
+	removed, or use .RENAME to move them to a different directory.  You
+	cannot delete a parent directory that contains any other levels of
+	directories.  You cannot remove your current directory, nor a
+	directory that is presently being used by someone in another
+	partition.
+
+	You may only remove one directory level at a time.  For example, if
+	you have a directory named \MYTEXT\MYFILES\LETTERS, you must first
+	remove the LETTERS directory in order to remove the MYFILES
+	directory.
+Form:	.REL
+
+Type:	Intrinsic.  (General)
+
+	Entering .REL at the system prompt displays the current release of
+	MOS that is running on your computer.
+Form:	.REM {remark}
+
+Type:	Intrinsic.  (Batch File)
+
+	.REM inserts a remark into a batch file.  This may be any character
+	string up to 122 characters long.  If .ECHO is on, the remark
+	displays on the video screen.
+
+	You may want to use .REM to insert remarks or comments into your
+	batch file that explain the logic in the file.
+Form:	.REMDEV devname
+
+Type:	Extrinsic.  (General)
+
+	You may use the .REMDEV command to remove any device, which was
+	installed with the .ADDDEV command, without rebooting your
+	computer.
+
+	There may be devices on your computer that are active or are
+	required.  If you attempt to remove one of these devices, MOS will
+	display a message stating that the device cannot be removed. 
+Form:	.REMTASK task ID
+
+Type:	Extrinsic.  (Multi-Tasking/Multi-User)
+
+	.REMTASK lets you remove a memory partition from the system.  Enter
+	the task ID number of the partition to remove after the command.
+
+	You may use .REMTASK to remove any partition to which you have
+	unrestricted access, except partition 0.  Partition 0 is absolute
+	and may never be removed.  When you remove a partition, the task ID
+	of that partition is then available for assignment to another
+	partition.
+
+	When you remove a partition, MOS closes all open files in that
+	partition.  If the partition removed is running at a workstation,
+	the workstation is rendered inactive.  You may reactivate a
+	workstation by adding a partition for that workstation from the
+	main console or from any other active workstation.
+Form:	.RENAME name name {/m}
+
+Type:	Intrinsic.  (General)
+
+	.RENAME lets you change the name of a file or group of files and
+	optionally move them to a different directory.  You may also use
+	.RENAME to relocate or change the name of a subdirectory.
+
+	The first name operand is the name of the file or directory you
+	want to rename or move.  Wildcards are permitted with file names
+	but not with directories.  Include the drive and/or directory name
+	if not the current defaults.
+
+	The second name operand is the new name of the file or directory. 
+	If no entry is made, MOS defaults to the current directory. 
+	Wildcards are permitted with file names but not with directories. 
+	To move the file(s) to a different directory, enter the name of the
+	directory where the file(s) are to be moved.  When moving a
+	directory, you must enter the complete path name for its new
+	location.  You may rename and move at the same time.
+
+	You must enter /m if you want to move the file(s) or directory.
+Form:	.SEARCH {/n}{/v}{/c}{/i} "string" {filename ...}
+
+Type:	Extrinsic.  (General)
+
+	.SEARCH searches one or more files to locate a specific string of
+	characters.  The filename must include the drive and/or directory
+	if not the current defaults.  Wild cards are NOT permitted.  If no
+	filename is specified, .SEARCH reads from standard input as a
+	filter to produce redefined output.
+
+	/n causes the number of the line that matches the character string
+	to display on the output device along with the character string.
+
+	/v causes the lines where the character string does not match to
+	display on the output device.
+
+	/c counts and displays on the output device the total number of
+	lines in which the character string is matched in each specified
+	file.  This option overrides the two previous options.
+
+	/i causes the search to ignore upper or lower case.
+
+	The string specified must be enclosed in double quotes.  Quotes
+	within the string must be enclosed within two consecutive double
+	quotes ("").  For example, the string "the "command" name" is not
+	valid, but "the ""command"" name" is a valid string.
+Form:	.SET variable=string 
+
+Type:	Intrinsic.  (General)
+
+	The .SET command lets you place character strings for specific
+	variables in the environment space.  This information is made
+	available to all programs.
+
+	MOS sets COMSPEC=C:\COMMAND.COM upon bootup.  PATH and PROMPT are
+	set when invoked from a batch file or at the system prompt.  The
+	.SET command lets you change any of these values.  The most
+	commonly used environment variables and their uses are:
+
+		COMSPEC - tells MOS where the Command Processor is located.
+
+		PATH - tells MOS the drives and directories to search when
+		you invoke an executable file.  The .PATH command is an
+		alternative to .SET PATH=.
+
+		PROMPT - defines the prompt that will be displayed for the
+		partition in which the .SET command is invoked.  The
+		.PROMPT command is an alternative to .SET PROMPT=.
+
+	Entering .SET with no operands displays the current set variables. 
+	To delete items, enter .SET, the variable name, and an equals sign.
+Form:	SHELL = {d:}{\path\}filename 
+
+Type:	Intrinsic.  (Configuration)
+
+	SHELL specifies the location and name of a user defined command
+	processor that loads in place of MOS's command processor.  The user
+	defined command processor must contain the same interrupt levels,
+	intrinsic commands and batch processor as the MOS command
+	processor.  MOS defaults to using COMMAND.COM if the SHELL command
+	statement is not found in the CONFIG.SYS file.
+
+	Enter the filename of the new command processor.  Enter the drive
+	and path of the directory where it is located, if not the current
+	drive and path.
+Form:	.SIGNOFF
+
+Type:	Intrinsic.  (Security)
+
+	Entering .SIGNOFF causes the current user to exit the secured mode
+	and return to the system prompt in an unsecured mode.  Always sign
+	off before allowing anyone else to use your workstation, or the new
+	user will be able to access all of your secured files, directories
+	and partitions.
+
+	A sign off message appears similar to the following:
+
+		ROD signed off.
+
+	Once signed off, you may still use MOS, but only to access items
+	with a blank class.  MOS clears the keyboard buffer when you sign
+	off to prevent other users from recalling your key strokes.
+Form:	.SIGNON {user ID}
+
+Type:	Intrinsic.  (Security)
+
+	To access secured items, enter .SIGNON at the system prompt to
+	activate security for your partition.  The MOS sign on screen will
+	display, at which you may enter your user ID and password.
+
+	Entering your user ID with the .SIGNON command will bring up the
+	screen with your ID already entered, such as:
+
+		User Name  :  ROD
+		Password   :
+
+	Then just enter your password to complete the sign on.  It will NOT
+	appear on the screen as you enter it.  MOS checks the $$USER.SYS
+	file to verify the user ID and password.
+
+	If successful, MOS displays the user's partition class and default
+	output class.  If not successful, MOS will prompt "Try again."  If
+	not successful after between three and seven attempts, MOS will
+	"locks" the workstation and displays:
+
+		Access denied.  Please wait.
+
+	The workstation will remain in a "locked" state for between 4 and
+	15 minutes.  When the workstation is freed, you may attempt the
+	sign on again.
+Form:	SLICE=nnn
+
+Type:	Intrinsic.  (Configuration)
+
+	The SLICE command statement instructs MOS to either not use time
+	slicing, or to activate sharing of the processor's time.
+
+	The multi-tasking capability of MOS is based on time-sharing.  Each
+	task (of equal priority) receives an equal share of the processor's
+	time, in turn.  Enter a 0 if time slicing is not to be used, or a
+	number between 1 and 255 for the number of time ticks each task is
+	to receive.  4 time ticks (about 4/18 of a second) is a good
+	practical limit.
+
+	The default for SLICE is 1.  MOS gives each partition (task) one
+	time tick (about 1/18 of a second) of processing time before moving
+	to the next partition.  Processing time is continually shared among
+	the partitions in turn.  If time slicing is not used, a task will
+	monopolize the processor until it makes a system call.
+
+	You may adjust the number of time ticks the partition will receive
+	during its turn from within the partition by using the .MOSADM
+	SLICE utility.
+Form:	SMPSIZE=nnnnK
+
+Type:	Intrinsic.  (Configuration)
+
+	MOS uses a System Memory Pool (SMP) to supervise all tasks and
+	track all activity on your computer.  The SMP defaults to 64K if
+	not specified in the CONFIG.SYS file.  This is a reasonable value
+	for many systems.
+
+	nnnn is the number of kilobytes to be allocated to the system
+	memory pool.  Include the K to indicate the size is in kilobytes.
+
+	A substantially larger SMP size will be required if you are:
+
+		1.  Running a large number of background tasks.
+
+		2.  Loading large (or many) device drivers into the system.
+
+		3.  Opening a large number of files in the system.
+
+	In a system configured to allow MOS to relocate (see FREEMEM), the
+	maximum SMPSIZE is 440K bytes.  In systems that do not allow MOS
+	relocation, the maximum is 360K bytes.
+Form:	.SPOOL {d:}\path\ {/Tnn}
+
+	.SPOOL d{p}{c}
+
+	.SPOOL {/Tnn}
+
+Type:	Extrinsic.  (Print Spooler)
+
+	The .SPOOL command lets you specify the drive and directory where
+	the print files for a partition are to be sent.  When you invoke
+	the .SPOOL command in a partition, it intercepts the printer output
+	for that partition and directs it to the dedicated directory as a
+	spooled print file.
+
+	The drive and directory entered for the .SPOOL command must be the
+	same as that entered with the .PRINT command.  If not specified,
+	MOS defaults to the current drive.
+
+	When .SPOOL is first invoked, the extension of the print file
+	defaults to D2A, where D is the disposition (d), 2 is the priority
+	{p}, and A is the print class {c}.  You may use .SPOOL to change
+	the default print status that is assigned to print files.  See your
+	User Guide for information on print file names and possible print
+	status selections.
+
+	The /T operand changes how quickly a spool file closes when there
+	is no output to the file.  You may enter from 1 to 99 seconds for
+	nn.  The time defaults to about 18 seconds if not specified.
+
+	NOTE:  The .PRINT and .SPOOL commands must never be invoked in the
+	same partition.
+Form:	.STOP
+
+Type:	Intrinsic.  (Batch File)
+
+	.STOP causes an immediate exit from a batch file.  You may use
+	.STOP with the .IF command, to specify a condition which requires a
+	.STOP.  The .IF command also may be used to specify a condition
+	that must exist for processing to occur.  For example:
+
+		.IF NOT EXIST MOSTEST.DOC .STOP  
+
+	If .STOP is used with nested files, processing will return to the
+	previous layer .BAT file.  Execution of the file returned to
+	continues with the next command statement after the name of the
+	batch file that was just exited.
+Form:	.SWITCH {task ID}
+
+Type:	Intrinsic.  (General)
+
+	.SWITCH allows you to switch to a specific task by entering the
+	.SWITCH command, rather than using the ALT key - number sequence. 
+	If you do not specify a task number, you will be switched to the
+	next task number in sequence.
+Form:	.TEXT {/Sbf} {/Kbf} {/Cbf} {/Pxxyy}
+	.
+	|bf
+	.
+	.ENDTEXT
+
+Type:	Intrinsic.  (Batch File)
+
+	.TEXT/.ENDTEXT lets you create a display within a batch file that
+	appears on the video screen during its execution.  Anything you
+	enter within the .TEXT and .ENDTEXT commands echoes to the screen,
+	independent of the state of .ECHO.  You cannot invoke commands from
+	within the text block.
+
+	b designates a code for a background color.  f designates a code
+	for a foreground color.  See your User Guide for the available
+	background and foreground color codes.
+	
+	Enter /S followed by the codes of the background and foreground
+	colors you want to use for the entire display screen.  The colors
+	you set carry forward to other.TEXT screens.
+
+	Enter /K followed by the codes of the background and foreground
+	colors you want to use for the entire display screen.  Unlike the
+	/Sbf option, the /Kbf option clears the display.  The colors you
+	set also carry forward.
+
+	Enter /C followed by the codes of the background and foreground
+	colors to display on the first line and all subsequent line in this
+	.TEXT screen only, or until you change them.  This operand does not
+	carry your selection forward.  It is useful for entering an operand
+	to determine the initial color for the text block.
+
+	Enter the broken vertical bar followed by the background and
+	foreground colors (|bf) anywhere in the text block to change the
+	current color settings.
+
+	Enter /P followed by the x and y coordinates to define the initial
+	cursor position for the text block.  xx defines the column number -
+	from 01 to 80.  yy defines the line number - from 01 to 25.
+Form:	.TIME {hh:mm{:ss{.hh}}}
+
+Type:	Intrinsic.  (General)
+
+	.TIME lets you set or display the MOS system time.  The format for
+	time is defined with the COUNTRY command statement in your
+	CONFIG.SYS file.  If your system does not have a perpetual clock,
+	set the system time immediately after booting MOS.  The .TIME a
+	file was created and last updated appears with each file when a
+	directory is displayed.
+
+	Set the current time by entering .TIME at the system prompt,
+	followed by the hour (hh), minutes (:mm), seconds (:ss), and
+	hundredths of seconds (.hh) for the correct time.
+
+	Enter .TIME with no operands to display and optionally reset the
+	current time.
+Form:	.TYPE filename {/h}
+
+Type:	Intrinsic.  (General)
+
+	.TYPE displays the contents of a file on the video screen.  Use the
+	/h option for a display in a hexadecimal form.
+
+	If you select to display a text file, the text appears on the video
+	screen.  If you choose the hexadecimal form, the hexadecimal codes
+	for the contents of the file display.  If the file is a text file,
+	or any text appears in the file, the hexadecimal codes will appear
+	and their "text equivalents" will be displayed to the right.
+
+	Any periods that appear in the text equivalent column represent
+	actual periods in the file or letters in the ASCII character set
+	that could not be translated into hexadecimal codes.    
+
+	For long files, use the .MORE command to display the file one
+	screen at a time.
+Form:	USERFILE=d:\path\$$USER.SYS
+
+Type:	Intrinsic.  (Configuration)
+
+	USERFILE defines the directory where the $$USER.SYS file is
+	located.  This statement is only necessary when user security
+	active, and the $$USER.SYS file is NOT located at the root
+	directory.
+
+	Enter the drive and path of the directory where the $$USER.SYS file
+	is located.  You must enter $$USER.SYS as the file name.
+
+	If you create the $$USER.SYS file at a directory other than the
+	root, and do not set the path in the CONFIG.SYS file, MOS will not
+	find the file.
+Form:	.VERIFY {d:}{/c /f /v}³{/h}
+
+Type:	Extrinsic.  (General)
+
+	.VERIFY is a diagnostic command that verifies a disk by checking
+	for file allocation errors.  It is wise to run .VERIFY if your
+	system fails due to a power outage or other cause.  .VERIFY
+	displays the allocation status showing the number of lost clusters,
+	and any cross allocated clusters.
+
+		/c displays any non-contiguous files as they are being
+		checked.
+
+		/f fixes the lost allocation clusters by combining them
+		into files named LOSTDATA.nnn.  nnn is a consecutive number
+		assigned to each new file as it is created.
+
+		/v displays the directory path and file names on the disk
+		as they are being checked.
+
+		/h displays a help screen for the .VERIFY command.
+Form:	VTYPE=1³2³3³4³5 {F}
+
+Type:	Intrinsic.  (Configuration)
+
+	VTYPE allows a user to control certain aspects of MOS's memory
+	allocation, and thereby, task size limits.  VTYPE is part of your
+	configuration set up and can only be used when a memory management
+	driver is present.  FOR EGA USE YOU MUST ACCEPT THE SYSTEM DEFAULTS
+	AND NOT ENTER A VTYPE STATEMENT.  If VTYPE is not used, the default
+	upper memory limit is A0000, and a 16K memory area is reserved for
+	the video save area.
+ 
+	VTYPE 1 specifies that the area from A0000 to B0000 can be used as
+	task memory and is not available as EGA memory.  A 16K  video save
+	area is reserved.
+
+	VTYPE 2 is the same as 1, but only a 4K video save area is
+	reserved.
+
+	VTYPE 3 specifies that the area from A0000 to B4000 can be used as
+	task memory and is not available as MDA or EGA memory.  A 16K video
+	save area is reserved.
+
+	This option leaves the area from B4000 to B8000 available for the
+	$RAMDISK.SYS driver to use.  (B4000 is the default area for this
+	driver.  Another area may be specified.) 
+ 
+	NO MONOCHROME TASKS (e.g. terminals using a non-graphics terminal
+	driver such as PCTERM) MAY BE USED WITH THIS OPTION SINCE THE
+	MONOCHROME VIDEO MEMORY AT B0000 CAN BE USED AS TASK MEMORY.
+
+	Certain applications will test for memory at B0000 and B8000 to
+	determine where they can do direct video writing.  Such an
+	application would see task memory at B0000, believe it was on a
+	monochrome system, most likely crash.  Therefore, if you have such
+	an application DO NOT USE VTYPE=3 OR VTYPE=4.
+
+	VTYPE 4 specifies that the area from A0000 to B8000 can be used as
+	task memory.  A 16K video save area is reserved.
+
+	The same considerations hold true for this option as for VTYPE=3
+	except that the area from B4000 to B8000 is not available as the
+	default location for $RAMDISK.SYS.  This driver may still be used
+	as long as another area is specified.
+
+	VTYPE 5 must be used to handle hercules type graphics adapters.  If
+	.MOS VMODE is set to HG1 or HG2, VTYPE must be set to 5.
+
+	VTYPE 5 specifies that the area from A0000 to B0000 can be used as
+	task memory and is not available as EGA memory.  A 32K memory area
+	is reserved for the video save area.
+
+	The area from B8000 to C0000 is not available if VMODE HG2 is used,
+	or if VMODE HG1 and CGA are both used.  The same restrictions on
+	$RAMDISK.SYS apply as with VTYPE 4.
+
+	The optional F operand can only be used in combination with one of
+	the previous operands.  If used, the foreground task will be filled
+	out to the new upper memory limit by allocating from extended
+	memory.
+Form:	.WVER {on³off}
+
+Type:	Intrinsic.  (General)
+
+	.WVER causes any subsequent disk writes to be verified.  Processing
+	may slow, since a verification check is performed with each
+	operation.
+
+	Entering .WVER without any operands displays the current status of
+	.WVER.  .WVER defaults to off.
+
+	When .WVER is on, MOS performs a check of all output sent to a disk
+	to be sure it is identical to the copy still in memory.  If there
+	is a discrepancy, MOS displays a critical error message similar to
+	the following:
+
+		DATA ERROR READING DRIVE A   
+		Enter A to abort, R to retry
+
+	Enter an A to abort the current function and return to the system
+	prompt, or enter an R to retry.  If an error appears while .WVER is
+	active, you may have a problem with your disk or a hardware problem

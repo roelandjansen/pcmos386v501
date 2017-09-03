@@ -1,0 +1,6 @@
+
+Public  bootadr, loadadr, minmem, boot, drive, read, locboot, dirsct, cdata
+Public  sctshft, fatbuf, bigfat, endbf2, endboot, ldbios, parms, pmaxsct, boot0
+Public  bootx, boot1, boot2, boot3, hang, hang1, hang2, rdsect, rdsct1, rdsct2
+Public  rdsx, rdsx1, rdsx2, rdsy, rdsy1, rdsy2, rdsy3, nonsystem, fnm, bootbuf
+

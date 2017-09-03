@@ -1,0 +1,409 @@
+[TITLE]
+1
+                  Installation Program for PC-MOS 4.10
+[HELP]
+1
+       Press <F10> to abort INSTALL or <ESC> to cancel this step.
+[FIRST]
+1
+       PC-MOS Installation Options
+[OPT1]
+1
+     PC-MOS First Time Installation
+[OPT2]
+1
+      Replace Existing DOS with PC-MOS 
+[OPT3]
+1
+      Install dual DOS/PC-MOS system.
+[OPT4]
+1
+              PC-MOS Update
+[2ND_SYSTEM_MSG]
+4
+Installation of PC-MOS as the second system in a dual
+operating system machine has been specified.  The system
+files are about to be copied to the hard drive you selected.
+Do you wish to continue the installation? (Y/N):
+[ONDOS]
+2
+To continue the Install program, please re-boot your
+computer with the SYSTEM disk in Drive A
+[WRONGDRIVE]
+1
+INSTALL must be run from Drive A:
+[DO1]
+6
+This installation program will perform the following steps: 
+
+  Help you to partition your hard drive for MOS.
+  Format the logical drives created by partitioning.
+  Make the selected MOS partition a bootable drive.
+  Copy the MOS system files to the MOS partition.
+[DO2]
+4
+This installation program will perform the following steps: 
+
+  Make the selected MOS partition a bootable drive.
+  Copy the MOS system files onto the selected MOS partition.
+[DO3]
+6
+This installation program will perform the following steps:
+
+  Help you to partition your hard drive for DOS AND MOS.
+  Format the selected partitions.
+  Make the MOS partition a bootable drive.
+  Copy the MOS system files onto the selected mos partition.
+[DO4]
+6
+This installation program will perform the following steps: 
+
+  Make the selected hard drive bootable.
+  Copy the MOS system files onto the selected hard drive.
+  Check for previous release versions of MOS files and allow
+   you to delete them.
+[DOASK]
+2
+
+Do you wish to continue? (Y/N):
+[CONFIG]
+1
+           PC-MOS Configuration
+[VIEW1]
+1
+    Press <PgDn> for Next Screen, <PgUp> for Previous Screen, <ESC> to End 
+[VIEW2]
+1
+ Copyright 1990 The Software Link, Incorporated.  All Rights Reserved Worldwide
+[ERRORS]
+2
+         Press any key to continue
+Do you really want to abort INSTALL? (Y/N):
+[INPUT]
+3
+README file not present on disk.
+Abort key F10 pressed by user.
+User attempted to Control-C out.
+[REPORT]
+7
+Duplicate PC-MOS file found in
+Found:                            
+Install has detected %s style video adapter on system.
+Install has determined that VTYPE should be %c%c.
+You may select Drive %c - Drive %c
+Select Boot Partition %c after system reboots.
+Do you wish to format Drive %c:? (Y/N):
+[SELECT]
+9
+Please select one of the following installation options.
+
+1. Install PC-MOS on a new system.  (or to DELETE an old system)
+2. Install PC-MOS to REPLACE an existing DOS system.
+3. Install Dual DOS/MOS system.
+4. Perform UPDATE installation of MOS.
+5. Return to Operating System. (QUIT)
+
+   Enter desired option: 
+[VERIFY]
+9
+WARNING: If you repartition your hard drive all data on it
+         will be destroyed.  If you have already partitioned
+         it the way you want it, you may skip this part of
+         the procedure and you will be taken immediately to
+         the drive format stage.  If you wish, you may abort
+         the procedure altogether by pressing the ESC key
+         now.
+
+	 Do you want to repartition your hard drive? (Y/N):
+[HDSETUP]
+3
+You have selected to repartition your hard disk.
+
+Are you ready to repartition your hard disk? (Y/N):
+[FORMAT]
+2
+Before the system files can be placed on your hard disk, the
+hard disk partition (logical drive) must be formatted.
+[DRIVE]
+4
+Only one drive at a time can be formatted.
+
+Please enter the drive letter of the logical drive
+you want to format:
+[BACKUP]
+5
+You have chosen to install a new version of MOS onto an 
+existing system.  It is recommended that you do a backup
+of your hard drive first, just to be safe.
+
+Do you wish to continue? (Y/N):
+[MOS]
+2
+PC-MOS will be placed on the hard drive of your choice.
+
+[MOS2]
+2
+
+Which drive do you wish MOS to be installed to? :
+[BADMOS]
+9
+The drive which you selected is not a bootable drive. 
+
+You may do one of the following:
+
+1.   Select another logical drive for the PC-MOS boot drive.
+2.   Run HDSETUP to activate this logical drive.
+     (Make it bootable)
+
+     Which of the above would you like to do? (1/2):
+[ACTIVE]
+8
+You have selected to run HDSETUP and activate the logical drive 
+
+When HDSETUP comes up, please select option 2 to activate the
+drive you want to boot from, and then select option 7 to save
+the changes. When you are finished, reboot the computer.
+
+Press any other key to run HDSETUP and repartition your
+hard disk.
+[KERNEL]
+1
+Copying files to hard drive.
+[SPACE]
+8
+
+
+   Insufficient disk space to install Operating System.
+
+      PC-MOS Requires 800k to store systems files.
+
+
+             Press F10 to Exit to PC-MOS.
+[PCMOS]
+4
+All PC-MOS files will be placed in the \PCMOS subdirectory.
+
+Do you want to use \PCMOS as the directory for your PC-MOS
+files? (Y/N):
+[PATH]
+7
+Please enter the name of the subdirectory in which to place the
+PC-MOS files, including the drive letter.
+
+This will be where PC-MOS will reside, and all commands will
+access this directory via MOS's PATH environment variable.
+
+For example, you could enter C:\PCMOS
+[BADPATH]
+2
+Please re-enter the subdirectory name for the PC-MOS files.
+The path entered is invalid.
+[PATH_NON_EXISTANT]
+1
+That subdirectory does not exist.  Press any key to continue.
+[UPATH]
+7
+Please enter the name of the drive and directory in which your
+existing PC-MOS files reside.
+
+For example, you could enter C:\PCMOS
+
+Please note that your old PC-MOS files will be overwritten by
+the new PC-MOS files.
+[ALREADY]
+3
+Path specified already exists.
+
+Do you want to overwrite the files in this directory? (Y/N):
+[WORK]
+5
+
+
+Moving system files into selected MOS subdirectory.
+
+                  Please wait.
+[DISK1]
+5
+
+
+     Please insert the AUXILIARY Disk 1 into Drive A.
+
+                Press any key to continue.
+[BAD1]
+4
+
+Please verify that disk in Drive A is actually AUXILIARY Disk 1.
+
+                  Press any key to continue.
+[COPY1]
+5
+
+
+Copying PC-MOS system files from AUXILIARY Disk 1 in Drive A:
+
+                       Please Wait
+[DISK2]
+5
+
+
+     Please insert the AUXILIARY Disk 2 into Drive A.
+
+                Press any key to continue.
+[BAD2]
+4
+
+Please verify that disk in Drive A is actually AUXILIARY Disk 2.
+
+                  Press any key to continue.
+[COPY2]
+5
+
+
+Copying PC-MOS system files from AUXILIARY Disk 2 in Drive A:
+
+                       Please Wait
+[DISKS]
+5
+
+
+     Make sure the SYSTEM Disk is in Drive A.
+
+             Press any key to continue.
+[BADS]
+4
+
+Please verify that disk in Drive A is actually SYSTEM Disk.
+
+                 Press any key to continue.
+[COPYS]
+5
+
+
+Copying PC-MOS system files from SYSTEM Disk in Drive A:
+
+                      Please Wait
+[FREEMEM]
+2
+INSTALL has found unused memory addresses in your system. If
+you're SURE these areas are unused, select option 1.
+[FREE2]
+5
+Enter   1. To add above FREEMEM statement(s) to CONFIG.SYS.
+        2. To add FREEMEM=NONE to CONFIG.SYS.
+        3. To leave CONFIG.SYS alone.
+
+        Please enter your choice:
+[SIGNOFF]
+4
+
+PC-MOS has been successfully installed on your system.
+
+Press ENTER to exit INSTALL.
+[SEARCH]
+5
+To eliminate any problems with upgrading to a new version
+of PC-MOS, this installation program is searching for the
+existence of any DUPLICATE MOS files on your hard drive.
+
+Please wait, file search is in process.
+[DELVIEW]
+6
+
+Files possibly from a previous release of PC-MOS have been
+detected on your hard drive. A list of these files and
+locations is now in the file INSTALL.DEL.
+
+Do you wish to view INSTALL.DEL? (Y/N):
+[CPU386]
+7
+INSTALL has detected an 80386 or 80486 processor.  Please choose
+one of the following memory management options:
+
+      1.  Install $386.SYS for 80386 virtual memory management.
+      2.  Do NOT install any memory management drivers.
+
+        Please enter your choice:
+[CPU286]
+8
+INSTALL has detected an 80286 processor.  Please choose one of
+the following memory management options:
+
+      1.  Install $CHARGE.SYS, for "ALL Computers 'CHARGECARD.'"
+      2.  Install $GIZMO.SYS for the "AT-GIZMO" card.
+      3.  DO Not install any memory management drivers.
+
+        Please enter your choice:
+[DONE]
+21
+                 ******* I M P O R T A N T *******
+
+This installation is the temporary EVALUATION version of PC-MOS. (The system
+will time out after 60 minutes, but you may reboot as often as you like.) To
+make your installation permanent, you must open the sealed envelope and follow
+the instructions on how to initialize your PC-MOS system files.
+
+  Since you selected to install PC-MOS and DOS you must do the following:
+
+     1) Boot your system with a DOS system disk in drive A:
+     2) Place the DOS boot record on drive C: by entering the
+        following command:
+             SYS C:
+     3) Copy COMMAND.COM to the root directory of the hard drive. Enter:
+             COPY COMMAND.COM C:\
+     4) Make a directory for DOS files and copy the files there.
+     5) If you have ENHDISK.SYS, place the following line in
+        your CONFIG.SYS file on drive C:
+             DEVICE=ENHDISK.SYS
+        You will then have access to MOS drive D from DOS,
+        provided that the MOS volume is not larger than 32MB.
+[DONE1]
+6
+                 ******* I M P O R T A N T *******
+
+This installation is the temporary EVALUATION version of PC-MOS. (The system
+will time out after 60 minutes, but you may reboot as often as you like.) To
+make your installation permanent, you must open the sealed envelope and follow
+the instructions on how to initialize your PC-MOS system files.
+[DONE2]
+15
+  Installation of PC-MOS has completed Successfully.
+
+  After exiting this Install program use the Auto-Configuration Utility
+(ACU) to properly configure PC-MOS for your system.
+
+  To run the ACU, reboot your computer from the hard disk.  Log onto the
+directory that contains your PC-MOS files.  Type:
+
+        ACU
+
+and press ENTER.  Then follow the screen instructions to configure
+PC-MOS for your system.  When finished, reboot your computer to
+activate the new configuration.
+
+
+[ABORT]
+1
+PC-MOS Installation program has been aborted.
+[VNA]
+1
+Install has determined that system supports VNA.
+[VTYPE]
+2
+Do you want to include this VTYPE statement in your
+CONFIG.SYS file? (Y/N):
+[BADDUAL]
+12
+                   ***** WARNING *****
+You have choosen to install a DUAL DOS/MOS operating system.
+	 >> However <<
+Install has detected only ONE logical drive!  There must be
+at least TWO logical drives to install a dual operating
+system environment.  You have the following choices:
+
+	1) Execute HDSETUP to re-partition your hard drive.
+	2) Return to the INSTALL main menu.
+	3) Quit INSTALL.
+
+Please enter your choice:
+
+                                                                             

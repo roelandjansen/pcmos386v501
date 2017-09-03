@@ -1,0 +1,38 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 02BD6H 02BD7H _TEXT                  CODE
+ 02BD8H 02BD8H 00000H C_ETEXT                ENDCODE
+ 02BE0H 02C21H 00042H NULL                   BEGDATA
+ 02C22H 03295H 00674H _DATA                  DATA
+ 03296H 032A3H 0000EH CDATA                  DATA
+ 032A4H 032A4H 00000H XIFB                   DATA
+ 032A4H 032A4H 00000H XIF                    DATA
+ 032A4H 032A4H 00000H XIFE                   DATA
+ 032A4H 032A4H 00000H XIB                    DATA
+ 032A4H 032A4H 00000H XI                     DATA
+ 032A4H 032A4H 00000H XIE                    DATA
+ 032A4H 032A4H 00000H XPB                    DATA
+ 032A4H 032A5H 00002H XP                     DATA
+ 032A6H 032A6H 00000H XPE                    DATA
+ 032A6H 032A6H 00000H XCB                    DATA
+ 032A6H 032A6H 00000H XC                     DATA
+ 032A6H 032A6H 00000H XCE                    DATA
+ 032A6H 032A6H 00000H XCFB                   DATA
+ 032A6H 032A6H 00000H XCF                    DATA
+ 032A6H 032A6H 00000H XCFE                   DATA
+ 032A6H 032A6H 00000H CONST                  CONST
+ 032A6H 032ADH 00008H HDR                    MSG
+ 032AEH 0337BH 000CEH MSG                    MSG
+ 0337CH 0337DH 00002H PAD                    MSG
+ 0337EH 0337EH 00001H EPAD                   MSG
+ 03380H 033A5H 00026H _BSS                   BSS
+ 033A6H 033A6H 00000H XOB                    BSS
+ 033A6H 033A6H 00000H XO                     BSS
+ 033A6H 033A6H 00000H XOE                    BSS
+ 033B0H 0FC29H 0C87AH c_common               BSS
+ 0FC30H 1042FH 00800H STACK                  STACK
+
+ Origin   Group
+ 02BE:0   DGROUP
+
+Program entry point at 0000:0822

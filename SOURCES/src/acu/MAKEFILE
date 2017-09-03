@@ -1,0 +1,59 @@
+###############################################################################
+#
+#       MAKEFILE FOR:   ACU.EXE
+#
+#	Creation date:	5/4/90
+#
+#	Revision date:	5/4/90
+#
+#	Programmer:	B. W. Roeser
+#
+# ----------------------  >> Revision Log <<  --------------------------
+#
+# Date		Prog	Description of Revision
+# ----		----	-----------------------
+#
+###############################################################################
+#
+.c.obj:
+        cl -c -AL $<
+
+.asm.obj:
+	masm -Mx $*;
+
+OBJECTS = acu.obj  sysgen.obj  globals.obj  init.obj  \
+          cpu_type.obj  read_exi.obj  ed_mos.obj  ed_mm.obj  ed_video.obj \
+          ed_cache.obj  ed_misc.obj  write.obj  cmos.obj  calc.obj \
+          ed_fre.obj  ed_dev.obj  ed_ems.obj  ed_ser.obj  ed_serop.obj \
+          ed_mouse.obj  ed_pipe.obj  ed_ramd.obj  ed_keyb.obj  ed_vna.obj \
+          get_file.obj  term.obj  freemem.obj  draw_ed.obj  errors.obj \
+          ranges.obj  shell.obj  status.obj
+
+OBJLIST = acu +sysgen +globals +init +cpu_type +read_exi +ed_mos \
+        +ed_mm +ed_video +ed_cache +ed_misc +cmos +calc +ed_fre +ed_dev \
+        +ed_ems +ed_ser +ed_serop +ed_mouse +ed_pipe +ed_ramd +ed_keyb \
+        +ed_vna +get_file +write +term +freemem +draw_ed +errors +ranges \
+        +shell +status
+
+ALL:    acu.exe  acu.mnu  acu-help.hlp
+
+acu.exe : $(OBJECTS) ${LIB}\rsalarge.lib
+        link $(OBJLIST)/m/e,,,rsalarge
+
+acu.mnu : m1.mmk m160.mmk
+        if exist acu.mnu del acu.mnu
+        menmak acu m1 m160 /c
+
+acu-help.hlp : acu-help.txt
+        helpcom acu-help
+#--------------------------------------------------------------------------
+# Multi-file dependencies
+#--------------------------------------------------------------------------
+globals.obj : globals.c  acu.h
+init.obj : init.c acu.h
+read_exi.obj : read_exi.c acu.h
+write.obj : write.c acu.h
+ed_ser.obj : ed_ser.c acu.h
+ed_serop.obj : ed_serop.c acu.h
+ed_vna.obj : ed_vna.c acu.h
+ranges.obj : ranges.c acu.h

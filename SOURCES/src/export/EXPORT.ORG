@@ -1,0 +1,291 @@
+/*
+*****************************************************************************
+*
+*   MODULE NAME:        main
+*
+*   TASK NAME:          EXPORT.EXE
+*
+*   PROJECT:            PC-MOS utilities
+*
+*   CREATION DATE:      1/8/91
+*
+*   REVISION DATE:      1/8/91
+*
+*   AUTHOR:             B. W. Roeser
+*
+*   DESCRIPTION:        Main routine for EXPORT.EXE
+*
+*
+*               (C) Copyright 1991, The Software Link, Inc.
+*                       All Rights Reserved
+*
+*****************************************************************************
+*
+*   USAGE:  EXPORT d:[path] d: [/S] [/D:mm-dd-yy] [/M] [/Q] [/?]
+*
+*       where:
+*
+*           d:[path]        - Source directory or file to be archived
+*                           to floppy drive.
+*
+*           d:              - Target drive.
+*
+*           /S              - Copy all subdirectories.
+*
+*           /D              - Archive all files AFTER specified date.
+*                             (Default is archive all files)
+*
+*           /M              - Archive only files with archive bit set.
+*                             (Files modified since last backup)
+*
+*           /Q              - Ask user for parameters.  Ignore any others
+*                             entered on command line.
+*
+*           /?              - Display help page showing user how to use
+*                             EXPORT
+*
+*****************************************************************************
+*                           >> REVISION LOG <<
+*
+* DATE      PROG        DESCRIPTION OF REVISION
+* ----      ----        -----------------------
+*
+* 03/31/92  SAH		   Fix bug for 14th disk. not correctly closing files
+*****************************************************************************
+*
+*/
+#include <ctype.h>
+#include <rsa\rsa.h>
+
+extern char     yes[],
+                source_arg[],
+                target_arg[];
+
+extern unsigned char    A_flag,
+                        S_flag,
+                        D_flag;
+
+extern int      disk_count,
+                target_drive;
+
+
+static unsigned char    DTA_buffer[48];
+
+main(int argc, char **argv)
+{
+    char    ans[10];
+
+    int     l,
+            count,
+            status;
+
+    unsigned    attrib;
+
+    static char     drive[3], dir[65], fname[9], ext[5];
+
+    static char     buffer[81],
+                    filename[13],
+                    pathname[65],
+                    temp_file[65],
+                    target_file[65];
+    if(is_MOS())
+        save_TCB_data();
+
+    setup_i24();
+
+    Parse_command_line(argc, argv);
+/*
+**  If the /A (append) flag was not set, then warn the user.
+*/
+    if(A_flag) {
+        printf("NOTE: EXPORTed files will be appended to the data\n");  /* @@XLATN */
+        printf("      already existing on drive %s.\n", target_arg);    /* @@XLATN */
+        printf("      Do you wish to continue? (Y/N): ");               /* @@XLATN */
+        gets(ans);
+        ans[0] = toupper(ans[0]);
+        if(ans[0] != yes[0]) {
+            puts("\nEXPORT: Terminated by user.\n");    /* @@XLATN */
+            Terminate(1);
+        }
+    }
+    else {
+        printf("WARNING: All files on drive %s will be DELETED.\n", target_arg);    /* @@XLATN */
+        printf("         Do you wish to continue? (Y/N): ");    /* @@XLATN */
+        gets(ans);
+        ans[0] = toupper(ans[0]);
+        if(ans[0] != yes[0]) {
+            puts("\nEXPORT: Terminated by user.\n");    /* @@XLATN */
+            Terminate(1);
+        }
+    }
+/*
+**  If the /S option was specified, then walk the directory tree,
+**  picking up the filenames to be backed up as they are provided.
+*/
+    if(S_flag) {
+        if(strchr(source_arg, '*') || strchr(source_arg, '?')) {
+            if(!find_first_file(source_arg, filename, &attrib)) {
+                puts("EXPORT: No files found.");    /* @@XLATN */
+                Terminate(1);
+            }
+            if(strcmp(filename, ".") == 0) {
+                find_next_file(filename, &attrib);     /* Dispense w/".." */
+                if(!find_next_file(filename, &attrib)) {
+                    puts("EXPORT: No files found.");    /* @@XLATN */
+                    Terminate(1);
+                }
+            }
+
+            _splitpath(source_arg, drive, dir, fname, ext);
+
+            count = 0;
+            disk_count = Get_next_disk(0);
+
+            do {
+                strcpy(pathname, drive);
+                strcat(pathname, dir);
+                strcat(pathname, filename);
+
+                if(attrib & 0x10) {
+                    read_DTA(DTA_buffer, 48);
+                    status = set_tree(pathname);
+                    if(status != 0) {
+                        printf("EXPORT: Could not find %s\n", pathname);    /* @@XLATN */
+                        Terminate(1);
+                    }
+                    while(walk_tree(pathname, &attrib) == 0) {
+                        if((attrib & 0x10) == 0) {
+                            if(Output_file(pathname) == 0)
+                                count++;
+                        }
+                    }
+                    write_DTA(DTA_buffer, 48);
+                } /* End if (attrib) */
+/*
+**  If the file is not a directory, just output it directly.
+*/
+                else if((attrib & 0x08) == 0) {
+                    if(Output_file(pathname) == 0)
+                        count++;
+                } /* End if (attrib) */
+            } while(find_next_file(filename, &attrib));
+        } /* End if(strchr) */
+        else {
+            status = set_tree(source_arg);
+            if(status != 0) {
+                puts("EXPORT: Could not find source path.");    /* @@XLATN */
+                Terminate(1);
+            }
+/*
+**  Ask the user to insert the next disk.
+*/
+            count = 0;
+            disk_count = Get_next_disk(0);
+
+            while(walk_tree(pathname, &attrib) == 0) {
+                if((attrib & 0x10) == 0) {
+                    if(Output_file(pathname) == 0)
+                        count++;
+                }
+            }
+        }
+    }
+/*
+**  The /S option was not specified.  Pick up only the files immediately
+**  in the directory.
+**
+**  There will be 3 separate cases for the filename entered.
+**
+**      1) The source name specified has wilcards in it.
+**         Do a find_first / find_next loop to get the
+**         names of the files to be EXPORTed.
+**
+**      2) The source name specified is a FILE.  Simply
+**         EXPORT the specified file.
+**
+**      3) The source name specified is a DIRECTORY.  Append
+**         the string "\*.*" to it and do a find_first / find_next
+**         loop to get all the filenames.
+*/
+    else {
+        if(strchr(source_arg, '*') || strchr(source_arg, '?'))
+            count = Search_directory(source_arg);
+/*
+**  Is the source path a directory?  If so, append \*.* to it.
+*/
+        else {
+            status = get_file_attributes(source_arg, &attrib);
+            if(status != 0) {
+                puts("EXPORT: No files found to export.");  /* @@XLATN */
+                Terminate(1);
+            }
+            if(attrib & 0x10)
+                strcat(source_arg, "\\*.*");
+
+            count = Search_directory(source_arg);
+        }
+    } /* End flat back-up */
+/*
+**  Export is complete.  If there were some files backed up, write
+**  the final label to the disk in the target drive.
+*/
+    if(count > 0) {
+        sprintf(buffer, "EX-L%04d", disk_count);
+        set_volume_label(target_drive, buffer);
+        printf("EXPORT: %d files backed up to %s\n", count, target_arg);    /* @@XLATN */
+        Terminate(0);
+    }
+    else {
+        puts("EXPORT: No files found to be exported."); /* @@XLATN */
+        Terminate(1);
+    }
+}
+/*
+**  This routine does a flat directory search for files to be exported
+**  by using the find_first / find_next method.
+*/
+Search_directory(char *source_arg)
+{
+    char        drive[3], dir[65], fname[9], ext[5];
+    char        filename[13];
+    char        pathname[65];
+
+    int         count;
+    int         status;
+
+    unsigned    attrib;
+
+    _splitpath(source_arg, drive, dir, fname, ext);
+
+    if(!find_first_file(source_arg, filename, &attrib)) {
+        puts("EXPORT: No files found to be exported."); /* @@XLATN */
+        Terminate(1);
+    }
+/*
+**  If the special directory name "." was found, skip it and the
+**  name ".." and get the first real filename in the directory.
+*/
+    if(strcmp(filename, ".") == 0) {
+        find_next_file(filename, &attrib);
+        if(!find_next_file(filename, &attrib)) {
+            puts("EXPORT: No files found to be exported."); /* @@XLATN */
+            Terminate(1);
+        }
+    }
+
+    count = 0;
+    disk_count = Get_next_disk(0);
+/*
+**  Output all files in the directory, but skip directory files.
+*/
+    do {
+        if(attrib & 0x10)
+            continue;
+        sprintf(pathname, "%s%s%s", drive, dir, filename);
+        if(Output_file(pathname) == 0)
+            count++;
+    } while(find_next_file(filename, &attrib));
+
+    return(count);
+}
+

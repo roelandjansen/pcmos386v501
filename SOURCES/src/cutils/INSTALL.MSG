@@ -1,0 +1,615 @@
+[ABORT]
+1
+PC-MOS Installation program has been aborted.
+
+[ALREADY]
+3
+Specified path already exists.
+
+Do you want to overwrite the files in this directory? (Y/N):
+
+[BACKUP]
+6
+Before continuing with this installation process, we strongly
+recommend that you perform a backup of all existing hard disk
+partitions.  If you have already performed this backup or if you
+do not care about any existing hard disk files, you may proceed.
+
+Proceed with the installation process? (Y/N):
+
+[BADDRIVE]
+3
+Invalid drive letter
+
+Press any key to try again
+
+[BADPATH]
+3
+Invalid path,
+
+Press any key to try again
+
+[BEFAFT1]
+6
+Initial partition structure:
+------- no primary partition on 1st hard drive!
+Final partition structure:
+drive  hard   pt    boot               start end
+letter drive  type  status megs  cylds cyld  cyld
+====== ===== ====== ====== ===== ===== ===== =====
+
+[CFGCHNG1]
+3
+An existing CONFIG.SYS file was detected on your new boot 
+drive.  To prevent confusion with this new installation, this 
+file has been renamed to: 
+
+[CFGCHNG2]
+1
+Press any key to continue.
+
+[COPY1]
+5
+
+
+    Copying PC-MOS system files from the AUXILIARY Diskette
+
+                          Please Wait
+
+[COPY2]
+5
+
+
+    Copying PC-MOS system files from the AUXILIARY #2 Diskette
+
+                          Please Wait
+
+[COPYS]
+5
+
+
+    Copying PC-MOS system files from the SYSTEM Diskette
+
+                          Please Wait
+
+[DELETEALL]
+6
+
+All partitions on all physical hard-drives will have to be
+deleted.  Before proceeding, you should first exit this
+installation program and backup any files you wish to preserve.
+
+Delete all partitions on all drives? (Y/N)
+
+[DELVIEW]
+6
+Files possibly from a previous release of PC-MOS have been
+detected on your hard drive. A list of these files and
+locations is now in the file INSTALL.DEL.  This file
+has been placed in the root directory of your boot drive.
+
+Do you wish to view INSTALL.DEL? (Y/N):
+
+[DESCRIBE_DOS2DUAL]
+12
+To create a dual DOS/MOS environment on an existing DOS system,
+exit this installation utility, back up all partitions and then
+restart the installation utility, selecting the following main
+menu choice:
+
+  4. Install dual DOS/MOS environment on a NEW system
+
+When done, restore your backed up data to either the C: drive
+or to an extended partition.  Only MOS system files should be
+kept on a secondary partition.
+
+Press any key to continue
+
+[DESCRIBE_DUAL]
+8
+This installation program will perform the following steps:
+
+    Help you to partition your hard drive for DOS AND MOS
+    Format the MOS partitions
+    Make the MOS partition a bootable drive
+    Copy the MOS system files onto the selected mos partition
+
+Do you wish to continue? (Y/N):
+
+[DESCRIBE_DUAL2]
+7
+                 ******* I M P O R T A N T *******
+
+     If you ever use the MS-DOS 5.x SETUP program to apply a
+     DOS 5.x upgrade, see the section on "Correcting for the
+     MS-DOS 5.x SETUP program" in the PC-MOS installation manual.
+
+   Do you wish to continue? (Y/N):
+
+[DESCRIBE_MOS2DUAL]
+12
+To create a dual DOS/MOS environment on an existing MOS system,
+exit this installation utility, back up all partitions (except
+the MOS files) and then restart the installation utility,
+selecting the following main menu choice:
+
+  4. Install dual DOS/MOS environment on a NEW system
+
+When done, restore your backed up data to either the C: drive
+or to an extended partition.  Only MOS system files should be
+kept on a secondary partition.
+
+Press any key to continue
+
+[DESCRIBE_NEW]
+8
+This installation program will perform the following steps:
+
+    Help you to partition your hard drive for MOS
+    Format the logical drives created by partitioning
+    Make the selected MOS partition a bootable drive
+    Copy the MOS system files to the MOS partition
+
+Do you wish to continue? (Y/N):
+
+[DESCRIBE_UPGRADE]
+12
+This installation program will perform the following steps:
+
+    Make the selected hard drive bootable
+    Copy the MOS system files onto the selected hard drive
+    Check for previous release versions of MOS files
+
+IMPORTANT: This procedure will delete all existing files in the
+directory that holds your PC-MOS files.  If this directory contains
+any device drivers or other files not included on your PC-MOS
+distrubtion diskettes, exit now and back them up before continuing.
+
+Do you wish to continue? (Y/N):
+
+[DESCRIBE_REPLACE]
+12
+This installation program will perform the following steps:
+
+    Use the existing C: partition as the MOS partition
+    Make the partition a bootable MOS drive
+    Copy the MOS system files onto the selected MOS partition
+
+NOTE: This procedure leaves your existing disk partition
+structure intact.  If you want to change the partition
+structure or sizes you should first backup all data and then
+use the "Install PC-MOS on a NEW system" installation option.
+
+Do you wish to continue? (Y/N):
+
+[DISK1]
+5
+
+
+        Please insert the AUXILIARY Diskette into Drive A.
+
+                   Press any key to continue.
+
+[DISK2]
+5
+
+
+        Please insert the AUXILIARY #2 Diskette into Drive A.
+
+                   Press any key to continue.
+
+[DISKS]
+5
+
+
+           Make sure the SYSTEM Diskette is in Drive A.
+
+                  Press any key to continue.
+
+[DONE]
+23
+                 ******* I M P O R T A N T *******
+
+This installation is the temporary EVALUATION version of PC-MOS. (The
+system will time out after 60 minutes, but you may reboot as often as
+you like.)  To make your installation permanent, you must open the
+sealed envelope and follow the instructions on how to initialize your
+PC-MOS system files.
+
+Since you selected:
+
+  4. Install dual DOS/MOS environment on a NEW system
+
+it is now time for you to install DOS on the C: drive.  If you backed
+up an existing DOS installation, you should restore it now.  Otherwise,
+follow the the instructions in your DOS manual for a new DOS installation.
+
+                 ******* I M P O R T A N T *******
+
+     If you ever use the MS-DOS 5.x SETUP program to apply a
+     DOS 5.x upgrade, see the section on "Correcting for the
+     MS-DOS 5.x SETUP program" in the PC-MOS installation manual.
+
+Press any key to continue
+
+[DONE1]
+9
+                 ******* I M P O R T A N T *******
+
+This installation is the temporary EVALUATION version of PC-MOS.
+(The system will time out after 60 minutes, but you may reboot as often
+as you like.) To make your installation permanent, you must open the
+sealed envelope and follow the instructions on how to initialize
+your PC-MOS system files.
+
+Press any key to continue
+
+[DONE2]
+14
+Installation of PC-MOS has completed successfully.
+
+After exiting this Install program use the Auto-Configuration
+Utility (ACU) to properly configure PC-MOS for your system.
+
+To run the ACU, reboot your computer from the hard disk, log onto
+the directory that contains your PC-MOS files, type:
+
+        ACU
+
+and press ENTER.  Then follow the screen instructions to configure
+PC-MOS for your system.  When finished, reboot your computer to
+activate the new configuration.
+
+
+[DONE3]
+4
+
+If any MOS large secondary partitions were deleted, replacement
+partitions must now be formatted.  Then, restore any data to these
+new partitions.
+
+[DRIVECHOICE1]
+2
+Enter the drive letter of the MOS boot drive.
+Listed below are the possible choices:
+
+[DRIVECHOICE2]
+1
+Enter the drive letter:
+
+[ERRORB]
+1
+ERROR: Must boot from SYSTEM disk to use INSTALL.
+
+[ERRORS]
+2
+         Press any key to continue
+Do you really want to abort INSTALL? (Y/N):
+
+[ESCVERIFY]
+3
+  Escape key pressed
+
+  Do you wish to return to the Main Menu? (Y/N)
+
+[EXECERR]
+1
+Error in EXEC for
+
+[INPUT]
+3
+File not present on disk.
+Abort key F10 pressed by user.
+User attempted to Control-C out.
+
+[FORMAT]
+2
+Before the system files can be placed on your hard disk, the
+hard disk partition(s) (logical drives) must be formatted.
+
+[HELP1]
+1
+                 Press <F10> to abort, <ESC> to abort
+
+[HELP2]
+1
+           Press <F10> to abort, <ESC> to return to Main Menu
+
+[MAINMENU]
+11
+ Please select one of the following installation options.
+
+  1. Install PC-MOS on a NEW system
+  2. Install PC-MOS to REPLACE an existing DOS system
+  3. Upgrade PC-MOS on an existing MOS or a dual DOS/MOS system
+  4. Install dual DOS/MOS environment on a NEW system
+  5. Install dual DOS/MOS environment on an existing MOS system
+  6. Install dual DOS/MOS environment on an existing DOS system
+  7. Return to Operating System (QUIT)
+
+ Enter desired option:
+
+[MISCMSGS]
+4
+Duplicate PC-MOS file found:
+Do you wish to format Drive %c:? (Y/N):
+You may select Drive %c - Drive %c
+Old PC-MOS file found:
+
+[MISCTAG]
+3
+MLG
+DLG
+SML
+
+[MLG_P]
+7
+One or more MOS Large Primary partitions (made by PC-MOS 4.10 or
+earlier) exists on this system.  Before you can proceed, all such
+partitions must be converted to DOS Large Primary partitions.
+Though the conversion process is non-destructive, we strongly
+recommend that you backup all files in these partitions first.
+
+Proceed with automatic conversion from MLG to DLG? (Y/N):
+
+[MLG_S]
+12
+One or more MOS Large Secondary partitions (made by PC-MOS 4.10 or
+earlier) exists on this system.  Before you can proceed, all such
+partitions must be deleted to be replaced with extended
+partitions.  If you need to keep any of the data in these
+partitions, you must exit this installation utility, reboot with
+your PREVIOUS version of MOS and perform a backup of all MOS Large
+Secondary partitions.
+
+If you have already backed up any important information on these
+MOS Large Secondary partitions, you may proceed.
+
+Do you wish to DELETE ALL MOS Large Secondary partitions? (Y/N):
+
+[MSYS]
+1
+Making target drive bootable.
+
+[NOADRV]
+3
+Updating to the A: drive is not allowed.
+
+Press any key to continue.
+
+[NEEDBOOT]
+4
+No bootable partitions can be found on the first physical
+hard drive.  Unable to proceed with the installation process.
+
+Press any key to continue.
+
+[NEEDDRV]
+3
+A drive letter must be included.
+
+Press any key to continue.
+
+[NEEDSEC2]
+4
+No secondary partition can be found on the first physical
+hard drive.  Unable to proceed with dual DOS/MOS installation.
+
+Press any key to continue.
+
+[NOTAUX]
+5
+            This isn't the AUXILIARY Diskette.
+
+     Please insert the AUXILIARY Diskette into Drive A.
+
+                Press any key to continue.
+
+[NOTAUX2]
+5
+            This isn't the AUXILIARY #2 Diskette.
+
+     Please insert the AUXILIARY #2 Diskette into Drive A.
+
+                Press any key to continue.
+
+[NOTSYS]
+5
+                This isn't the SYSTEM Diskette.
+
+        Please insert the SYSTEM Diskette into Drive A.
+
+                   Press any key to continue.
+
+[ONDOS]
+2
+To continue the Install program, please re-boot your
+computer with the SYSTEM disk in Drive A
+
+[ONEBOOT1]
+2
+Because only one partition exists which is bootable
+the following drive letter will be used as your boot drive:
+
+[ONEBOOT2]
+1
+Press any key to continue.
+
+[OPT_FIRST]
+1
+            PC-MOS Installation Options
+
+[OPT_NEW]
+1
+           Install PC-MOS on a NEW system
+
+[OPT_REPLACE]
+1
+         Install PC-MOS to REPLACE an existing DOS system
+
+[OPT_DUAL]
+1
+         Install dual DOS/MOS environment on a NEW system
+
+[OPT_UPGRADE]
+1
+   Upgrade PC-MOS on an existing MOS or a dual DOS/MOS system
+
+[OPT_MOS2DUAL]
+1
+   Install dual DOS/MOS environment on an existing MOS system
+
+[OPT_DOS2DUAL]
+1
+   Install dual DOS/MOS environment on an existing DOS system
+
+[PATH]
+5
+
+Please enter the pathname of the subdirectory into which INSTALL
+will place the PC-MOS system files.  You may specify a different
+drive letter than the boot drive.  If no drive letter is
+entered the boot drive will be used.
+
+[PATH_NON_EXISTANT]
+1
+That subdirectory does not exist.  Press any key to continue.
+
+[PCMOS]
+3
+
+Do you wish to use the directory \PCMOS on the
+boot drive to hold the MOS system files? (Y/N):
+
+[REPLACE]
+7
+Remember to replace your old AUTOEXEC.BAT and CONFIG.SYS
+files for DOS with new ones for PC-MOS.
+
+Also, you may want to delete the files in your old DOS
+subdirectory to clear up some disk space.
+
+Press any key to continue.
+
+[REPORT0]
+9
+This installation program will generate a before and
+after report of your hard disk's partition structure.
+The installation process may involve automatic reboot(s).
+
+Therefore, you may see this screen more than once during
+an installation.
+
+Is this the first time you've seen this screen during this
+installation process? (Y/N):
+
+[REPORT1]
+3
+Just a moment, please...
+
+Recording initial partition structure.
+
+[REPORT2]
+3
+Just a moment, please...
+
+Recording final partition structure.
+
+[REPORT3]
+7
+The next screen will present the contents of a file that contains
+a summary of your system's initial partition structure and
+its current partition structure.
+
+This file, named DISKDATA.TXT, is located on the SYSTEM Diskette.
+
+Press any key to continue
+
+[SEARCH]
+5
+To eliminate any problems with upgrading to a new version
+of PC-MOS, this installation program is searching for the
+existence of any DUPLICATE MOS files on your hard drive.
+
+Please wait, file search is in process.
+
+[SIGNOFF]
+7
+
+PC-MOS has been successfully installed on your system.
+
+You may wish to review the README file at this time
+by pressing F1.
+
+When finished, press ENTER to exit INSTALL.
+
+[SPACE]
+8
+
+
+   Insufficient disk space to install Operating System.
+
+      PC-MOS Requires 800k to store systems files.
+
+
+             Press F10 to Exit to PC-MOS.
+
+[TITLE]
+1
+                  Installation Program for PC-MOS 5.01
+
+[UPATH]
+4
+Please enter the name of the drive and directory in which your
+existing PC-MOS files reside.
+
+For example, you could enter C:\PCMOS
+
+[UPD_KILL]
+9
+One or more files exist within the specified directory.
+All files within this directory will be deleted before you
+can proceed with the Upgrade process.
+
+Do not proceed if you first want to preserve any of these
+files.  For example, device drivers or other files not included
+on your PC-MOS distrubtion diskettes.
+
+Proceed with the installation process? (Y/N):
+
+[UPD_KILL_E]
+2
+An error occured while attempting to delete all files in the
+specified directory.
+
+[VERPATH1]
+1
+You have specified the path shown below.
+
+[VERPATH2]
+1
+Is this correct? (Y/N):
+
+[VIEW1]
+1
+      Use PgUp, PgUp, Up, Down, Home and End to scroll, Esc to exit
+
+[VIEW2]
+1
+ Copyright 1992 The Software Link, Incorporated.  All Rights Reserved Worldwide
+
+[WAIT]
+4
+
+                     Just a moment, Please
+
+            Loading the HDSETUP partitioning utility
+
+[YESNOCHARS]
+1
+YN
+
+
+
+
+

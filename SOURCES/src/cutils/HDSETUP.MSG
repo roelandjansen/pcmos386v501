@@ -1,0 +1,284 @@
+[ADDBEGEND]
+1
+                 Add to partition's Beginning or End? (B/E):
+
+[ALLDATA]
+1
+     All data in the partition will be lost.  Delete partition? (Y/N):
+
+[ALLALLDATA]
+1
+  All data in ALL partitions will be lost.  Delete ALL partitions? (Y/N):
+
+[BEGENDCHARS]
+1
+BE
+
+[CHNGSTAT]
+4
+Memory data:
+Disk data:
+Unchanged
+Changed
+
+[D_PROMPT1]
+4
+
+       Now it is time to add the primary partition.  Press F1 for help.
+         NOTE: 3megs have been reserved for a secondary partition.
+            Also, save room for any desired extended partitions.
+
+[D_PROMPT2]
+4
+
+
+              Now it is time to add the secondary partition.
+                           Press F1 for help.
+
+[D_PROMPT3]
+3
+          Make sure you know the drive letter assigned to the
+          secondary boot partition before exiting.
+          Proceed with the exit process? (Y/N):
+
+[DELPART]
+1
+                           Delete partition? (Y/N):
+
+[DELALLPART]
+1
+                  Delete ALL partitions for this drive? (Y/N):
+
+[DRVXOFX]
+3
+Drive
+of
+%s:   %c %s %c
+
+[ESCTAGS]
+6
+ESC
+      Resume Editing
+      Restore Original
+      Continue
+      Abort Addition
+      Exit Program
+
+[ERRORTAGS]
+12
+Error -
+ Insufficient memory
+ Disk read error
+ Disk write error
+ Data error 1
+ Data error 2
+ Data error 3
+ Data error 4
+ Data error 5
+ Data error 6
+ Improper cylinder numbering
+ Failure in EXEC of MSYS/M
+
+[FKEYTAGS]
+20
+Help
+(Help)
+Chg Drive
+(Chg Drive)
+Add Pri
+(Add Pri)
+Add Ext
+(Add Ext)
+Add Sec
+(Add Sec)
+Chg Boot
+(Chg Boot)
+Delete
+(Delete)
+ !! filler for f8
+ !! filler for (f8)
+Delete All
+(Delete All)
+MLG->DLG
+(MLG->DLG)
+
+[HEADINGS]
+2
+ Drive  Boot  Type   Megs   Cylds  Start   End
+ =====  ====  =====  =====  =====  =====  =====
+
+[INSDISK1]
+2
+                      Insert SYSTEM Diskette in drive A:
+                          and press any key to reboot
+
+[INSDISK2]
+2
+                           Prepare system for reboot
+                              and press any key
+
+[KEYATAGS]
+4
+         Select Partition
+         Select Megs/Cylds
+0-9,BKSP Edit entry
+ENTER    Accept Entry
+
+[LARGETAG]
+1
+ Maximum size:
+
+[LT_FINAL]
+3
+
+              You may now create any additional partitions.
+               Press F1 for help.  Press ESC when through.
+
+[MAXSML]
+3
+          This entry will create a DLG (DOS LARGE) partition.
+    Did you intend to create a maximally sized SML (SMALL, <= 32MB)
+                          partition? (Y/N):
+
+[MISCTAG]
+11
+-- UNALLOCATED --
+MLG
+DLG
+SML
+OTH
+-e
+-s
+-p
+- NEW PRIMARY ----
+- NEW EXTENDED ---
+- NEW SECONDARY --
+
+[MLG2DLG]
+3
+    Though the MLG->DLG conversion process is non-destructive,
+    we strongly recommend that you backup all files first.
+    Proceed with conversion from MLG to DLG? (Y/N):
+
+[MLGS2EXT1]
+1
+  The old MOS large secondary partition
+
+[MLGS2EXT2]
+1
+: has been replaced by
+
+[MLGS2EXT2A]
+1
+  the new, unformatted extended partition
+
+[MLGS2EXT3]
+1
+  Press any key
+
+[MLGS2EXT4]
+1
+: has been deleted but automatic
+
+[MLGS2EXT4A]
+3
+  replacement with extended not possible.  Manual creation of a
+  replacement extended partition must be done after installation
+  is complete.               Press an key
+
+[MLGSDEL]
+5
+  Do NOT proceed with the deletion of all MOS Large Secondary partitions
+  until you first backup all files.  (You may use the up and down arrow
+  keys and F2 to review the current partition structure.)
+
+  Proceed with the deletion of all MOS Large Secondary partitions? (Y/N)
+
+[MODETAGS]
+9
+Mode:
+    Select Partition
+    Modify Partition
+    Add Pri Partition
+    Add Ext Partition
+    Add Sec Partition
+    Exit Program
+    Delete All
+    MLG->DLG
+
+[N_PROMPT1]
+4
+
+
+              Now it is time to add the primary partition.
+                     Press F1 for help information.
+
+[NOMSYSM]
+1
+   Conversion not possible, MSYS.COM could not be found.  Press any key
+
+[PD_PROMPT]
+4
+    Do NOT proceed with the deletion of all partitions until you
+    first backup all files.  You may use the up and down arrow keys
+    and F2 to review the current partition structure.
+    Proceed with the deletion of all partitions on all drives? (Y/N)
+
+[PRILAST]
+1
+     Primary partition must be deleted last -- Press any key to continue
+
+[PTCFIX]
+1
+   Partition type correction applied for drive
+
+[PTCFIX2]
+1
+   Press any key
+
+[SECNOTE]
+3
+    Secondary partitions should be used only for a MOS boot partition
+      in dual boot installations and made only large enough to hold
+            MOS system files (e.g. 3Meg).    Proceed? (Y/N):
+
+[SIZECHNG]
+2
+        When a partition's size is changed, its data will be destroyed
+            and the partition must be reformated.  Proceed? (Y/N):
+
+
+[SUBBEGEND]
+1
+              Subtract from partition's Beginning or End? (B/E):
+
+[TITLE]
+2
+                    PC-MOS Hard Disk Setup Program, v5.01
+                 (c) Copyright 1992  The Software Link, Inc.
+
+[VIEW1]
+1
+      Use PgUp, PgDn, Up, Down, Home and End to scroll, Esc to exit
+
+[VIEW2]
+1
+ Copyright 1992 The Software Link, Incorporated.  All Rights Reserved Worldwide
+
+[VIEWERR]
+1
+                 File not found error.  Press any key to continue
+
+[WRCHNG]
+1
+                       Write changes to the disk? (Y/N):
+
+[WRITING]
+1
+                         Writing disk information
+
+[YESNOCHARS]
+1
+YN
+
+

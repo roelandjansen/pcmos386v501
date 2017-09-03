@@ -1,7 +1,0 @@
-   Search Concepts   ;display_help "searching"
- Regular Expressions ;display_help "regular expressions"
-  Case Sensitivity   ;display_help "case sensitivity"
-       Search        ;display_help "search"
-      Translate      ;display_help "translate"
-       Repeat        ;display_help "searching again"
- Incremental Search  ;display_help "incremental search"

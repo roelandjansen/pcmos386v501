@@ -1,2219 +1,0 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-nothing
-
-	No command is assigned to this key.  Pressing it will invoke the
-	registered macro for unassigned key sequences.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-help"help"
-
-	To get help on concepts or commands:
-
-		 Press Alt-h
-
-	If you press Alt-h at a prompt, the help screen for the current
-	command is displayed.  Otherwise, a menu of topics appears.
-
-		 Use the Up and Down arrows to move to the topic you want help on
-		 Press Enter
-
-	Repeat this process until a help screen appears.  To find out the key
-	assignments for the commands described on the screen, press Alt-h
-	again.
-
-		 Esc returns you to your editing session
-		 Grey/Keypad minus returns you to the previous menu
-
-keyboard layout
-	Keystroke		Command								Keystroke		Command
-	ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-	Alt-a				Non-inclusive Mark	 ³F1					Change Window
-	Alt-b				Buffer List					 ³F2					Resize Window
-	Ctrl-b			Line to Bottom			 ³F3					Create Window
-	Alt-c				Column Mark					 ³F4					Delete Window
-	Ctrl-c			Center Line in Window³Alt-F1			Toggle Borders
-	Alt-d				Delete Line					 ³Alt-F2      Zoom Windows
-	Ctrl-d			Scroll Buffer Down	 ³F5					Search Forward
-	Alt-e				Edit File						 ³F6					Translate Forward
-	Ctrl-e			Scroll Buffer Up		 ³Shift-F5		Search Again
-	Alt-f				Display File Name		 ³Shift-F6		Translate Again
-	Alt-g				Go to Line					 ³Ctrl-F5			Case Sens. Toggle
-	Alt-h				Help								 ³Ctrl-F6			Regular Expr. Toggle
-	Alt-i				Insert Mode Toggle	 ³Alt-F5			Search Backward
-	Alt-j				Jump To Bookmark     ³Alt-F6			Translate Backward
-	Alt-k				Delete to End of Line³F7					Remember
-	ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PgDn ==> Next page
-	Keystroke		Command								Keystroke		Command
-	ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-	Alt-l				Line Mark						 ³Alt-F7			Load Keystroke Macro
-	Alt-m				Mark								 ³Shift-F7		Pause Remember Toggle
-	Alt-n				Next Buffer					 ³F8					Playback
-	Ctrl-n			Next Error					 ³Alt-F8			Save Keystroke Macro
-	Alt-o				Change Output File	 ³F9					Load Macro File
-	Alt-p				Print Block					 ³Shift-F9		Delete Macro File
-	Ctrl-p			Pop Up Error Window	 ³F10					Execute Command
-	Alt-q				Quote								 ³Alt-F10			Compile Buffer
-	Alt-r				Read File						 ³Home				Beginning of Line
-	Ctrl-r			Repeat							 ³Home Home					Top of Window
-	Alt-s				Search Forward			 ³Home Home Home		Top of Buffer
-	Alt-t				Translate Forward		 ³End								End of Line
-	Ctrl-t			Line to Top					 ³End End						End of Window
-	Alt-u				Undo								 ³End End End				End of Buffer
-	Ctrl-u			Redo								 ³Shift-End		Right Side of Window
- PgUp ==> Previous page ÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PgDn ==> Next page
-	Keystroke		Command								Keystroke		Command
-	ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-	Alt-v				Display Version ID	 ³Ctrl-Home		Top of Window
-	Alt-w				Write								 ³Ctrl-End		End of Window
-	Ctrl-w			Backup File Toggle	 ³PgDn				Page Down
-	Alt-x				Exit								 ³PgUp				Page Up
-	Ctrl-x			Write Files and Exit ³Ctrl-PgDn		End of Buffer
-	Alt-z				Suspend BRIEF				 ³Ctrl-PgUp		Top of Buffer
-	Ctrl-z      Zoom Window   			 ³Down arrow	Down
-	Alt-minus	  Previous Buffer    	 ³Left arrow	Left
-	Ctrl-minus  Delete Curr. Buffer  ³Right arrow	Right
-	Backspace		Backspace						 ³Up arrow		Up
-	Ctrl-Bksp.  Delete Previous Word ³Ctrl-Right	Next Word
-	Enter				Enter								 ³Ctrl-Left		Previous Word
-	Ctrl-Enter	Open Line						 ³Ctrl-Break	Halt
-	Esc					Escape							 ³Del					Delete
-	Tab					Tab									 ³Ins					Paste from Scrap
- PgUp ==> Previous page ÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PgDn ==> Next page
-	Keystroke		Command								Keystroke		Command
-	ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-	Shift-Tab		Back Tab						 ³Keypad -		Cut to Scrap
-	Alt-1				Drop Bookmark 1			 ³Keypad +		Copy to Scrap
-	Alt-2				Drop Bookmark 2			 ³Keypad *		Undo
-	Alt-3				Drop Bookmark 3			 ³
-		.							.								 ³
-		.							.								 ³
-	Alt-0				Drop Bookmark 10		 ³
-																	 ³
-																	 ³
-																	 ³
-																	 ³
-																	 ³
-																	 ³
-																	 ³
-																	 ³
- PgUp ==> Previous page ÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-basic conceptscursor shapes
-
-	BRIEF is a "modeless" editor, meaning that the commands have the
-	same meaning almost all the time.  The normal editing environment
-	is referred to as the editing mode, and all of BRIEF's commands and
-	editing capabilities are available from it.
-
-	There are two variations on the editing mode:  insert mode and
-	overstrike mode.  In insert mode, typed text is inserted at the
-	cursor.  In overstrike, existing text is overwritten as you type.
-
-	Because BRIEF is a full-screen editor, you can edit any part of the
-	screen, even if there is no text there.  Screen areas with no cor-
-	responding text are referred to as "virtual" space.  If you type in
-	virtual space, it becomes real.
-
-	
-
-																										PgDn ==> Next page
-
-	You can tell what editing mode you're in just by looking at the
-	cursor:  BRIEF's insert and overstrike cursors are different shapes.
-	The cursor also changes shape when it's at a virtual character.
-	Although the behavior of the cursor may be changed with Setup, the
-	normal shapes are:
-
-	Insert _		Insert/Virtual Ü		Overstrike/Virtual ß		Overstrike Û
-
-	The following symbols are used in the descriptions on the Basic
-	Concepts menu:
-
-	a b	Insert:			Indicates the effect of an action in insert mode.
-	 
-
-	xxx Overstrike: Indicates the effect of an action in overstrike mode.
-
- PgUp ==> Previous page
-insert_modeinsert and overstrike"insert_mode"
-
-	Insert Mode toggles BRIEF between insert mode and overstrike mode.
-	You can tell what mode you are in by looking at the cursor.  See the
-	Basic Concepts Overview help screen for information on cursor shapes.
-
-	a b	Insert:			 Characters are inserted at the cursor
-	 							 Backspace deletes the character left of the cursor
-									 Enter splits the line at the cursor
-									 Tab inserts a Tab character or spaces
-
-	xxx Overstrike:  Characters replace the character at the cursor
-									 Backspace replaces the character left of the
-										cursor (except tab characters) with a space
-									 Enter moves cursor to the start of the next line
-									 Tab moves cursor to the next tab stop
-
-
-
-self_inserttyping keys
-
-	All alphanumeric keys, punctuation, and some other keys are	self-
-	inserting, meaning that pressing those keys causes the character
-	shown on the key itself to be inserted at the current position.
-
-	a b	Insert:			 Characters are inserted at the cursor
-	 							 Backspace deletes the character left of the cursor
-									 Enter splits the line at the cursor
-									 Tab inserts a Tab character or spaces
-
-	xxx Overstrike:  Characters replace the character at the cursor
-									 Backspace replaces the character left of the
-										cursor (except tab characters) with a space
-									 Enter moves cursor to the start of the next line
-									 Tab moves cursor to the next tab stop
-
-
-
-quote"quote"
-
-	Quote is used when you want to insert a character that has a command
-	assigned to it.  For example, the Ctrl-r keystroke normally invokes
-	Repeat instead of inserting a Ctrl-r character (, ASCII value 18)
-	into the buffer.  To insert the ASCII value for Ctrl-r,
-
-		 Press the Quote key, then
-		 Press Ctrl-r
-
-	Not all key sequences have ASCII values.  Quoting sequences that
-	don't has no effect.  For example, Quote Alt-e will still call Edit
-	File.  A list of ASCII values for keys may be found in your DOS
-	manual.
-
-
-
-
-
-tabsback_tab"tabs,back_tab;use_tab_char"
-
-	The Tabs command lets you set the tab stops for the current buffer.
-
-	Tab stops are column positions that the cursor will move to when the
-	Tab command (Tab key) or Back Tab command (Shift-Tab) is executed.
-	Stops must be specified in ascending order.  The distance between the
-	last two you specify will be repeated for tab stops across the width
-	of the buffer.  For tabs every 8 columns, set the first at column 9.
-
-	Prompt:		"Enter tab stop (return terminates):"
-
-		This prompt appears repeatedly.  At each occurrence, enter the
-		value for the next tab stop (in ascending order).  Press Enter
-		without entering a value to indicate that the last tab has been set.
-
-
-
-
-use_tab_char"use_tab_char"
-
-	Use Tab Characters controls whether real tab characters (ASCII
-	value 9) or spaces (ASCII value 32) are inserted when the Tab key
-	is pressed and when characters are inserted in "virtual space"
-	(beyond the ends of lines or files).
-
-	Prompt:		"Fill with tab chars?"
-
-		Type "y" if you want to use real tab characters, or "n" if you
-		want to use spaces.
-
-
-
-
-
-
-
-
-open_linenewlines"open_line"
-
-	Enter has the following effects:
-
-	a b	Insert:			Puts a newline character into the current buffer at
-	 							the cursor.  This is the only way to split a line.
-
-	xxx Overstrike: Moves the cursor to the beginning of the next line.
-
-
-
-	Open Line inserts a new line into the current buffer, on the line
-	after the current line.  Open Line works in both modes and is the
-	only way to insert a new line in overstrike mode.
-
-
-
-
-
-delete_chardeleting"delete_char;backspace,cut"
-
-	Delete is used to delete characters from the buffer.  If a block
-	is marked, Delete deletes the entire block.  Otherwise, it deletes
-	the character at the cursor.
-
-	Newlines are treated like all other characters; if a newline is
-	deleted, the next line is joined to the end of the current line.
-	This is the simplest way to join two lines.
-
-
-
-
-
-
-
-
-
-
-backspace"backspace;delete_char"
-
-	Backspace has the following effects:
-
-	a b	Insert:			Deletes the character to the left of the cursor.
-	 
-
-	xxx Overstrike: Replaces the character to the left of the cursor
-									with a space.
-
-	Nothing is deleted if the cursor is at the left edge of the window,
-	so you don't accidentally delete characters you can't see.
-
-
-
-
-
-
-
-delete_next_worddelete_previous_worddeleting words"delete_next_word,delete_previous_word;cut"
-
-	Words may be deleted quickly by using Delete Next Word and Delete
-	Previous Word.
-
-	Words are normally defined as being separated only by spaces, tabs,
-	or newlines, although for certain types of programming language files
-	the definition of a word may be slightly different.
-
-
-
-
-
-
-
-
-
-
-
-delete_linedeleting lines"delete_line,delete_char;cut"
-
-	Entire lines can be deleted with Delete Line.  The following lines
-	will move up to replace the deleted line.  If you are at the end
-	of the buffer, nothing is deleted.
-
-	Lines may be joined by deleting (with Delete) the newline character
-	that separates them.
-
-
-
-
-
-
-
-
-
-
-
-delete_to_eoldeleting to end"delete_to_eol;cut"
-
-	Delete to End of Line deletes all characters from the cursor
-	to the end of the current line, except the newline character.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-blocks
-
-	Blocks are a way of restricting editing actions (like cut, copy,
-	and search) to a portion of the buffer.  There are 4 block types:
-
-		1.  Character blocks, which include all characters from a mark
-		to the character at the cursor
-
-		2.  Column blocks, which include all characters in the rectangle
-		formed by the end of the mark and the cursor
-
-		3.  Line blocks, which include all lines that are marked
-
-		4.  Noninclusive blocks, which are like character blocks, except
-		that the mark and cursor act like they are between characters
-
-	You may only have one block marked at a time, and the block is
-	always bounded by a mark at one end, and the cursor at the other.
-
-markmark 2mark 3mark 4marking"mark,mark 2,mark 3,mark 4"
-
-	Marks are used to define the beginning of a block.  The cursor
-	always defines the other end.  There are 4 mark commands:
-
-		1.  Mark, which starts a character block (mark is left at cursor)
-
-		2.  Column Mark, which starts a column block (mark is left at
-		cursor, but block will be column-restricted)
-
-		3.  Line Mark, which starts a line block (mark includes entire
-		line where the cursor is located)
-
-		4.  Noninclusive Mark, which starts a noninclusive block (mark is
-		left "between" cursor and preceding character)
-
-	If there is already a mark of the same type in the current buffer,
-	these commands remove the mark.  If there is already a mark of a
-	different type, it is converted to the new type.
-swap_anchor"swap_anchor"
-
-	Swap Anchor reverses the position of the cursor and the start of
-	the marked block in the current buffer.  If there is no marked block,
-	it has no effect.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-cutdelete_char"cut,delete_char;paste"
-
-	Cut copies a marked block to the scrap and then deletes the block
-	from the buffer.  If no block is marked, Cut copies and deletes the
-	current line.
-
-	To delete a marked block without copying its contents to the scrap
-	first, use the Delete command.
-
-	Text in the scrap can be inserted in any buffer with Paste; this is
-	is the mechanism BRIEF uses for moving and copying text.
-
-
-
-
-
-
-
-
-copy"copy;paste"
-
-	Copy copies a marked block to the scrap.  If no block is marked,
-	Copy copies and deletes the current line.
-
-	Text in the scrap can be inserted in any buffer with Paste; this is
-	is the mechanism BRIEF uses for moving and copying text.
-
-
-
-
-
-
-
-
-
-
-
-
-paste"paste;cut,copy"
-
-	Paste inserts a copy of the scrap into the current buffer.  The
-	scrap itself remains unchanged, so you can paste many copies of
-	the same text without cutting or copying again.
-
-	The type of block in the scrap (Character, Column, Line, or Non-
-	Inclusive) is taken into consideration when pasting.  Character
-	and Non-inclusive blocks are inserted just before the current
-	position.  So is the first line of a column block; additional lines
-	are inserted below the current position.  Line blocks are inserted
-	before the current line.
-
-
-
-
-
-
-
-printprinting"print"
-
-	Print prints the currently marked block on the standard printer
-	device, then unmarks the block.  All real tab characters are
-	translated to the appropriate number of spaces as the text is
-	sent to the printer.
-
-
-
-
-
-
-
-
-
-
-
-
-
-slide_inslide_outindenting blocks"slide_in,slide_out;back_tab"
-
-	Normally, Tab moves the cursor to the next tab stop on the current
-	line.  Back Tab moves the cursor to the previous tab stop, or to the
-	beginning of the line.
-
-	Both commands have a slightly different effect when these conditions
-	are in effect:
-
-		 The current buffer has a language package associated with it
-		 A block is marked
-
-	In this situation, Tab acts as though it had been pressed at the
-	first character of every line in the block, which shifts the block
-	right by one tab stop.
-
-	Back Tab has the opposite effect, shifting a block left by one tab
-	stop.  It only shifts lines that begin with tabs or spaces.
-
-tolowertouppercase conversion"toupper,tolower"
-
-	Uppercase Block converts all the lower-case characters in a block to
-	upper case.  Lowercase Block converts the block to lower case.
-
-	If no block is marked, both commands operate on the current line.
-
-
-
-
-
-
-
-
-
-
-
-
-
-buffers
-
-	Buffers are the objects that BRIEF uses to store text while you are
-	editing it.  Buffers and files are different; a buffer is a temporary
-	copy of a file, and usually has the same name.  All changes made to
-	a buffer are stored in memory (not in the file on disk) until you
-	explicitly write them.
-
-	Each buffer has an input file and an output file associated with it.
-	The buffer is copied from the input file, edited, and copied to the
-	output file.  These two files are normally one and the same.  However,
-	you may change the output file name.  Writing a buffer to a new
-	output file changes the input file to match.
-
-	Buffers may be up to 65,535 lines long.  There is no limit on their
-	number; you can edit as many files as you want.
-
-
-																										PgDn ==> Next page
-
-	The buffers are kept in a circular list called the buffer list.  When
-	a buffer is created, it is added to the list; when it's deleted, it
-	is removed.  All buffers are always in the buffer list.
-
-	When you write a buffer, its contents replace the output file; if
-	you exit BRIEF without writing a buffer, the changes made to the
-	buffer are lost.
-
-
-
-
-
-
-
-
-
- PgUp ==> Previous page
-edit_fileediting"edit_file"
-
-	Edit File creates a new buffer, copies a file from disk into it, and
-	views the new buffer in the current window.  The buffer is created
-	even if the disk file does not exist.
-
-	If the file is already in a buffer, that buffer is put in the
-	current window.
-
-
-	Prompt:		"File:"
-
-		Enter the name of the file you want to edit.
-
-	File name completion is active at the Edit File prompt.  Pressing
-	<Tab> will either complete the name of the file being entered, or
-	present a menu of files that you can select from.
-
-
-read_filereading"read_file;edit_file"
-
-	Read File Into Buffer reads a copy of a file from disk into the
-	current buffer, at the current cursor position.  If the specified
-	file is already in a buffer, the buffer is read in instead.
-
-	Read File should not normally be used to edit files, because it is
-	slower and less efficient than Edit File.  It should only be used
-	when you want to merge a file into an existing buffer.
-
-
-	Prompt:		"File to read:"
-
-		Enter the name of the file you want to read in.
-
-	File name completion is active at the Read File prompt.  Pressing
-	<Tab> will either complete the name of the file being entered, or
-	present a menu of files that you can select from.
-
-display_file_nameoutput_filefile names"display_file_name,output_file"
-
-	Display File Name displays the full path name of the output file for
-	the current buffer.  An asterisk after the name indicates that the
-	buffer has been modified since it was loaded or written.
-
-
-	Change Output File changes the output file name.  This command may
-	be used to create a copy of a file, or to save it on a different
-	disk when the original disk fills up.  The original input file
-	remains associated with the buffer until it is written.
-
-	Prompt:		"Enter new output file name:"
-
-		Enter the file name that will be used to save the buffer.  You can
-		specify any name (with or without a path), as long as you're not
-		editing another buffer with the same input or output file name.
-
-
-buf_listbuffer list"buf_list"
-
-	The Buffer List command shows you a list of all the buffers
-	currently in memory, and indicates whether each buffer has been
-	modified.
-
-	In the buffer list, you can use the following commands:
-
-		 Move up or down with the Up and Down arrows
-		 Scroll forward or back 1 screen with PgUp or PgDn
-		 Move to the top or bottom of the list with Home or End
-		 Delete the currently highlighted buffer with d
-		 Write the currently highlighted buffer with w
-		 Edit the currently highlighted buffer with e
-		 Return to your editing session with Esc
-
-	You cannot delete a buffer that is currently being viewed in any
-
-																										PgDn ==> Next page
-
-	of the windows.  Also, if you try to delete a modified buffer,
-	you will receive the following prompt:
-
-
-	Prompt:		"This buffer has not been saved.  Delete [ynw]?"
-
-		Typing y will delete the buffer anyway, n or Esc will return you
-		to the buffer, and w will write the buffer and then delete it.
-
-
-	After the buffer is deleted, the next buffer in the buffer list
-	becomes the new current buffer.
-
-
-
-
- PgUp ==> Previous page
-edit_next_bufferedit_prev_bufferchange buffer"edit_next_buffer,edit_prev_buffer;buf_list"
-
-	Next Buffer and Previous Buffer let you switch to the next or
-	previous buffers in the buffer list respectively.  This method
-	is faster than selecting a buffer from the Buffer List.
-
-	The new buffer is always displayed in the current window.  The
-	cursor is put the last position it held in the buffer.
-
-
-
-
-
-
-
-
-
-
-
-write_bufferwriting"write_buffer;output_file"
-
-	Write saves the current buffer to disk, using the current output file
-	name.  The input file name is changed, if necessary, to match the
-	output file name.  Once a file is written, changes that had been
-	made to it can no longer be undone.
-
-	You can write a marked block to a new output file.  This unmarks the
-	block, but does not clear your undo information.
-
-	Prompt:		"Write marked area as:"
-
-		Enter a file name that will be used to save the marked block.
-
-	If the disk you are writing to is full, you must change the output
-	file name to a file on a disk that has free space.
-
-
-
-set_backupbackups"set_backup"
-
-	Backup files are normally created when a file is written.  A backup
-	file contains the edited file as it existed prior to the editing
-	session.
-
-	Backup files may be saved in any directory on any drive, or they may
-	be saved in the same directory as the edited file.  In the second case
-	case, the extension of the file is changed to ".bak".  The backup
-	file location may be set with SETUP.
-
-	Although we do not recommend turning backup files off, you may do so
-	with the Backup File Toggle command.  Turning backups off will not
-	reduce the amount of space BRIEF needs to write your file, because
-	BRIEF doesn't erase the old version until the new one is safely
-	written.  It will, however, make writing large files slightly
-	faster, especially if backups are stored on another drive.
-
-
-delete_curr_bufferdelete buffer"delete_curr_buffer;buf_list"
-
-	Delete Current Buffer deletes the current buffer from the buffer
-	list.  If the buffer has been modified but not saved, you will see
-	the following prompt:
-
-	Prompt:		"This buffer has not been saved.  Delete [ynw]?"
-
-		Typing y will delete the buffer anyway, n or Esc will return you
-		to the buffer, and w will write the buffer and then delete it.
-
-	After the buffer is deleted, the next buffer in the buffer list
-	becomes the new current buffer.
-
-	You can't delete a buffer if it is the only one in the list, or if
-	it is being viewed in more than one window.
-
-
-
-deldelete file"del"
-
-	Delete File deletes a DOS or OS/2 file from inside BRIEF.  This command
-	is potentially dangerous, because it is not undoable.  It does not
-	prompt.  You must first invoke Execute Command, then enter
-
-			del <file name>
-
-	where <file name> is the name of the file you want to delete.
-
-	You cannot delete a file that you are editing.
-
-
-
-
-
-
-
-
-updownleftrightprev_charnext_charcharacter movement"up,down,left,right,prev_char,next_char"
-
-	The Up, Down, Left, and Right commands are used to move the cursor
-	in the current buffer.  They will move the cursor into virtual
-	space (into tab fill areas, past the ends of lines, or past the end
-	of the file) if necessary.  If you try to move the cursor past one of
-	the window edges, the buffer will be scrolled if possible to bring
-	the next line or column into view.
-
-	The Previous Character and Next Character commands also move the
-	cursor in the buffer, but will not move it into virtual space.
-
-
-
-
-
-
-
-
-next_wordprevious_wordword movement"next_word,previous_word"
-
-	Next Word moves the cursor to the first character of the next word.
-
-	Previous Word moves the cursor to the first character of the
-	previous word.
-
-	Words are normally defined as being separated only by spaces, tabs,
-	or newlines, although for certain types of programming language files
-	the definition of a word be slightly different.
-
-
-
-
-
-
-
-
-
-goto_linebeginning_of_lineend_of_line_home_endline movement"goto_line,beginning_of_line,end_of_line,_home,_end"
-
-	Go To Line moves the cursor to the first character of a specific
-	line in the buffer.
-
-	Prompt:		"Go to line:"
-
-		Enter the line number you want to go to.  If you specify a line
-		past the end of the buffer, the cursor will move as far as it can.
-
-	Beginning of Line moves the cursor to the beginning of the current
-	line.  End of Line moves the cursor to the end of the current line.
-
-	Home and End are multiple-keystroke commands.  The first time Home
-	is pressed, the cursor moves to the beginning of the line; the second
-	time, to the top of the window; the third time, to the beginning of
-	the buffer.  End moves to the end of the line, bottom of the window,
-	and end of the file.
-
-top_of_windowend_of_windowleft_sideright_sidewindow movement"top_of_window,end_of_window,left_side,right_side;change_window"
-
-	Top of Window moves the cursor to the top line of the current
-	window.  End of Window moves the cursor to the bottom line.
-
-	Left Side of Window moves the cursor to the leftmost column in
-	the current window.  Right Side of Window moves the cursor to the
-	rightmost column.
-
-
-
-
-
-
-
-
-
-
-
-top_of_bufferend_of_bufferbuffer movement"top_of_buffer,end_of_buffer;edit_next_buffer,edit_prev_buffer"
-
-	Top of Buffer moves the cursor to the first character in the
-	current buffer.
-
-	End of Buffer moves the cursor to the last character in the current
-	buffer (which is always a newline).
-
-
-
-
-
-
-
-
-
-
-
-
-to_topcenter_lineto_bottomscreen_upscreen_downscrolling by line"to_top,center_line,to_bottom,screen_up,screen_down"
-
-	You can scroll the buffer so that the current line is as close to the
-	top, middle, or bottom of the window as possible.  The commands are:
-
-		 Line To Top of Window
-		 Center Line in Window
-		 Line to Bottom of Window
-
-
-	You can also scroll the buffer up or down, one line at a time, with:
-
-		 Scroll Buffer Up in Window
-		 Scroll Buffer Down in Window
-
-
-
-
-
-page_uppage_downscrolling by page"page_up,page_down"
-
-	Page Up moves one page back in the current buffer, leaving the
-	cursor at the same position on the screen.
-
-	Page Down likewise moves one page forward.
-
-	For both commands, if you can't move an entire page in the appropriate
-	direction, the buffer is scrolled as much as possible.
-
-
-
-
-
-
-
-
-
-
-drop_bookmarkdrop_bookmark 1drop_bookmark 2"drop_bookmark,drop_bookmark 1,drop_bookmark 2;drop_bookmark 3,goto_bookmark"
-
-	Bookmarks let you save a position in a particular buffer.  The
-	position is anchored to a character, and moves with that character if
-	lines are added or deleted before it in the buffer.  If the character
-	itself is moved or deleted, the bookmark remains as close as possible
-	to the original position.  Up to 10 bookmarks can be kept at once.
-
-	The Drop Bookmark command drops a bookmark, saving the current
-	position.
-
-	Prompt:		"Drop bookmark [1-10]:"
-
-		Enter a bookmark number from 1 to 10.  The current line, column,
-		and buffer will be saved in the bookmark for later recall with
-		Go To Bookmark.
-
-
-
-goto_bookmark"goto_bookmark;drop_bookmark"
-
-
-	Go To Bookmark moves the cursor to a position saved with Drop
-	Bookmark.  This position may be in another buffer.  If it is, the
-	current buffer is changed to the buffer where the bookmark was
-	dropped.  The bookmark contains the line, column, and buffer where it
-	was dropped.
-
-	Prompt:		"Go to bookmark [1-10]:"
-
-		Enter a bookmark number from 1 to 10.  The cursor will move to the
-		position of the saved bookmark.
-
-
-
-
-
-
-keys and commands";execute_macro"
-
-	Commands are functions that you can perform from the keyboard.
-	Commands may be assigned to key sequences; for example, the Exit
-	command is assigned to <Alt-x> by default.  Commands may also be
-	executed by name: you could also exit by invoking Execute Command
-	and entering "exit".
-
-	In BRIEF, any command may be assigned to any legal key sequence.
-	You can	change any or all of BRIEF's default key assignments, either
-	temporarily or permanently.
-
-	You can write your own commands, known as macros, to replace or
-	supplement BRIEF's built-in commands.
-
-	See the BRIEF User's Guide for information on commands.  See the
-	Macro Language Guide for detailed information on key assignments,
-	and on reconfiguring BRIEF through macros.
-
-execute_macroexecute"execute_macro"
-
-	Execute Command is used to execute a command by its function name
-	(rather than by the keystroke it's assigned to).  Command names are
-	listed in the User's Guide's Command Reference.  Commands beginning
-	with an underscore may not be invoked in this way.
-
-	Prompt:		"Command:"
-
-		Type the name of the command, followed by any parameters you wish
-		to provide.  Spaces are permitted in a parameter, if the parameter
-		is surrounded by double quotes.  For example,
-
-				dos "dir a:"
-
-		will pass the single parameter "dir a:" to the dos command.  Double
-		quote characters may themselves be included in a parameter by
-		preceding them with a backslash.
-
-remember"remember;playback"
-
-	Remember causes BRIEF to start recording all keystrokes, until you
-	call Remember again.
-
-	Only one keystroke sequence may be remembered at a time.  You may
-	receive the following prompt:
-
-	Prompt:		"Overwrite existing keystroke macro [yn]?"
-
-		You have already recorded a keystroke sequence in this editing
-		session.  Answer y if you want to overwrite the previous
-		recording, or n if you want to return to BRIEF.
-
-	<Shift-F7> lets you insert a pause into a keystroke recording (this
-	key assignment may not be changed.)  Pressing <Shift-F7> again
-	resumes recording.  When the recording is played back, it stops at
-	the pause, and can be resumed by pressing <Shift-F7> one more time.
-
-playback"playback;remember"
-
-	Playback plays back the most recently remembered keystroke sequence.
-	If Playback encounters a pause (<Shift-F7>) command in the remembered
-	sequence, it will pause the playback; to resume it, press <Shift-F7>.
-
-	When a keystroke sequence is being replayed, the notation PL appears
-	near the lower-right-hand corner of the screen.  The notation PA
-	indicates that a Remember or Playback command is paused.
-
-
-
-
-
-
-
-
-
-
-load_keystroke_macro"load_keystroke_macro;save_keystroke_macro"
-
-	Load Keystroke Macro reads in a previously saved keystroke macro
-	(recorded sequence of keystrokes) from a file.  Once the file has
-	been read in, it becomes the current keystroke macro, and can be
-	played back with Playback.
-
-	Prompt:		"Keystroke macro file:"
-
-		Enter the name of the file containing the saved keystroke macro.
-		If no file extension is specified, .km is assumed.  If the file
-		is not located in the current directory, the directories on the
-		BPATH are searched for the file.
-
-
-
-
-
-
-save_keystroke_macro"save_keystroke_macro;load_keystroke_macro"
-
-	Save Keystroke Macro saves the current keystroke recording to a
-	file.  The saved keystroke macro can later be restored using Load
-	Keystroke Macro.
-
-	Prompt:		"Save recording as [c:\brief\macros]:"
-
-		Enter the name of the file that the keystroke recording should
-		be saved in.  If no file extension is specified, .km is assumed.
-		The file is placed in the directory shown in square brackets if
-		no explicit path is specified.  To change the directory in square
-		brackets, press Enter without entering a file name.  If you
-		keep pressing Enter, BRIEF will cycle through all of the directories
-		on the BPATH, showing the current directory after all the BPATH
-		directories have been displayed.
-
-
-
-repeat"repeat"
-
-	Repeat lets you repeat a command several times.
-
-	Prompt:		"Repeat count = 1; type count or command."
-
-		Enter the number of times you want to repeat the command, or
-		the command itself.  If the command requires multiple keystrokes
-		to invoke, you must first create a keystroke recording of it,
-		and then repeat the keystroke recording rather than the command
-		itself.
-
-
-
-
-
-
-
-
-keys"keys;assign_to_key,key"
-
-	The Keys command is used to:
-
-		 Reconfigure key assignments for the commands included with
-			BRIEF
-
-		 Determine the current key assignments for each command (online
-			Quick Reference card)
-
-	When Keys is run, two windows appear.  The left window lists the
-	BRIEF commands.  One command is always highlighted.  The right
-	window lists the key assignments for the highlighted command.
-
-
-
-
-
-																										PgDn ==> Next page
-
-	In the left window, you can use the following commands:
-
-		 Move up or down with the Up and Down arrows
-		 Scroll forward or back 1 screen with PgUp or PgDn
-		 Move to the top or bottom of the list with Home or End
-		 Move to a specific command by typing its first letter
-		 Add an assignment with Ins
-		 Move to the right window with Enter or the Right arrow
-		 Return to your editing session with Esc.
-
-	In the right window, you can:
-
-		 Add an assignment with Ins
-		 Delete an assignment with Del
-		 Return to the left window with Esc, F10, or the Left arrow.
-
- PgUp ==> Previous page															PgDn ==> Next page
-
-	Keys modifies a file called keyboard.h, which is located in the macro
-	source file directory.  If the macro source files are not installed,
-	Keys can only be used as a Quick Reference, not for reconfiguration.
-	You will not be able to move into the right window.
-
-	If you invoke Keys with the syntax "keys 1", it will insert macro
-	commands to produce the key assignments into the current buffer,
-	instead of modifying keyboard.h.
-
-
-
-
-
-
-
-
- PgUp ==> Previous page
-assign_to_key"assign_to_key;keys,key"
-
-	Assign to Key can be used to make one specific assignment without
-	bringing up the Keys menu.  It prompts for a key code and the name
-	of a command to assign to that key.
-
-
-	Prompt:		"Enter key:"
-
-		Enter the code for the key you wish to assign to.  For example, to
-		assign to F9, enter <F9>.  A full description of key codes may be
-		found in the Macro Language Guide.
-
-	Prompt:		"Enter macro name to assign:"
-
-		Enter the name of the command.  Command names are listed in the
-		User's Guide's Command Reference section.
-
-
-keykey codes"key;assign_to_key,keys"
-
-	Insert Key Code inserts the key code for a given keystroke sequence
-	into the current buffer.
-
-
-	Prompt:		"Press the keys you want converted, Esc to end."
-
-		All keystrokes up to but not including an <Esc> will be translated
-		to a specific, numeric format, and inserted into the current buffer.
-
-
-	Prompt:		"Recognize only that specific <character>?"
-
-		The key you pressed can be considered either a single keystroke
-		(like the Tab key) or a group of keystrokes (all keys that can
-		generate an ASCII Tab character).  Responding y will treat the
-		key as the more specific keystroke, n as the more general.
-
-load_macro"load_macro;delete_macro"
-
-	Load Macro File loads a compiled macro file into BRIEF.
-
-	Prompt:		"Macro file:"
-
-		Enter the name of the file you want to load.  If you don't
-		specify a file extension, .cm will automatically be used.
-		If you don't specify a path, the directories listed in
-		the BPATH environment variable will be searched for the file.
-
-
-	File name completion is active at the Load macro prompt.  Pressing
-	<Tab> will either complete the name of the file being entered, or
-	present a menu of files that you can select from.
-
-
-
-
-delete_macro"delete_macro;load_macro"
-
-	Delete Macro File removes a compiled macro file (including all
-	the macros contained in it) from memory.
-
-	Prompt:		"Macro to delete:"
-
-		Enter the name of the macro file to delete from memory.  If
-		the macro file is not in the current directory, you must
-		specify the full path name.
-
-	File name completion is active at the Delete Macro prompt.  Pressing
-	<Tab> will either complete the name of the file being entered, or
-	present a menu of files that you can select from.
-
-
-
-
-
-languages
-
-	BRIEF provides "smart" automatic indenting, compilation from BRIEF,
-	template editing, and syntax error location for the following languages:
-
-	Assembler				BASIC						C
-	COBOL						dBASE						FORTRAN
-	Modula-2				Pascal					BRIEF/CBRIEF Macro Languages
-
-	BRIEF recognizes language files by their file extension.  To use
-	the language support for a particular language, you must activate
-	it with SETUP.
-
-
-
-
-
-
-
-bracebrace matching"brace"
-
-	Brace makes sure that all opening and closing braces ({ and }) in the
-	current buffer pair up, and moves the cursor to any that don't.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-compile_itcompiling"compile_it;next_error,next_error 1"
-
-	Compile Buffer compiles the current buffer, using the compiler that
-	was selected during Setup.  If the compilation is unsuccessful, you
-	can use the Next Error and Pop-up Error Window commands to view and
-	scroll through the syntax errors.
-
-	With the OS/2 version of BRIEF, you may choose to have the compiler
-	run as a background process.  This means you can continue to edit
-	any file while the compiler is running.  Use Setup to turn on (or
-	off) background compilation for any compiler.
-
-
-
-
-
-
-
-
-next_errornext_error 1error locationwarnings_only"next_error,next_error 1,warnings_only;compile_it"
-
-	Next Error and Pop-up Error Window let you locate syntax errors in
-	your program.
-
-	Next Error moves the cursor to the next line with an error, and
-	displays the error message on the status line.  Warnings are
-	displayed in the normal message color, errors in the error color.
-
-	Pop-up Error Window displays the compiler's output in a window.  If
-	BRIEF recognizes error messages, you can scroll through them, or
-	press Enter to go to the line that caused the highlighted error.
-
-	Warnings Only tells BRIEF to inform you when a compile turns up
-	warnings, but no errors.  Invoking it again tells BRIEF not to.
-
-
-
-
-routinesprocedure location"routines"
-
-	Routines scans the current buffer for declarations of C language
-	procedures, using the assumptions that procedure declarations
-	begin in column 1 and that a closing parenthesis is the last non-
-	whitespace character on the line.  It builds a menu containing the
-	names of all "procedures" located.
-
-	In the menu:
-
-		 Move up or down with the Up or Down arrow keys
-		 Jump to the highlighted procedure by pressing Enter
-		 Return to your editing session with Esc
-
-
-
-
-
-
-marginreformcenterword processing"margin,reform,center"
-
-	Word processing is normally on for just .txt and .doc files, but you
-	may change this with Setup.
-
-	When word processing is active, word wrap is automatic and occurs
-	whenever you type past the right margin.  The Margin command is used
-	to set the right margin; the left is always at column 1.
-
-	Prompt:		"Enter margin:"
-
-		Enter the new right margin value, in columns.
-
-	Reformat Paragraph forces the marked paragraph to wrap at the current
-	margin setting.  If no paragraph is marked, Reformat tries to find
-	one by looking for blank or indented lines.
-
-	Center centers the current line between column 1 and the margin.
-
-autosave
-
-	BRIEF's autosave facility will save your files automatically whenever
-	your keyboard has been idle for a predetermined time.  The saved
-	files are given a .asv extension to avoid conflicts with your source
-	and backup files, and are deleted when you exit.  If the power fails
-	during your session, the .asv files will still be around.
-
-	Autosave may be turned on and off, and the time between saves set,
-	by using Setup.
-
-	Autosave is not a substitute for writing your files; it just protects
-	against calamities like power failures.
-
-
-
-
-
-
-cdchange directory"cd"
-
-	Change Directory changes the current directory.  It does not prompt
-	and must be run through Execute Command.  For example, to change to
-	the \brief\macros directory, you would have to:
-
-		 Run Execute Command
-		 Enter "cd \brief\macros"
-
-	If you omit the directory name, the current drive and directory
-	will be displayed.  If you specify a drive letter, but omit the
-	directory name, the specified drive becomes the default.
-
-
-
-
-
-
-
-exitwrite_and_exit"exit;exit y,exit w"
-
-	The Exit command concludes your editing session and returns control
-	to DOS or OS/2.  If you've made changes to buffers but haven't written
-	them, the following prompt appears:
-
-	Prompt:		"<num> buffers have not been saved.  Exit [ynw]?"
-
-		Pressing y exits without saving the buffers.  n or Esc returns
-		to BRIEF, and w writes all modified buffers and then exits.
-
-	Write Files and Exit saves all modified buffers before exiting to
-	DOS or OS/2.
-
-
-
-
-
-
-completion
-
-	Edit File, Read File, Load Macro, and Delete Macro allow for file
-	name completion.  When you are prompted for a file name:
-
-		 Type the beginning of the file name
-		 Press Tab
-
-	BRIEF will look for an existing file matching the beginning of the
-	name.  If there are none, BRIEF will beep.  If there is exactly one,
-	its name will appear on the command line.  If several files match,
-	a menu will pop up, listing them.
-
-		 Move up or down in the list with the Up or Down arrow
-		 Press Enter to select a matching file
-
-	File name completion also works when you specify DOS or OS/2
-	wildcards (* and ?) in the file name, then press Tab.
-
-history
-
-	BRIEF maintains a list of your responses to prompts, including
-	patterns that you search for, names of files that you edit, etc.
-	When you are prompted, you can scroll through previous responses
-	and re-enter them (or edit them) if you wish.
-
-	BRIEF normally maintains separate lists for each prompt, but you
-	can always recover the most recent response, even if it was typed
-	at a different prompt or command.
-
-	At a prompt:
-
-		 Up and Down arrow scroll through the responses to that prompt
-		 <Alt-l> gets the last response to ANY prompt
-		 Normal editing of any response is permitted
-
-
-
-pause_on_errorpausing errors"pause_on_error"
-
-	Pause on Error instructs BRIEF to pause whenever an error message
-	is displayed, giving you time to read the message.  It is useful
-	when error messages flash by too quickly to be read.
-
-	Error messages are followed by three dots when Pause on Error is
-	in effect.  The dots are a reminder that you must press a key to
-	resume.
-
-	To turn pausing on errors off, use the Pause on Error command again.
-	You can force pausing by using the syntax "pause_on_error 1", and
-	you can preclude it by using "pause_on_error 0".
-
-
-
-
-
-
-dossuspend"dos"
-
-	The Suspend BRIEF command lets you run another program (or programs)
-	without exiting BRIEF.  It starts a second copy of the command shell
-	running.  Under DOS, much less memory will be available to the new
-	copy, unless you have used Setup to turn "swapping" on.
-
-	While BRIEF is suspended, do NOT
-
-			Run any programs that are not completely debugged.
-			Alter or delete any files that you are currently editing.
-			Load any program that makes itself memory-resident.
-
-	To return to BRIEF, type "exit" at the command prompt.
-
-	If you forget that you have a suspended session, and start a second
-	copy of BRIEF, the number 2 will appear just above the clock.
-
-
-undo"undo"
-
-	Undo undoes the last undoable command.  All commands that change
-	the cursor position, text, or marks are undoable.
-
-	Information about the previous commands is retained, so if you Undo
-	5 times, the last 5 commands will be undone.
-
-	Once you write your changes to disk, they can no longer be undone.
-
-
-
-
-
-
-
-
-
-
-version"version"
-
-	Version displays the version number of BRIEF on the message line.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-searching
-
-	The Search commands let you search for a pattern in the current
-	buffer.  You can search:
-
-		 Forward towards the end of the file
-		 Backward towards the beginning of the file
-		 Within a marked block
-		 Case-sensitive (A matches only A) or case-insensitive
-			(A matches a and A)
-		 With (or without) powerful regular expression characters
-		 Incrementally, as you type the pattern
-		 Again for the last pattern specified
-
-	The Translate commands let you change any or all occurrences of
-	a pattern to a new value, with most of the above options.
-
-	See specific help topics for more information.
-
-toggle_reregular expressions"toggle_re"
-
-	Regular expressions are special characters in search or translate
-	strings that let you specify character patterns to match, instead
-	of just sequences of literal characters.
-
-	Regular expression characters are similar to DOS wildcards, but are
-	much more powerful.  These are the regular expressions:
-
-	Expression:			Matches:
-
-		?							Any character except a newline
-		*							Zero or more characters (except newlines)
-		\t						Tab character
-		\n						Newline character
-		\c						Position cursor after matching
-		\\						Literal backslash
-
-																										PgDn ==> Next page
-
-	Character:			Matches:
-
-		< or %				Beginning of line
-		> or $				End of line
-		@							Zero or more of last expression
-		+							One or more of last expression
-		|							Either last or next expression
-		{}						Define a group of expressions
-		[ ]						Any one of the characters inside [ ]
-		[~ ]					Any character except those in [~ ]
-		[a-z]					Any character between a and z, inclusive
-
-	In replacement text, \t, \n, and \c are allowed, as well as:
-
-	 \<n>						Substitute text matched by <n>th group (0 <= n <= 9)
-
- PgUp ==> Previous page															PgDn ==> Next page
-
-											 Regular Expression Examples
-
-	Pattern:				Result:
-
-	the							Find the next occurrence of "the".
-
-	{him}|{her}			Find the next occurrence of "him" or "her".
-
-	<alone> or			Finds next occurrence where "alone" is alone on
-	%alone$					a line.
-
-	stuff*between		Find next occurrence of "stuff" followed by
-									"between" on the same line.
-
-	th[eo]se				Find next occurrence of "these" or "those".
-
- PgUp ==> Previous page															PgDn ==> Next page
-
-											 Regular Expression Examples
-
-	[A-Z][a-z]@;		Find next capitalized word with a semicolon after it.
-
-	[0-9]+					Find one or more consecutive digits.
-
-	[~ \t\n]				Find any character but a space, tab, or newline.
-
-	Many additional examples may be found in the User's Guide.
-
-	Note that the *, @, and + expressions will always match as few of the
-	expression in question as possible.  UNIX-style matching (match as
-	many as possible) is available to macro writers.
-
-	The Regular Expression Toggle command turns expressions on or off.
-
- PgUp ==> Previous page
-search_casecase sensitivity"search_case"
-
-	Case sensitivity for searches and translates can be turned on and off
-	with the Case Sensitivity Toggle.  When case sensitivity is off,
-	"UnderWare" will match UNDERWARE, Underware, underware, etc.; when
-	case sensitivity is on, it will only match UnderWare.
-
-
-
-
-
-
-
-
-
-
-
-
-
-search_fwdsearch_backsearchsearching blocks"search_fwd,search_back;toggle_re,search_case,block_search,search_again"
-
-	Search Forward and Search Backward search for the next occurrence
-	of a pattern, starting at the cursor position.
-
-	Prompt:		"Search for:"
-
-		Enter the pattern you're searching for (see the help screen on
-		Regular Expressions, for information on special characters that
-		you can include in the pattern).
-
-
-	All searches are affected by the current states of the Regular
-	Expression and Case Sensitivity toggles.  The Block Search command
-	determines whether or not a search is confined to a marked block.
-
-
-
-
-translatetranslate_back"translate,translate_back"
-
-	Translate Forward and Translate Backward replace matches of any
-	pattern in the current buffer.  If a block is marked, translation
-	will only occur within the block.
-
-
-	Prompt:		"Pattern:"
-
-		Enter the search pattern, which may contain regular expressions.
-		See help on Regular Expressions for more information.
-
-
-	Prompt:		"Replacement:"
-
-		Enter the replacement text, which may contain regular expressions.
-
-
-																										PgDn ==> Next page
-
-	Prompt:		"Change [Yes|No|Global|One]?"
-
-		Enter y to replace the current match and continue translating,
-		n to skip this match and continue, g to replace all the remaining
-		matches without prompting, or Esc to stop the translation.  Enter
-		o to perform one translation, then stop.  (Esc leaves the cursor
-		at the last match, but o returns it to the starting position.)
-
-
-
-
-
-
-
-
-
- PgUp ==> Previous page
-search_againtranslate_againsearching again"search_again,translate_again;search_fwd,search_back"
-
-	Search Again finds the next occurrence of the pattern specified in
-	the most recent Search Forward or Search Backward command.  It
-	searches in the same direction as the last search.
-
-	Translate Again repeats the most recent Translate Forward or
-	Translate Backward command.
-
-
-
-
-
-
-
-
-
-
-
-i_searchincremental search"i_search"
-
-	Incremental Search lets you search for a pattern as you type it; as
-	you type each character, the cursor moves to the next occurrence of
-	text that matches the pattern so far.  Because patterns containing
-	regular expressions cannot be properly matched until the entire
-	pattern is known, incremental search ignores regular expressions.
-
-	Prompt:		"I-search for:"
-
-		Begin typing the pattern to search for.  If you make a mistake,
-		you can press Backspace.  A beep signals that no text matches the
-		pattern you have typed.  To end the search, press Esc.
-
-
-
-
-
-
-windows
-
-	Windows are rectangular areas of the screen which provide views of
-	text in a buffer.  If a buffer contains more text than the window can
-	view, the buffer can be scrolled through the window to bring other
-	portions into view.  You can create more than 50 tiled (non-
-	overlapping) windows on a normal display.
-
-	Windows and buffers are independent; that is, any window may view any
-	portion of any buffer, regardless of the contents of the other
-	windows.
-
-	In addition to tiled windows, BRIEF occasionally uses pop-up
-	(overlapping) windows such as this one.  Pop-up windows are intended
-	to display temporary information, and can only be created through
-	use of the macro language.
-
-
-
-create_edgesplitting"create_edge"
-
-	Create Window creates a new tiled window by splitting the current
-	window in half, displaying the current buffer in both windows.
-
-	Prompt:		"Select side for new window (use cursor keys)."
-
-		Point in the direction where you want the new window with one of
-		the arrow keys.  The window will be split, and your cursor will
-		be placed in the newly created window.  Neither of the two new
-		windows may be less than 1 line high or 14 columns wide.
-
-
-
-
-
-
-
-
-move_edgeresizing"move_edge"
-
-	Windows can be resized with the Resize Window command.
-
-	Prompt:		"Select an edge to move (use cursor keys)."
-
-		Point to the edge you want to move with one of the arrow keys.
-		You can only move edges that are shared by two (and only two)
-		windows.
-
-	Prompt:		"Move to new edge position and press Enter."
-
-		Use the cursor keys to move the cursor to the new position for
-		the edge being moved, and press Enter to complete the command.
-		The new windows (for both windows sharing the edge) cannot be
-		less than 1 line high and 14 columns wide.
-
-
-
-change_windowchange_window 1change_window 2change_window 3change_window 0switching"change_window"
-
-	Change Window lets you move the cursor to another tiled window.
-
-	Prompt:		"Point to destination (use cursor keys)."
-
-		Point to the window you want to move the cursor into by pressing
-		the appropriate arrow key.
-
-
-	There is also a shortcut for switching between windows:  hold down
-	the Shift key, and press the arrow key that points to the window
-	you want to move to.  This feature doesn't work if Num Lock is on.
-
-
-
-
-
-
-delete_edgeremoving"delete_edge"
-
-	Windows can be deleted by deleting the edges between them with the
-	Delete Window command.  The current window expands into the area
-	occupied by the other window.
-
-	Prompt:		"Select window edge to delete (use cursor keys)."
-
-		Point to the edge you want deleted with the appropriate arrow
-		key.
-
-	You cannot delete edges that are shared by more or less than two
-	windows.
-
-
-
-
-
-
-zoom_windowzooming"zoom_window"
-
-	Zoom Window takes the current window and expands it so that it
-	occupies the entire screen.
-
-	If there is only one window on the screen, Zoom Window restores
-	the windows that were present that last time Zoom Window was
-	used.
-
-
-
-
-
-
-
-
-
-
-
-borders"borders"
-
-	The Borders command lets you toggle BRIEF's window borders on and
-	off.  Borderless windows are distinguished by their background
-	color; if you're using a monochrome monitor, it may be difficult
-	to see the boundaries between multiple windows on the screen.
-
-
-
-
-
-
-
-
-
-
-
-
-
-debugmacro_debugger"debug"
-
-	The BRIEF Macro Debugger is a full screen source level debugger for
-	programs written in CBRIEF or in the original BRIEF macro language.
-	
-	The Debug command is used to enter the Debugger.  To enter the
-	Debugger immediately, execute the Debug command with no parameters.
-	To enter the Debugger when the next macro is called, execute the
-	debug command with "*" as the parameter.  To enter the Debugger when
-	a particular macro is called, specify the name of the macro to stop
-	at as the parameter to Debug.
-
-	For more specific information on commands available in the Debugger,
-	press Alt-h at the main Debugger screen.
-
-
-
-
-
-file name completion
-
-	When responding to prompts, several commands are available to you:
-
-	 To scroll through previous responses to the same prompt in the
-    current editing session, use the Up and Down arrows.	
-
-   To edit a response that appears on the command line, use
-    the Left and Right arrows, and the Backspace, Delete, Home and End.
-		keys.
-
-	 To see a list of available files at prompts that expect file
-		names press Tab.  You can specify exactly which files you want to
-	  see by typing a path and/or a DOS-OS/2 file pattern before
-		pressing Tab.  If only one file matches the pattern or path, the
-		file name will be filled in on the command line.  Otherwise, a
-		menu of available choices will appear.
-
-																										PgDn ==> Next page
-
-		Once the menu appears, you can move up and down in the list using
-		the Up and Down arrows, and select one or more files by using the
-		Space bar.  To invert the selection of all files (selected files
-		become unselected, and vice versa), press * (* is most often used
-		to select all files.)  To select a single file, or to complete
-		the selection process, press Enter.
-
-
-
-
-
-
-
-
-
-
- PgUp ==> Previous page
-
-mouse basic
-
-	Using the mouse
-
-	The mouse can be used in place of some commands to move the cursor,
-	change windows, mark and extend text, and scroll.  It can also be
-	used to select and extend the selection to words, to produce a
-	pop-up menu, to position the file horizontally and vertically in
-	relation to the scroll box, and to scroll the page left or right.
-
-	The mouse cursor
-
-	The mouse has its own cursor displayed on the screen, regardless of
-	which window is active.  Moving the mouse moves its cursor and
-	quickly changes the position of the text cursor.
-
-
-
-                                                    PgDn ==> Next page
-
-	A mouse can have either two or three buttons.  A two-button mouse
-	(left and right buttons) can imitate a three-button mouse.  For
-	right-handed users, the	buttons are typically labeled left to right
-	as 1, 3 (if present),	and 2.
-
-		 Button 1:  Most often used button.
-
-		 Button 2:  Most often used for the opposite action to Button 1.
-			For example, if Button 1 scrolls the buffer up, Button 2
-			scrolls	the buffer down.
-
-		 Button 3:  If you have a two-button mouse, using both buttons
-			at the same time is equivalent to using Button 3.
-																											 					 
-
-
- PgUp ==> Previous page															PgDn ==> Next page
-
-	Mouse button actions
-
-			To click:  Position the cursor where desired and press, then
-			release, the button. 
-
-			To drag:  Press the mouse button, position the cursor where
-			desired by moving the mouse, and release.
-
-			To double click:  Press and release the mouse button quickly.
-
-			To use with other keys:  Hold down the appropriate SHIFT, ALT,
-			or CTRL key, position the cursor, press the appropriate mouse
-			button, drag the mouse, and release both the button and key.
-
-
-
-	PgUp ==> Previous page															PgDn ==> Next page
-
-	Command mode
-
-	To execute a command, move the mouse cursor to the command line (in
-	the message area) and click Mouse Button 1.
-
-
-
-
-
-
-
-
-
-
-
-
-  PgUp ==> Previous page
-mouse buttons
-
-	Command								Button			 Key		Region
-	ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-	Beginning of Line			Dbl Click 1	      	Left Scroll Arrow
-	Bottom of Buffer			Dbl Click 1					Down Scroll Arrow
-	Change Position of		Click 1							Window
-		Cursor
-	Column Mark						Drag 1			 CTRL		Window
-	Command Mode					Click 1			 				Message Area
-	Copy to Scrap					Click 2							Window
-	Create Window					Dbl Click 1					Top/Left Edge
-													or 2
-	Cut to Scrap					Click 2			 CTRL		Window
-	Delete Window					Click 1			 				Close Button
-	End of Line						Dbl Click 1					Right Scroll Arrow
-	Extend Selection			Click 1			 SHIFT	Window
-	Extend Word Selection	Dbl Click 1	 SHIFT	Window
-	ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PgDn ==> Next page
-
-	Command								Button			 Key		Region
-	ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-	Line Mark							Drag 1			 ALT	  Window
-	Noninclusive Mark			Drag 1	      			Window
-	Normal Mark						Drag 1     ALT+CTRL Window
-	Paste from Scrap			Dbl Click 2					Window
-	Pop-Up Menu						Click 2			SHIFT 	Window
-	Position File Left    Move 1							Horizontal Scroll Box
-		or Right
-	Position File Up/Down Move 1							Vertical Scroll Box
-	Resize Window					Drag 1							Top/Left Edge
-												Drag 2							Any Edge
-	Scroll Down - Line		Click or hold 1			Down Scroll Arrow
-	Scroll Down - Page		Click or hold 1			Scroll bar below box
-	Scroll Left - Column	Click or hold 1			Left Scroll Arrow
-	Scroll Left - Page		Click or hold 1			Scroll bar left of box
- PgUp ==> Previous page ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PgDn ==> Next page
-
-	Command								Button			 Key		Region
-	ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-	Scroll Right - Column	Click or hold 1			Right Scroll Arrow
-	Scroll Right - Page		Click or hold 1			Scroll bar right of box
-	Scroll Up - Line			Click or hold 1			Up Scroll Arrow
-	Scroll Up - Page 			Click or hold 1			Scroll bar above box
-	Select Window					Click 1							New Window or Window Title
-	Select Word						Dbl Click 1					Window
-	Top of Buffer					Dbl Click 1					Up Scroll Arrow
-	Zoom/Unzoom Window		Click 1							Zoom button
-												Dbl Click 1					Title bar
-	ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-
-
-
- PgUp ==> Previous page
- mouse cursor
-
-	Top of Buffer:  Position the mouse cursor on the up arrow above
-	the vertical scroll bar and double-click Mouse Button 1.
-
-	Bottom of Buffer:  Position the mouse cursor on the down arrow
-	below the vertical scroll bar and double-click Mouse Button 1.
-
-	Beginning of Line:  Double-click Mouse Button 1 on the left arrow
-	on the horizontal scroll bar.
- 
-	End of Line:  Double-click Mouse Button 1 on the right arrow on
-	the horizontal scroll	bar.
- 									
- 	Change Position of Cursor:  Move the mouse cursor to the desired
-	position and click Mouse Button 1.
- 
- 
- 
-	mouse marking
-
- 	Mark:  Position the mouse cursor anywhere in the text, hold ALT,
-  CTRL, and	Mouse Button 1, and move the cursor to the desired position.
-
-	Line Mark:  Position the cursor anywhere on the line,	hold ALT and
-	Mouse Button 1, and move the cursor to the desired position.
-	
- 	Column Mark:  Position the mouse cursor anywhere in the	column, hold
-	CTRL and Mouse Button 1, and move the cursor to the	desired position.
-
- 	Noninclusive Mark:  Position the mouse cursor anywhere in the	text,
-	hold Mouse Button 1, and move the cursor to the	desired position.
-
-	Extend Text Selection:  Press SHIFT and Mouse Button 1.  The
-	highlighted area will move to the mouse cursor position.  To
-	continue marking text, drag the mouse or reposition the cursor and
-	extend again.
-                                                    PgDn ==> Next page
-
-	Copy to Scrap:  Click Mouse Button 2 after the text has been
-	marked.																										
-
-	Cut to Scrap:  Hold CTRL while clicking Mouse Button 2 after the
-	text has been marked.
-
-	Paste from Scrap:  Position the mouse cursor at the desired
-	position in the text and double-click Mouse Button 2.
-
-	Select Word:  Position the cursor anywhere in the word and
-	double-click Mouse Button 1.  To extend the selection, position the
-	mouse cursor at the desired word, hold the SHIFT key, and
-	double-click Mouse Button 1.
-
-
-
- PgUp ==> Previous page
- mouse scrolling
-
-	Scroll text by positioning the mouse cursor on either of the scroll
-	bars (right or bottom) or the scroll arrows at the ends of the
-	scroll bars, and clicking or holding the mouse button.
- 
- 	Control how quickly you move through the text by clicking or
-	holding down the mouse button:
-
-			Clicking moves the text one unit at a time
- 
-			Holding down moves the text one unit at a time, but the
-			movement doesn't stop until you release the button
- 
- 
-
-
-
-                                                    PgDn ==> Next page
-
-	Scroll One Line Up:  Position the mouse cursor on the up arrow
-	above the vertical scroll bar and click or hold Mouse Button 1.
-
-	Scroll One Line Down:  Position the mouse cursor on the down arrow
-	below	the vertical scroll bar and click or hold Mouse Button 1.
-
-	Scroll One Page Up:  Position the mouse cursor on the vertical
-	scroll bar above the scroll box and click or hold Mouse Button 1.
-
-	Scroll One Page Down:  Position the mouse cursor on the vertical
-	scroll bar below the scroll box and click or hold Mouse Button 1.
-
-
-
-
-
- PgUp ==> Previous page															PgDn ==> Next page
-
- 	Scroll One Column Left:  Position the mouse cursor on the left arrow
-	on the horizontal scroll bar and click or hold Mouse Button 1.
-
-	Scroll One Column Right:  Position the mouse cursor on the right
-	arrow	on the horizontal scroll bar and click or hold Mouse Button 1.
-
-	Scroll One Page Left:  Position the mouse cursor on the horizontal
-	scroll bar to the left of the scroll box and click or hold Mouse
-	Button 1.
-
-	Scroll One Page Right:  Position the mouse cursor on the horizontal
-	scroll bar to the right of the scroll box and click or hold Mouse
-	Button 1.
-
-
-
- PgUp ==> Previous page															PgDn ==> Next page
-
- 	Position File Left/Right:  Position the mouse cursor on the scroll
-	box on the horizontal scroll bar and hold Mouse Button 1.  Move the
-	mouse to position the scroll box in a new place.  That area of the
-	file is displayed.
-
-	Position File Up/Down:  Position the mouse cursor on the vertical
-	scroll box, hold down Mouse Button 1, and move the mouse to
-	position the scroll box in a new place.  That area of the file is
-	displayed.
-
-
-
-
-
-
-
- PgUp ==> Previous page
- mouse windows
-
- 	Create Window:  Double-click Mouse Button 1 or 2 at the left edge
-	(for a horizontal window) or the top edge (for a vertical window).
-
-	Delete Window:  Click Mouse Button 1 on the close window button.
-
-	Resize Window from top or left:	Position the mouse cursor on the top
-	or left window edge to be moved.  Hold down Mouse Button 1 to select
-	the edge, then move the mouse until the window is the desired size.
-
-	Resize Window from any edge:	Position the mouse cursor on any window
-	edge to be moved.  Hold down Mouse Button 2 to select the edge, then
-	move the mouse until the window is the desired size.
-
-	Select Window:  Move the mouse cursor to the desired window and
-	click	Mouse Button 1.  Alternatively, click the title bar of the
-	desired window.
-                                                    PgDn ==> Next page
-
-	Zoom/Unzoom Window:  Position the mouse cursor on the zoomed button
-	in the top right corner and click Mouse Button 1.  Alternatively,
-	double-click Mouse Button 1 in the title bar of the desired window.
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	PgUp ==> Previous page
-mouse popup menu
-
-	A default pop-up menu, which contains cut, copy, and paste options,
-	can be displayed by placing the mouse cursor where you want the menu
-	to appear and pressing SHIFT and clicking Mouse Button 2.
-
-	The menu is in the file \brief\help\popup.mnu, and can be modified
-	to add additional features.
-
-
-
-
-
-
-
-
-
-
-
- color"color"
-
-	Color sets the background and foreground colors for bordered windows,
-	the color of the current window's title, and the colors of normal and
-	error messages.  Each color type may be set independently.
-
-	Prompt:		"Enter <color type> color number:"
-
-		Enter a color number from the table below.  Background color
-		must be <= 7.  Other colors may be any number.
-
-		0			 Black				6			 Brown					12		 Light Red
-		1			 Blue					7			 White					13		 Light Magenta
-		2			 Green				8			 Dark Gray			14		 Yellow
-		3			 Cyan					9			 Light Blue			15		 Bright White
-		4			 Red					10		 Light Green
-		5			 Magenta			11		 Light Cyan
-

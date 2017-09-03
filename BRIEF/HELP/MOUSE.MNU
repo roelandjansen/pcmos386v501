@@ -1,7 +1,0 @@
-   Basic Concepts  ;display_help "mouse basic"
- Button Assignments;display_help "mouse buttons"
- Cursor Positioning;display_help "mouse cursor"
-      Marking      ;display_help "mouse marking"
-    Pop-Up Menu    ;display_help "mouse popup menu"
-     Scrolling     ;display_help "mouse scrolling"
-      Windows      ;display_help "mouse windows"

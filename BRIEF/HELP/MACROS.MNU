@@ -1,5 +1,0 @@
-  Load Macro File  ;display_help "load_macro"
- Delete Macro File ;display_help "delete_macro"
- Language Packages ;display_help "languages"
-     Compiling     ;display_help "compiling"
-  Word Processing  ;display_help "word processing"

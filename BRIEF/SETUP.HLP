@@ -1,995 +1,0 @@
-newuser
-Setup
-						Welcome to BRIEF Setup!
-
-If you have NOT already made backup copies of the master disks, please
-do so before proceeding.  You must use DISKCOPY to copy the disks.
-(To cancel Setup, press Esc twice.)
-
-You may install BRIEF to any disk or combination of disks.
-
-	 If you have a hard disk, we recommend you install to it.
-
-	 If you have a floppy disk larger than 360K, you may install
-	to it as if it were a hard disk.
-
-	 If you have a 360K floppy disk system, only install the following
-	directories:  EXECUTABLES and COMPILED MACROS.  
-
-Setup is used to configure BRIEF as well as install it.  You will be
-asked to supply your initials, so that Setup can personalize your
-configuration.
-configure
-
-You have started Setup in Configure Mode, but you have
-not already installed BRIEF on your system.
-
-Press Esc twice to cancel Setup.
-
-Then run Setup from the original Utilities Disk, or a
-DISKCOPY of that disk, to install BRIEF.
-drives
-Drive Letters
-Setup needs to know where configuration information can be read from
-and written to, and which drive files should be copied to.
-
-	 The boot drive is the drive you use to start up your computer.
-
-Much of BRIEF's configuration information is kept on the boot drive.
-Setup will NOT write any files on this drive without asking for your
-permission.
-
-	 The destination drive is the drive you want BRIEF installed to.
-
-You may split the files across more than one drive by choosing
-"Directories" from Setup's Main Menu.
-
-	 Double-check the drive letters, and press F10 to continue.
-initials
-Initials
-Your initials are used to keep your personal configuration separate
-from the standard BRIEF configuration, and possibly from the
-configurations of other people who share your machine.  Setup adds the
-file extension .M to your initials, and creates an "initials macro
-file" during installation.  This file contains about half of BRIEF's
-configuration information.
-keystrokes
-Keystrokes
-		In Menus							In Fields
-		ÄÄÄÄÄÄÄÄ							ÄÄÄÄÄÄÄÄÄ
-	Space		Next item			Ins		Toggle insert mode
-	Backspace	Previous item		Del		Delete character
-	Home		Beginning of menu	Home	Beginning of field
-	End			End of menu			End		End of field
-	<letter>	Go to next item		Ctrl-Home	Delete to beginning
-		starting with <letter>		Ctrl-End	Delete to end
-
-						Between Fields
-						ÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-					F10			Save screen
-					Esc			Cancel screen
-					Shift-Tab	Previous field
-					Tab			Next field
-					Enter		Next field (save on last field)
-					PgUp		First field
-					PgDn		Last field
-
-mainmenu
-the Main Menu
-You can change many aspects of BRIEF with Setup:
-
-	Directories		Installation directories for BRIEF files
-
-	Display			Display preferences (colors, screen size, etc.)
-
-	File extensions	Special features that vary with file extension
-					(language type, tab settings, indenting or word
-					processing, and compiler choices)
-
-	Miscellaneous	Insert or overstrike mode, maximum line length,
-					keyboard autorepeat, search defaults, etc.
-					Automatic swapping to disk or EMS.
-
-	Safety features	Automatic file save, undo, and backup file info
-
-	Mouse			Enable, set type, scroll bar display
-
-You may view your current setup, or change any part of it, by moving
-the highlight to any of these buttons and pressing Enter.  Once you're
-satisfied (or if you want to quit without setting up), choose "Exit".
-displaymenu
-the Display Menu
-Allows you to configure BRIEF's screen display:
-
-	Color preferences	Choose separate colors for foreground,
-						background, highlighted window titles, and normal 
-						and error messages; turn window borders on or off.
-
-	Cursor choices		Choose one of four cursor types for each basic
-						editing situation
-
-	43/50 Line mode		Try 43 lines on an Enhanced Graphics Adapter or
-						Hercules Graphics Plus Card, or 50 lines on an 
-						IBM Video Graphics Array
-
-	Snow test			Determine whether you need slower refreshing to
-						avoid snow (Color/Graphics Adapter and clones only)
-
-	Video page test		Needed for compatibility testing with some
-						hardware and memory resident software
-movefiles
-Moving Original Macro Source Files
-There are two BRIEF macro languages:  the original BRIEF macro 
-language and the CBRIEF macro language (available since release
-3.0).  All of the installed BRIEF macros are now written in the 
-CBRIEF macro language.  However, to avoid confusion and improper
-macro compilation, you may want to move your original BRIEF macros.
-
-In order to move the source files:
-
-	 "Yes" moves all of the original macro source files to the
-	destination directory.
-	 "No" moves none of the original macro source files.
-	 "Ask" causes Setup to ask you before moving each macro 
-	source file	to the destination directory
-
-Note:  you cannot move files to a disk other than the destination
-disk.
-movewhere
-Where to Move the Original Macro Source Files
-The original BRIEF macro source files may be moved anywhere on
-the destination drive.  If the disk drive is a floppy drive, Setup 
-will prompt you to insert a diskette at the proper time.
-
-Note:  you cannot move files to a disk other than the destination
-disk.
-copyfiles
-Copying Files
-If you have started Setup from the distribution disk, you can use it
-to install your BRIEF files.  No files are copied until you "Exit" 
-from the Main Menu and then choose "Install".  For each category:
-
-	 "Yes" copies all the files.
-	 "No" copies none of the files.
-	 "Ask" causes Setup to ask you before copying each file, and also
-	warns you if any of the files already exist.
-
-EXECUTABLES are executable programs, including BRIEF and its macro
-compiler, batch files, PIF files, device drivers, and font files.
-
-COMPILED MACROS are necessary; they contain many of BRIEF's commands.
-
-MACRO SOURCE CODE is only needed if you want to modify the macros or
-the default key assignments.  The macro source is kept in an archive.
-The INITIALS MACRO contains your special configuration information.
-
-HELP files are only needed for on-line help.  MISCELLANEOUS files
-include Setup, the READ.ME, and other files.
-copywhere
-Where to Copy Files
-Files may be copied to any disk drive.  If the disk drive is a floppy
-drive, Setup will prompt you to insert a diskette at the proper time.
-Note that files are only copied when you have started Setup from the
-distribution diskette.
-
-You should copy EXECUTABLES to a directory in your DOS PATH.  If you
-specify a directory not in the PATH, Setup will put it in the PATH.
-
-COMPILED MACROS and HELP files are accessed automatically by BRIEF, so
-put them in directories that you use infrequently, where they will be
-out of your way.  MACRO SOURCE CODE is usually placed in the same
-directory as COMPILED MACROS.  The INITIALS MACRO may be kept in a
-separate directory (for example, if compiled macros are in a shared
-network directory, you may keep the initials macro local).
-
-MISCELLANEOUS files can be placed in any directory.
-
-Setup must store configuration information in the files CONFIG.SYS
-and AUTOEXEC.BAT on your boot drive.  Setup will allow you to supply
-an alternate file name, or copy the existing file before updating it.
-editmode
-Insert vs Overstrike Mode
-Choose how BRIEF should behave when you type.  In insert mode, which
-is the default, the character is inserted at the cursor position and
-the text from the cursor to the end of the line is shifted right by
-one character.  In overstrike mode, the character replaces the
-character at the cursor.
-
-This choice only controls the active mode when BRIEF starts up.  You may
-switch between modes freely during an editing session.
-fillchar
-Tabs vs Spaces
-Choose whether you want BRIEF to insert a real tab character when
-you press the Tab key.  "Tabs" allow you to align and indent text more
-easily, and you may change their displayed width at any time.  When you
-print your file outside of BRIEF, though, the tab settings on your printer
-may be different from your settings in BRIEF, causing misaligned printouts.
-
-Choosing "Spaces" means that the Tab key will insert spaces to get
-to the next tab stop.  Your initial tab stops will be more difficult to
-change and maintain, and your files will take up more room when saved on
-disk.  But your text will always print exactly as it looks on screen.
-
-The character you specify here will also be used to fill in empty areas,
-as when you move the cursor past the end of a line and start typing.
-
-Note:  If you're unsure about this option, we suggest that you start
-with "Tabs", because it's easier to switch back to "Spaces" than to
-convert in the other direction.
-eofchar
-End of File Character
-Early versions of DOS (prior to 2.0) required that files end with a
-Control-Z character, ASCII value 26.  Current versions treat Control-Z
-as they do any other character, and determine the end of a file by its
-length.
-
-BRIEF normally puts a Control-Z at the end of a file in case you need to
-use it with another program (e.g. a compiler) that requires one.
-
-However, this usage is obsolete, and you may wish to forego it.  If
-you choose not to have a Control-Z at end of file, you can always add
-one manually in the cases where you need one.
-101key
-Enhanced Keyboard Support
-If you have an Enhanced (101/102-key) Keyboard installed, you can tell
-BRIEF to treat the numeric keypad and cursor keypad separately.  With
-an Enhanced Keyboard, you can assign more commands to keys, and you
-can use the numeric keypad for entering numbers without losing the
-BRIEF commands normally assigned to the shifted keys.
-
-With the Enhanced Keyboard, a few key assignments are different.
-Check the documentation and read.me file for details.
-autorepeat
-Auto-Repeat
-Normally, when you press a key and hold it down, programs for the IBM
-PC act as if you were repeatedly pressing the key--so you can move the
-cursor rapidly to the right, say, by holding down the right arrow key.
-
-BRIEF lets you choose the speed at which auto-repeat occurs.  You can
-also choose "Off" to turn auto-repeat off.  Note that you can't change
-the speed of auto-repeat during an editing session.
-kbd_compat
-Keyboard Compatibility
-On some less than 100% compatible computers, BRIEF's mechanism for
-handling auto-repeat does not work and must be disabled.
-
-If you run BRIEF and have trouble with auto-repeating keys, Caps Lock
-or other shift keys, or if you suspect for any reason that your keyboard
-is not fully compatible, set this field to No.  After you perform the
-Setup, if your copy of BRIEF still gives you trouble, call technical
-support.
-
-Disabling the special auto-repeat logic will not turn off auto-repeat;
-it will just make it a little slower.
-searchcase
-Case Sensitive Search
-BRIEF normally respects the case of alphabetic characters (e.g. 'A' is
-not the same as 'a') when searching.  You may change the normal behavior
-to case-insensitive by selecting "No".
-
-You may turn case-sensitivity on and off easily during an editing session;
-this value represents the default at the start of each editing session.
-searchre
-Regular Expression Search
-Choosing "No" here will suspend the special meanings of characters used in
-regular expression searching.  Regular expressions are a powerful
-language for describing complicated search patterns.
-
-For example, you could search for any upper-case vowel with the
-regular expression "[AEIOU]".  But if you wanted to search for just an
-open bracket, you'd have to use "\[", because the open bracket is a
-special character.
-
-These are the regular expression characters:
-		? * @ | + \ \n \t \c < % > $ { } [ ] ~ -
-
-Regardless of the default setting you choose, you can turn regular
-expressions on and off at any time during an editing session.
-linelen
-Line Length
-BRIEF requires that you set a maximum line length.  The default value,
-144 characters, is large enough to allow you to edit typical programs
-and listing files.
-
-The maximum value allowed is 512 characters.  For reference, an IBM PC
-screen is 80 characters wide.
-
-It is important that you exercise caution when you set this limit.
-If you make a change to a line that is longer than your limit, that
-line will be truncated and an error message will be displayed.  Lines
-that you do not modify will not be affected.
-
-Setting a larger maximum lets you edit files with longer lines, but
-it increases BRIEF's memory consumption.  If you double your line
-length, BRIEF will run out of memory (forcing you to save your files)
-approximately twice as often.
-
-You can override this maximum for a given editing session by using
-the -l command line flag (see the User's Guide).
-envsize
-Environment Size
-The DOS environment is space (set aside when you turn on your
-computer) for special variables that are accessible to every program
-you run.  BRIEF makes extensive use of the environment; in addition
-to the DOS-defined PATH and COMSPEC, BRIEF looks for variables named
-BPATH, BHELP, BBACKUP, and several others.  See the BRIEF User's Guide
-for more information.
-
-Many other programs also make use of the environment, so it's easy to
-run out of environment space.  In versions of PC-DOS beginning with
-3.1, you can increase environment size via CONFIG.SYS.  In prior
-versions, Setup can safely expand the environment by modifying
-COMMAND.COM.  The maximum size varies from version to version;
-however, an 800-byte environment is always possible and usually
-sufficient.  The new environment size takes effect when you boot from
-the new disk.
-
-Setup may not be able to increase the environment size if you are using
-some closely compatible versions of MS-DOS.  If this happens, upgrade to
-PC-DOS version 3.2, or contact your computer manufacturer for help.
-buffers
-BUFFERS
-The BUFFERS parameter in your CONFIG.SYS file sets the number
-of memory buffers DOS uses when transferring data to and from disk.  You
-can speed up certain operations in BRIEF dramatically by setting an
-optimum BUFFERS value.
-
-The optimum number varies with the amount of memory you have and the
-speed of your processor:
-
-	 On a regular PC, we recommend 15 buffers.
-	 On an AT, 30 buffers will give better performance.
-
-You must experiment, however, to find the best value for your machine.
-
-Since the DOS buffers are allocated when you turn on your computer, you
-will have to reboot your computer before the new buffer number can take
-effect.
-autosave
-Autosave
-BRIEF can automatically save your files when you're idle.
-
-	 Choosing "Yes" means that BRIEF will automatically save your
-	files whenever you've been idle for the specified amount of
-	time (see next entry).  The autosave files will be kept in the
-	same directory as the original file, with an .ASV extension.
-	They don't affect the original file, and are deleted when you exit
-	BRIEF under normal conditions.
-
-	 Choosing "No" means that BRIEF will not "autosave" your files.
-
-Note that no matter which option you choose, you still must save your
-files before exiting BRIEF.  This feature simply provides a safety valve
-in case of catastrophe (like a power failure while editing).
-idletime
-Idle Time
-Choose how many seconds you want to let the keyboard remain idle before
-BRIEF automatically saves your files.  An ideal number is less than
-the length of your typical break, but not so small that BRIEF
-starts autosaving during a short pause for thought.
-
-We recommend a value in the range of 60-200 seconds.
-backups
-Backup Files
-BRIEF normally preserves a copy of your original file when you write
-a modified version of it.  Creating the backup file takes very little
-time and is strongly recommended as a safety mechanism.  Backup
-files may be put in any directory you wish, so they need not clutter
-up your working directories.
-
-	 Choosing "Yes" means that BRIEF saves a backup file whenever a
-	file is written.
-
-	 Choosing "No" means that no backup files are saved.
-
-No matter which option you choose, backups can be turned on and off
-from inside BRIEF at any time during an editing session.
-bakdir
-Backup Directory
-Specify the name of the directory where BRIEF should keep its backup
-files.
-
-The directory name can be a full path name (c:\brief\backup), a
-relative path (..\backup), or the current directory (.).
-
-If you choose the current directory then the backups will be named
-after the original file, but will be given a .BAK extension. If you
-choose another directory, the entire name will be preserved.
-
-You may create backup files on any drive.  However, creating backups
-is much faster when the original and backup files are on the same
-drive.
-tmppath
-Temporary File Directory
-Specify the name of the directory where BRIEF should write temporary
-files when it runs out of memory, or when swapping is turned on.  The
-directory name can be a full path name (e.g., c:\brief\tmp) or a
-relative one.  Relative paths are calculated from the directory that
-was current when you started BRIEF.
-
-You may specify a directory on another drive; using a RAMdisk will
-improve performance.
-
-If you don't specify a directory, BRIEF will write temp files to the
-root directory of the drive that was current when you started BRIEF.
-This is not reliable when you edit files over a network; you may not
-have "write access" to the root directory.
-
-Many programs, notably Microsoft's, use an environment variable named
-TMP for specifying a temp file directory.  If you have set TMP, BRIEF
-will use that directory for temp files unless you instruct it to write
-temp files to a different directory.
-swap
-Swapping Session to Disk
-This option affects commands, like Suspend Session (Alt-z) and Compile
-Buffer (Alt-F10), that run a second copy of DOS inside BRIEF.  If you
-choose No Swapping, BRIEF will remain in memory, and the DOS "shell"
-will have much less memory available than the original copy.
-
-If you choose Yes, BRIEF will remove virtually all of itself from
-memory, freeing up at least 150K of memory for the DOS shell (and other
-programs).  You may need swapping in order to run a large compiler from
-BRIEF.  However, swapping is slower than not swapping.
-
-BRIEF swaps to Expanded Memory, if possible.  If not, it swaps to your
-Temporary Files directory.  If you have none, BRIEF swaps to the root
-directory of the drive that was current when you started.
-
-When BRIEF is swapped out, you must not delete or alter the swap file,
-and you must NEVER load a terminate-and-stay-resident program (like
-PRINT.COM).  Doing so will cause a system crash when you attempt to
-return to your BRIEF session.  (If you run PRINT.COM once before you
-start BRIEF, it's safe to run it when BRIEF is swapped out.)
-undolev
-Undo Level
-You may set the number of consecutive undoable commands to any number
-between 1 and 300.  Each buffer has its own undo information.  Setting
-a low number does NOT increase BRIEF's speed or reduce its memory
-consumption; it just affects the balance between the undo information
-in different buffers.  If you set an Undo level of 300, you will
-probably only be able to undo 300 commands in the current buffer, not
-in every buffer.
-
-Most people find that the default value of 30 meets their needs.
-restore
-Restore
-Normally, you invoke BRIEF with the command "b filename".  If you omit
-the filename, BRIEF will prompt you for one.  You start from scratch
-each time you bring up BRIEF.
-
-By choosing Automatic Session Restore, you can change this behavior.
-You can make BRIEF restore your search pattern, bookmarks, etc. from
-the previous session.  If you invoke BRIEF without a filename, BRIEF
-will edit each of the files you were editing, and restore the windows
-and the cursor position in each file, as well.
-
-BRIEF will use an automatically created file, state.rst, in your
-miscellaneous files directory to save your session information.
-tabs
-Tab Stops
-Each file extension has a unique set of tab stops.
-
-Tab stops are the column positions that the cursor moves to after the
-Tab key is pressed.  BRIEF can add either spaces or real tab characters
-to get to the next tab stop (see the Miscellaneous screen).
-
-Tab stops may be set from 2 to the line length, in increasing order.
-They do not have to be equal distances apart.  The distance between
-the last two tab stops you specify is repeated across the remainder
-of the line.
-
-Examples: since column numbering begins at 1, entering "9" or "9 17"
-here will generate tabs that are 8 columns apart across your entire file.
-Saying "8" will generate only 7-column tabs; saying "8 16" will generate
-one 7-column tab, and 8-column tabs across the remainder of the file.
-
-You can't change the tab stops for a particular extension during your
-BRIEF session; however, you can change the tabs for any particular file
-(regardless of extension) as often as you wish.
-langmenu
-Language Types
-Every file extension is associated with a language type.  Whenever you 
-edit files of a particular extension, BRIEF is capable of using special 
-features (like smart indentation) of the given extension's language type.  
-Although BRIEF recognizes about three dozen common extensions with 
-default language types, (for example, ".cbl" defaults to a COBOL 
-extension), you may select any language for any extension.
-
-The language choices are:
-
-Plain Text		BRIEF Macro Language		Eagle			Pascal
-ADA				C							FORTRAN			Prolog
-Assembler		COBOL      					LISP			SQL
-BASIC			dBase      					Modula-2
-
-"Plain Text" may be used for any file that is not a program file.
-"None" may be only be selected as the language type for the "default" 
-extension.
-
-The language type for the "default" extension also applies to any
-extension which has not been explicitly declared.  
-indenting
-Indenting
-For each file extension on the menu, you can specify a default indenting
-style:
-
-	 "None" means no indenting at all.
-
-	 "Regular" indenting works with any language and indents the cursor
-	to the same level as the previous line.
-
-	 "Smart" indenting knows about the syntax of your language, and
-	indents accordingly.  Be sure to set the language type.
-
-	 "Template" editing provides smart indenting, along with automatic
-	expansion of frequently used keywords.
-
-BRIEF includes regular indenting for all languages, and smart/template
-indenting for the following languages:  Ada, Basic, C, Cobol, FORTRAN, 
-Modula-2, and Pascal.  Support for some other languages is
-available from third party vendors.  If BRIEF can't find smart indenting
-for a language, it will use regular indenting instead.
-wordwrap
-Word Processing
-Word processing provides rudimentary word processing features like word
-wrap (automatically wraps words at the end of each line, as you type),
-configurable right margin, centering lines, and reformatting paragraphs.
-
-	 Choosing "Yes" means that the word processing features will be
-	activated for this file extension.
-
-	 Choosing "No" means that you must manually activate word processing
-	for this file extension.  We recommend this choice for program
-	files.
-margin
-Margin
-When word processing is turned on for a particular file, BRIEF will
-perform "word wrap" at a particular column.  Word wrap means that when
-you type a word that extends past that column, the whole word will
-automatically be shifted down to the beginning of the next line.
-
-The default is to wrap at column 70, but you may change that for any
-file extension by entering a different number here.  Note that this
-number is meaningless for file extensions that do not use word
-processing.
-otherext
-Adding Extensions
-You may configure BRIEF specially for many different kinds of files.
-BRIEF already knows about all file types listed on the menu; the first
-time you run Setup, there are no special file types.  If you frequently
-edit CBRIEF, original BRIEF macro, header, C, C++, Assembler, Pascal, 
-Ada, Modula-2, FORTRAN, COBOL, BASIC, dBase, SQL, Eagle, Prolog, Lisp, 
-text or document files, you should turn on BRIEF's built-in support 
-for these files by adding the particular extensions you use to the menu.
-
-For example, let's say you want to set special tabs for BRIEF macro
-files, which always have a .m extension.  Enter "m" here, and a new
-window will come up that allows you to set tabs, indenting, word wrap,
-and compiling information for .m files.  "m" files will also be added
-to the menu when you save your changes.
-
-You can add ANY extension to the menu, whether or not BRIEF has built-
-in support for it.  You can change the language type of any extension.
-
-The first item on the menu ("default") applies to all files whose
-extensions do NOT match the other extensions on the menu.
-extensions
-File Extensions
-BRIEF allows you to specify unique tab stops, compiler information,
-indenting mode, and word processing mode for each of the file extensions
-on the menu.  You may also set up values for a default file extension,
-which will be used whenever a file extension does NOT match any of the
-others, and add your own extensions to the menu.
-
-Although you can add any extension to the menu, Setup has built-in
-support for the following extensions:
-.txt				Plain text	 	  .cob, .cbl		COBOL files
-.doc				Plain text	 	  .prg				dBase files
-.ada, .pkg, .lib,	ADA files		  .pgm				Eagle files
-.adb, .ads, .sub	"	  		 	  .for, .ftn		FORTRAN files	
-.asm, .inc			Assembly files	  .lsp				Lisp files
-.bas				BASIC files	 	  .mod, .def		Modula-2 files
-.m, .h				BRIEF macros	  .pas, .p			Pascal files			
-.cb, .h				CBRIEF macros	  .pro, .dba, .ari	Prolog files
-.c, .h				C files			  .prs, .sql		SQL files
-.cxx, .cpp			C++ files		  
-
-These extensions MUST be on the menu for the built-in support to take
-effect.  You can change the language type for any extension if you wish.
-compiler
-Compilers
-Choose None if you do not plan to compile this type of file from within
-BRIEF.  Otherwise, choose one of the supported compilers, or choose
-Custom if your compiler is not on the list.  This is the compiler that
-will be invoked when you invoke the BRIEF Compile command on a file with
-this extension.  If you choose a supported compiler, you will be given
-the opportunity to modify the default compiler information; if you
-choose Custom, you will have to supply more information.
-
-Note that when you select any value other than None here, several other
-fields are displayed.  These fields contain the command(s) one would
-use to invoke the compiler, including options, the amount of memory the
-compiler requires, and whether or not you want "warning" messages to be
-treated as errors.
-
-You must have sufficient free memory in your system to be able to
-compile within BRIEF.  The amount varies with the compiler.  If you tell
-BRIEF to swap itself to disk when it runs the Suspend command (see the
-Miscellaneous window) you can free up at least 150K more.
-memory
-Memory Required
-Enter the amount of memory (in kBytes) that your compiler requires.
-This number should be listed in your compiler manual.  If you specify
-too small a number, your compiler may run out of memory while compiling
-a file.  On the other hand, your system has a limited amount of memory,
-and if you set aside too much, BRIEF may run out.  When that happens,
-BRIEF will slow down, and you will have to write your files often.
-
-Setup knows the memory requirements of each compiler with built-in
-support.  It will warn you if a particular compiler requires too much
-memory.  In some cases, you can get away with reserving less memory, but
-you can free up an additional 150K (or more) by turning on "swapping".
-(Go to the Miscellaneous Screen, move to the "swapping" question, and
-press Alt-h for more information.)
-
-Note that swapping is not always the best solution.  Other solutions
-include making room by removing unnecessary memory-resident software, or
-compiling outside of BRIEF using one of the supplied batch files.  Since
-the batch files don't load BRIEF unless syntax errors are found, they
-will run on most any system.  See the BRIEF User's Guide.
-slowdown
-
-Your compiler requires more memory than BRIEF would
-like to set aside.  You have three options:
-
-	 Leave the value alone.  BRIEF will run more
-	slowly, and you will have to write your files more
-	often.
-
-	 Set aside less memory for the compiler (which may
-	mean you can't compile large files inside of BRIEF).
-
-	 Turn "swapping" on.  BRIEF can free up 160K or
-	more by writing itself out to disk when you compile.
-	This will give the maximum amount of memory to both
-	BRIEF and the compiler.  "Swapping" is located on the
-	Miscellaneous screen; see its Help screen for details.
-needswap
-
-Your compiler requires more memory than BRIEF can
-afford to set aside.  You have two options:
-
-	 Set aside less memory for the compiler (which may
-	mean you can't compile large files inside of BRIEF).
-
-	 Turn "swapping" on.  BRIEF can free up 160K or
-	more by writing itself out to disk when you compile.
-	This will give the maximum amount of memory to both
-	BRIEF and the compiler.  "Swapping" is located on the
-	Miscellaneous screen; see its Help screen for details.
-
-Setup will ignore this compiler unless you choose one
-of the above options.
-noroom
-
-Even with swapping turned on, your compiler requires
-too much memory.  You will not be able to run it from
-inside BRIEF.
-
-Try removing unncessary resident software from your
-system, or purchasing additional memory.
-warnings
-Warning Messages
-Compilers frequently generate two kinds of error messages.  Fatal error
-messages indicate syntax errors that prevented a program from being
-compiled.  Warning messages indicate legal statements that the compiler
-considered questionable or dangerous.
-
-Most compilers set the "errorlevel" to zero when a compile succeeds, or
-to a positive number if fatal errors were found.  BRIEF normally uses
-this return code to determine how a compile progressed.  However, there
-are two situations where this won't work:
-
-	 When there are no fatal errors detected during a compile, but you
-	still want to see the warning messages
-
-	 When your compiler did not set the errorlevel (some compilers,
-	like QuickSilver and Ryan-McFarland COBOL, never set it)
-
-Entering Yes here will tell BRIEF to disregard the errorlevel and scan
-the output for all error messages.  Note that it's easy to change this
-value during an editing session.
-passes
-Compiler Passes
-Enter the commands you would type to compile the example file from
-the DOS prompt.  For example, if you use a hypothetical two-pass C
-compiler, and the passes have the names "under" and "ware", and you
-want to use the /Optimize option with the second pass of the
-compiler, you should type:
-
-under example.c			(then press Enter to get to the next line)
-ware example /Optimize
-
-To compile with a batch file, include the .bat extension with the
-command name (e.g., "cc.bat example.c").
-
-If a command will not fit on one line, type a backslash (\) at the end
-of the line and continue the command on the next line.  The commands
-must total less than 115 characters; if you need more room, call a
-batch file that invokes the commands.  For more information, see the
-BRIEF User's Guide.
-colors
-Colors
-BRIEF lets you change the colors of various parts of your screen.  You
-can specify six separate colors:
-
-	 "Background color" is the background window color, when borders
-	are turned on.  It is also the background color of the status 
-	line when borders are on or off.
-
-	 "Foreground color" is the color of normal text, window borders,
-	line and column indicators, and the clock.
-
-	 "Window title color" is the color of the title of the current
-	window, when borders are turned on.
-
-	 "Normal message color" is the color of normal status messages.
-
-	 "Error message color" is the color of error messages on the status
-	line.
-
-	 "Borderless background" is the background window color, when 
-	borders are turned off.
-
-The window on the screen shows the current colors.
-borders
-Borders
-You can turn your window borders off to gain the use of 2 extra rows
-and 2 extra columns of your screen.  If you split a window, then the
-two resulting windows will automatically be assigned different
-background colors.  On a monochrome display, you will not be able to
-tell the difference between more than two adjacent borderless windows
-(because there are only two possible background colors).
-
-Borderless windows use a different background color than bordered
-windows, and you may set these colors separately.
-
-Window borders can be turned on and off easily during your session.
-
-Turning borders off does not change the minimum size of a window.
-cursors
-Cursors
-BRIEF allows you to have up to four distinct cursors to signify different
-editing situations.
-
-"Normal insert mode" is when the cursor is in insert mode and is at an
-existing character.
-
-"Normal overstrike mode" is when the cursor is in overstrike mode and is
-at an existing character.
-
-The virtual modes are like the normal modes, except that the cursor is
-in virtual space: past the end of a line, past the end of the file, or
-within an expanded tab character.  The cursor is considered to be at
-the previous existing character.
-
-Any mode may be associated with any cursor; if you want cursor
-number 1 all the time, just enter a 1 in each field.
-ega43
-43/50 Line Mode
-This test is applicable if you have an IBM Enhanced Graphics Adapter
-(or compatible) and an Enhanced Color Display (or compatible), or a
-Hercules Graphics Plus card, or an IBM Video Graphics Array.
-
-With this display, you can put 43 lines of text on the screen at once
-(50 if you have a VGA).
-
-You can't switch between 25-line and 43/50 Line mode during an editing
-session.
-snow
-Snow
-"Snow" is the annoying, random speckling of the screen that sometimes
-occurs on the IBM Color/Graphics Adapter and other compatible adapters.
-
-BRIEF can run on virtually any display without snow.  Setup will
-make sure that snow-free displays like the IBM Monochrome Display,
-Enhanced Graphics Adapter, and 3270 PC are redrawn at full speed, and
-this test will let you determine the optimum speed for redrawing on
-a Color Graphics Adapter or compatible.
-
-The snow test continuously redraws your screen as fast as possible.  If
-you see snow during the test and you don't mind slightly slower display
-speed, answer Yes, and BRIEF will avoid the snow with a slower redrawing
-method.  If you have a fast processor, see the help screen for the next
-question.
-chip
-Faster Processors
-The IBM Color/Graphics Adapter is prone to "snow"--an annoying, random
-speckling of the screen when the display is changed at full speed.  Some
-compatible computers, like the COMPAQ, have a redesigned graphics adapter
-which eliminates snow.  If you don't see snow when you run the snow test,
-your computer is in this category.
-
-However, snow may also occur on the following kinds of computers:
-
-	 Intel 8086- or 8088-based, like an IBM PC or compatible, sped up
-	to twice the normal speed (to 9 MHz)
-	 80186-based, like PCs with some kinds of speedup boards
-	 80286-based, like the IBM AT or XT 286
-	 80386-based, like the COMPAQ DeskPro 386
-
-Please answer "Yes" if your computer is in one of these categories, and
-watch for snow when you run BRIEF.  (The snow in Setup will remain.)
-
-If you get snow within BRIEF no matter what you try, determine your
-computer's processor type, clock rate and monitor type, then contact
-Technical Support.
-page
-the Page Test
-On most standard display adapters (but not the Monochrome Adapter)
-several pages of memory are used for the screen.  In effect, there are
-several display screens, but only one is visible at a given time.  If
-you have such a display, BRIEF uses a different display page than
-DOS uses, so it can restore your DOS screen when you exit.
-
-Many not-quite-compatible display adapters fail to provide the extra
-display pages.  Usually, this means that when you enter BRIEF your
-cursor is invisible.  On some adapters, the entire screen may disappear.
-
-BRIEF can, however, be configured to use only one display page.  If
-you can't see the cursor moving during the test, enter No.  (If you
-can't see the screen at all, press Esc, and No will be chosen
-automatically.)
-
-ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-³  IMPORTANT:  Consult the help system while the cursor is on the next	³
-³  field to make sure that BRIEF will work with all memory-resident		³
-³  software that you use.												³
-ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
-resident
-Memory-Resident Software
-The following memory-resident programs (among others) are unable to
-handle multiple pages of display memory properly:
-
-	SideKick, other Borland programs (older versions)
-	DesqView
-	Ready!
-	SmartKey
-	Mouse driver programs with pop-up menus (Microsoft & others)
-	Microsoft Advisor (QuickHelp)
-
-To use BRIEF with these programs, enter Yes here -- BRIEF will use only
-one page of display memory, but it will not preserve your DOS screen.
-
-(If you do not use any of these programs, but you experience problems
-such as the cursor being invisible or the screen being garbled, lie.
-Tell Setup you do use such programs, and see if that fixes the
-problem.  If it doesn't, call Technical Support.)
-exitmenu
-Exiting
-If you choose Exit, no changes at all will be made to your current
-setup.  You will have to start from scratch next time you run Setup.
-
-If you press Esc, Setup will return you to the main menu, and you
-will be able to examine, alter, save, or cancel the Setup as usual.
-
-If you choose Install or Configure (only one of which will appear on
-your screen) Setup will save your new setup.  Install (which appears
-when you have run Setup from the distribution disk) will copy BRIEF
-to the destination disk(s) first, using the directions you provided on
-the Directories screen.
-
-	 If your setup requires a change to CONFIG.SYS, Setup will ask you
-	to Update the existing CONFIG.SYS (with backup), Show the changes on the
-	screen first, Write the changes to a different file, or Discard them.
-
-	 If your AUTOEXEC.BAT or INITIALS MACRO have changed, Setup will
-	present the same options.
-
-	 Setup will recompile your initials macro.
-noboot
-
-Your boot disk does not contain the system files that
-are necessary to restart your computer.  Setup will
-write the configuration information to that disk, but
-you will have to update your real CONFIG.SYS and
-AUTOEXEC.BAT by hand.
-whereinit
-
-Although BRIEF is already installed, Setup was unable
-to find your "initials macro".  If you proceed, Setup
-will use default values in place of the configuration
-information it normally reads from that file.
-
-To get Setup to read your full configuration, perform
-the following steps:
-
-	 Exit Setup
-	 Add the initials macro source directory to the
-	BPATH environment variable
-	 Restart Setup.
-dual_install
-
-BRIEF for OS/2 is already present on your computer.
-
-The DOS and OS/2 versions may coexist on the same disk,
-but you must keep the program files in separate
-directories.
-
-Please choose Directories from the Main Menu and select
-a new Executable Files directory before completing Setup.
-
-The help and macro files are compatible between versions,
-so you may keep a single set if you wish.
-
-select
-a new Executable Files directory before completing Setup.
-
-The help and macro files are compatible between versions,
-so you may keep a single set if you wish.
-mouse_enable
-Mouse enable
-
-Selecting "YES" for this field will enable the mouse if a mouse is present.
-You must have a two or three button mouse attached to your system and a 
-Microsoft compatible mouse driver loaded when you start BRIEF.
-numbtns
-Number of mouse buttons
-
-Enter the number of buttons on your mouse.  Legal values are two or three.
-button1loc
-Relative location of button one
-
-The relative location of button 1 specifies whether you use the mouse with
-your left or right hand.  Right handed users should specify left - button 1
-is on the left side of the mouse. Left handed users should specify right.
-Button 1 is the button normally pressed with the index finger.
-vert_show
-Enable vertical scroll bar
-
-This field allows you to choose whether or not the vertical scroll bar is 
-displayed.  The vertical scroll bar appears on the right side of the 
-current window.  
-horz_show
-Enable horizontial scroll bar
-
-This field allows you to choose whether or not the horizontial scroll bar is 
-displayed.  The horizontial scroll bar appears at the bottom of the current
-window.
-close_show
-Enable close button
-
-This field allows you to choose whether or not a close button is 
-displayed in each window.  The close button provides a convenient 
-method delete a window.
-zoom_show
-Enable zoom button
-
-This field allows you to choose whether or not a zoom button is displayed
-in each window.  The zoom button provides a convenient way to zoom 
-a window.
-btn2_dflt
-Default button two action
-
-This field allows you to choose whether button 2 click brings up a 
-popup menu or executes a copy to scrap command.  Each choice implies
-several other assignments to button 2 actions.  These assignments are:
-"Popup Menu" assignments:
-
-      Button 2 click               Display popup menu 
-      Button 2 double click        Display popup menu 
-      <Ctrl> Button 2 click        Execute last menu choice 
-      <Alt> Button 2 click         Display last menu 
-      <Shift> Button 2 click       Copy to scrap
-
-"Quick Edit" assignments:
-
-      Button 2 click               Copy to scrap 
-      Button 2 double click        Paste 
-      <Ctrl> Button 2 click        Cut 
-      <Shift> Button 2 click       Display popup menu 
-      <Shift+Ctrl> Button 2 click  Execute last menu choice 
-      <Shift+Alt> Button 2 click   Display last menu
-
-
-

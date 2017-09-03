@@ -1,0 +1,2 @@
+msys a:
+copy . a:

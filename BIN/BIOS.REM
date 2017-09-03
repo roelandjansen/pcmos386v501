@@ -1,0 +1,1629 @@
+
+
+                   ===========================================
+                       SOURCER REMARKS FILE - BIOS REMARKS
+                   ===========================================
+
+
+ :::::::::::::::::::::::::::::::: DATA REMARKS ::::::::::::::::::::::::::::::::
+
+    --------- Data Remarks -----------  -------- comments ignored here --------
+
+001 ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û    PRIMARY BIOS DATA AREA     Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    RS-232 port addresses                     rs232_1
+002 Printer port addresses                    prn_1
+003 Equipment installed info bits             equip_install
+     15  14  13   12   11  10   9   8
+     \    /      game  \       /
+     # of print  port  # of RS-232
+     ports 0-3   used   ports 0-4
+
+     7   6    5    4    3   2   1   0
+     \   /    \    /    \   / Math  |
+     # of   video mode  RAM    uP  no
+     disk-  at boot up  00=16K    dsk
+     ettes  00=EGA      01=32K   driv
+      1-4   01=CGA-40   10=48K   if 0
+     if bit 10=CGA-80   11=64K
+     0 = 1  11=MDA-80   (old PCs)
+
+    Note: bit 13=modem on PC lap-tops
+          bit  2=mouse on PS/2
+      
+004 Initialization test                       init_test_flag
+005 Base memory size 0-1Meg, 1K steps         main_ram_size
+006 Channel i/o size                          chan_io_size
+007 ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û         KEYBOARD DATA         Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Keyboard flag bits                        keybd_flags_1
+      7   6   5   4    3   2   1   0
+    ins- cap num scrl alt ctl lef rig
+    sert --toggles--- --shifts down--
+
+008 Keyboard flag bits                        keybd_flags_2
+       7     6     5     4     
+    insert  caps  num  scroll
+    ------now depressed------
+
+       3     2     1     0
+     pause  sys   left right
+     lock request -alt-down-
+       
+009 Alt & digit pad number buffr area         keybd_alt_num
+00A Head ptr of circular key queue            keybd_q_head
+      empty if head ptr = tail ptr
+00B Tail ptr of circular key queue            keybd_q_tail
+      empty if head ptr = tail ptr
+00C 15 key queue for keyboard                 keybd_queue
+00D                                           unused
+00E ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û          DISK DATA            Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+     Recalibrate floppy drive bits             dsk_seek_stat
+        3       2       1       0
+     drive-3 drive-2 drive-1 drive-0
+
+     bit 7 = interrupt flag
+     
+00F Motor running status & disk write         dsk_motor_stat
+     bit 7=1 disk write in progress
+     bits 6&5 = drive selected 0 to 3
+        3       2       1       0
+     drive-3 drive-2 drive-1 drive-0
+     --------- 1=motor on-----------
+
+010 Motor timer, at 0, turn off motor         dsk_motor_tmr
+011 Controller return code                    dsk_ret_code
+     00h = ok
+     01h = bad command or parameter
+     02h = can't find address mark
+     03h = can't write, protected dsk
+     04h = sector not found
+     08h = DMA overrun
+     09h = DMA attempt over 64K bound
+     10h = bad CRC on disk read
+     20h = controller failure
+     40h = seek failure
+     80h = timeout, no response
+
+012 Status bytes-disk controller chip         dsk_ctrl_stat
+     Note: 7 info bytes returned from
+     controller are saved here. Refer
+     to the NEC uPD 765 chip manual
+     for the specific info, depending
+     on the previous command issued.
+013                                           unused
+014 ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û          VIDEO DATA           Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Present display mode(see int 10h)         video_mode
+015 Number of columns                         video_columns
+016 Video buffer size in bytes                video_buf_size
+      Note: size may be rounded up to
+      the nearest 2K boundary.  For
+      example, 80x25 mode=4000 bytes,
+      but value may be 4096.
+017 Segment of active video memory            video_segment
+      MDA=0B000h, CGA=0B800h, etc.
+
+018 Cursor position page 0                   video_cur_pos0
+      bits 15-8=row, bits 7-0=column
+019 Cursor position page 1                   video_cur_pos1
+      bits 15-8=row, bits 7-0=column
+01A Cursor position page 2                   video_cur_pos2
+      bits 15-8=row, bits 7-0=column
+01B Cursor position page 3                   video_cur_pos3
+      bits 15-8=row, bits 7-0=column
+01C Cursor position page 4                   video_cur_pos4
+      bits 15-8=row, bits 7-0=column
+01D Cursor position page 5                   video_cur_pos5
+      bits 15-8=row, bits 7-0=column
+01E Cursor position page 6                   video_cur_pos6
+      bits 15-8=row, bits 7-0=column
+01F Cursor position page 7                   video_cur_pos7
+      bits 15-8=row, bits 7-0=column
+
+020 Active cursor, start & end lines         video_cur_mode
+      bits 12 to 8 for starting line
+      bits 4  to 0 for ending line
+021 Present page                             video_page
+022 Video controller base I/O address        video_port
+023 Hardware mode register bits              video_mode_reg
+024 Color set in CGA modes                   video_color
+025 ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û         GENERAL DATA          Û
+    Û Note: next 5 bytes also used  Û
+    Û    for cassette interface in  Û
+    Û    older PCs.                 Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    ROM initialization pointer               @gen_io_ptr
+026 ROM i/o segment                          gen_io_seg
+027 Unused interrupt occurred                gen_int_occurd
+028 Timer, low word, cnts every 55 ms        timer_low
+029 Timer, high word                         timer_hi
+02A Timer overflowed, non-zero when          timer_rolled
+     more than 24 hours have elapsed
+02B Bit 7 set if break key depressed         keybd_break
+02C Boot (reset) type                        gen_warm_boot
+      1234h=warm boot, no memory test       
+      4321h=boot & save memory
+            (PS/2 with MCA only)
+02D ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û        HARD DISK DATA         Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Hard disk status                         hdsk_status_1
+     00h = ok
+     01h = bad command or parameter
+     02h = can't find address mark
+     03h = can't write, protected dsk
+     04h = sector not found
+     05h = reset failure
+     07h = activity failure
+     08h = DMA overrun
+     09h = DMA attempt over 64K bound
+     0Ah = bad sector flag
+     0Bh = removed bad track
+     0Dh = wrong # of sectors, format
+     0Eh = removed control data addr
+            mark
+     0Fh = out of limit DMA
+            arbitration level
+     10h = bad CRC or ECC, disk read
+     11h = bad ECC corrected data
+     20h = controller failure
+     40h = seek failure
+     80h = timeout, no response
+     AAh = not ready
+     BBh = error occurred, undefined
+     CCh = write error, selected dsk
+     E0h = error register = 0
+     FFh = disk sense failure
+       
+02E Number of hard disk drives               hdsk_count
+02F Head control (XT only)                   hdsk_head_ctrl
+030 Hard disk control port (XT only)         hdsk_ctrl_port
+031 ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û I/O PORT TIMER, KEYBOARD DATA Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Countdown timer waits for printer        prn_timeout_1
+      to respond (printer 1)
+032 Countdown timer waits for printer        prn_timeout_2
+      to respond 
+033 Countdown timer waits for RS-232         rs232_timout_1
+      port to respond (port 1)        
+034 Countdown timer waits for RS-232         rs232_timout_2
+      port to respond                  
+035 Ptr to beginning of keybd queue          @keybd_begin
+036 Ptr to end of keyboard queue             @keybd_end
+037 ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û  ADVANCED VIDEO DATA, EGA/VGA Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Rows of characters on display - 1        video_rows
+038 Number of pixels per charactr * 8        video_pixels
+039 Display adapter options                  video_options
+      bit 7 = clear RAM
+      bits 6,5 = memory on adapter
+                  00 - 64K
+                  01 - 128K
+                  10 - 192K
+                  11 - 256K
+      bit 4 = unused
+      bit 3 = 0 if EGA/VGA active
+      bit 2 = wait for display enable
+      bit 1 = 1 - mono monitor
+            = 0 - color monoitor
+      bit 0 = 0 - handle cursor, CGA
+03A Switch setting bits from adapter         video_switches
+      bits 7-4 = feature connector
+      bits 3-0 = option switches
+03B Video reserved 1, EGA/VGA control        video_1_resv
+      bit 7 = 200 line mode
+      bits 6,5 = unused
+      bit 4 = 400 line mode
+      bit 3 = no palette load
+      bit 2 = mono monitor
+      bit 1 = gray scale
+      bit 0 = unused
+03C Video reserved 2                         video_2_resv
+03D ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û OTHER FLOPPY & HARD DISK DATA Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Last data rate for diskette              dsk_data_rate
+     bits 7 & 6 = 00 for 500K bit/sec
+                = 01 for 300K bit/sec
+                = 10 for 250K bit/sec
+     bits 5 & 4 = step rate
+03E Hard disk status                         hdsk_status_2
+03F Hard disk error                          hdsk_error
+040 Set for hard disk interrupt flag         hdsk_int_flag
+041 Bit 0 = 1 when using 1 controller        hdsk_options
+     card for both hard disk & floppy
+042 Media state for drive 0                  hdsk_media_st0
+043 Media state for drive 1                  hdsk_media_st1
+        7      6      5      4
+     data xfer rate  two   media
+      00=500K bit/s  step  known
+      01=300K bit/s
+      10=250K bit/s
+        3      2      1      0
+     unused  -----state of drive-----
+             bits floppy  drive state
+             000=  360K in 360K, ?
+             001=  360K in 1.2M, ?
+             010=  1.2M in 1.2M, ?
+             011=  360K in 360K, ok
+             100=  360K in 1.2M, ok
+             101=  1.2M in 1.2M, ok
+             111=  state not defined
+
+044 Start state for drive 0                  hdsk_start_st0
+045 Start state for drive 1                  hdsk_start_st1
+046 Track number for drive 0                 hdsk_track_0
+047 Track number for drive 1                 hdsk_track_1
+048 ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û    ADVANCED KEYBOARD DATA     Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Special keyboard type and mode           keybd_flags_3
+     bit 7 Reading ID of keyboard
+         6 last char is 1st ID char
+         5 force num lock
+         4 101/102 key keyboard
+         3 right alt key down
+         2 right ctrl key down
+         1 E0h hidden code last
+         0 E1h hidden code last
+       
+049 Keyboard Flags (advanced keybd)          keybd_flags_4
+      7      6       5     4  3 2 1 0
+    xmit   char   Resend  Ack   \   /
+    error was ID  Rec'd  Rec'd   LEDs
+
+04A ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û  REAL-TIME CLOCK & LAN DATA   Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Ptr offset to wait done flag             @timer_wait_off
+04B Ptr segment to wait done flag            @timer_wait_seg
+04C Timer low word, 1 microsecond clk        timer_clk_low
+04D Timer high word                          timer_clk_hi
+04E Timer flag 00h = post acknowledgd        timer_clk_flag
+               01h = busy
+               80h = posted
+04F Local area network bytes (7)             lan_1
+050                                          unused
+051 ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û   MORE ADVANCED VIDEO DATA    Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Pointer to a save table of more          @video_sav_tbl
+    pointers for the video system 
+               SAVE TABLE
+     offset type    pointer to
+     ÄÄÄÄÄÄ ÄÄÄÄ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+       0     dd  Video parameters
+       4     dd  Parms save area
+       8     dd  Alpha char set
+      0Ch    dd  Graphics char set
+      10h    dd  2nd save ptr table
+      14h    dd  reserved (0:0)
+      18h    dd  reserved (0:0)
+     
+     2ND SAVE TABLE (from ptr above)
+     offset type functions & pointers
+     ÄÄÄÄÄÄ ÄÄÄÄ ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+       0     dw  Bytes in this table
+       2     dd  Combination code tbl
+       6     dd  2nd alpha char set
+      0Ah    dd  user palette tbl
+      0Eh    dd  reserved (0:0)
+      12h    dd  reserved (0:0)
+      16h    dd  reserved (0:0)
+
+052 unused
+053 unused
+054 unused
+055 unused
+056 Days since 1-Jan-1980 counter
+057 Print screen status                      prn_scrn_stat
+       00h = Print screen ready
+       01h = Print screen in progress
+       FFh = Error occurred
+058                                          unused
+059                                          unused
+05A                                          unused
+05B                                          unused
+05C                                          unused
+05D ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û     Floppy Disk Parameters    Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+     hi nibble = stepping rate in ms
+     lo nibble = head unload time, ms
+05E  2nd info byte bit 0 = 0 for DMA
+05F  Delay after use for motor off
+060  Bytes per sector  0 =  128 bytes
+                       1 =  256 bytes
+                       2 =  512 bytes
+                       3 = 1024 bytes
+061  Number of sectors per track
+062  Gap Length
+063  Data Length
+064  Format Gap Length
+065  Format write byte
+066  Head load time, in milliseconds
+067  Motor startup wait time * .125ms
+068 ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ
+    Û    Video Hardware Registers   Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+      mode CGA 40 columns x 25 lines
+069   mode CGA 80 columns x 25 lines
+06A   mode CGA graphics
+06B   mode MDA 80 columns x 25 lines
+06C Video buffer bytes CGA 40x25
+06D Video buffer bytes CGA 80x25
+06E Video buffer bytes CGA Graphics
+06F Video buffer bytes CGA Graphics
+070 Video columns per modes 0-7
+071 Video hardware modes (0-7)
+072 ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ        dsk_info_table
+    Û Hard Disk Information Tables  Û
+    Û                               Û
+    Û   Each sub-table contains a   Û
+    Û   a set of 16 bytes for each  Û
+    Û   particular disk type.       Û
+    Û                               Û
+    Û   Type number specified may   Û
+    Û   differ with manufactures    Û
+    Û   specification.  The hard    Û
+    Û   disk table shown here       Û
+    Û   assumes the first entry     Û
+    Û   is type 0.                  Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+     Number of cylinders, hdsk_type_0
+073  Number of heads
+074  Low write current cyl begin *
+075  Write pre-compensation cylinder
+076  Error correction burst length *
+077  Miscellaneous bit functions:
+       bits 0-2 disk option, XT only*
+            0-2 unused, all others
+            3 = 1 if > 8 heads
+            4   unused
+            5 = 1 for bad map at last
+                 cylinder + 1
+            6 or 7 = 1 no retries
+078  Normal timeout *
+079  Format timeout *
+07A  Check timeout  *
+07B  Parking cylinder number
+07C  Number of sectors per track
+07D  Unused
+        * indicates XT machines only
+07E Unused
+07F Video characters in graphic modes        video_char_table
+080 Characters, EGA  8x14 font
+081 Characters, EGA  8x8 font (0-7F)
+082 Characters, EGA  8x8 font (80-FF)
+083 Character changes, EGA  8x14 font
+084 Characters, VGA  8x16 font
+085 Character changes, VGA  9x16 font
+086 Video VGA parameter table ptr
+087 Initial interrupt vectors                int_vec_table
+088 BIOS version date code                   rom_versn_date
+089 Model  FFh = PC                          model_type
+           FEh = 1st XT
+           FBh = later XTs
+           FCh = AT type (286/386)
+           FAh = models 25/30
+           F9h = IBM lap-tops
+           F8h = models 70/80 (80386)
+08A Extended BIOS data (PS/2)or printer 4    BIOS_data_seg
+      Printer 4 (PC,XT,AT & compatibles)
+08B ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ        VGA_parm_tbl
+    Û   Video VGA Parameter Tables  Û
+    Û                               Û
+    Û   64 byte sub-table per mode  Û
+    Û  offset/size     function     Û
+    Û  -- --------  --------------  Û
+    Û   0  1 byte   # of columns    Û
+    Û   1  1 byte   # of rows       Û
+    Û   2  1 byte   # bytes/char    Û
+    Û   3  1 word   # bytes/page    Û
+    Û   5  5 bytes  sequencer regs  Û
+    Û  10 25 bytes  display regs    Û
+    Û  35 20 bytes  attribute regs  Û
+    Û  55  9 bytes  graphics regs   Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+08C ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ        baud_rate_tbl
+    Û        Baud Rate Table        Û
+    Û                               Û
+    Û   Table of hex divsors  for   Û
+    Û   the serial ports.   Table   Û
+    Û   divisors for bauds 110 to   Û
+    Û   9600, and 19,200 on some.   Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    110 Baud rate divisor
+08D ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ        Config_tbl_size
+    Û   System Configuration Table  Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Size of table in bytes
+08E Model type
+      0F8h = 80386 model 70-80 types
+      0FCh = 80286 model 50-60 types
+             also most 80286/80386
+             compatibles
+      0FAh = 8088/86 model 25-30 type
+08F Sub-Model type 
+090 BIOS revsion number
+091 Feature information
+      bit 7=1, hard disk uses DMA 3
+      bit 6=1, dual interrupt chips
+      bit 5=1, has real-time-clock
+      bit 4=1, int 15h, ah=4Fh is
+               supported (keyboard)
+      bit 3=1, external wait support
+      bit 2=1, has extended BIOS RAM
+      bit 1=1, micro-channel
+      bit 0=1, unused
+092 Information bytes (future use)
+093 ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ 
+    Û       Interrupt Vectors       Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Divide error
+094 Single Step
+095 NMI
+096 Debug
+097 Overflow
+098 Print Screen
+099 Timer Ticks
+09A Keyboard
+09B Serial
+09C Serial
+09D Disk
+09E Diskette
+09F Bad Interrupt
+0A0 Video
+0A1 Equipment
+0A2 Memory Size
+0A3 Disk Services
+0A4 General Services
+0A5 ROM Basic
+0A6 ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ 
+    Û         ROM BEGINNING         Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    ROM signature word
+0A7 Number of 512 byte pages
+0A8 unused
+0A9 ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ 
+    Û     FONT - 8 wide, 14 high    Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Video character font
+0AA ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ 
+    Û     FONT - 8 wide, 8 high     Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Video characters 0-127
+0AB ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ 
+    Û     FONT - 8 wide, 8 high     Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Video characters 128-255
+0AC ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ 
+    Û     FONT - 9 wide, 14 high    Û
+    Û                               Û
+    Û  First byte indicates the     Û
+    Û    character to replace       Û
+    Û  Followed by 14 bytes of data Û
+    Û    (the 9th bit is provided   Û
+    Û    by the EGA/VGA adapter     Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Video character font
+0AD ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ 
+    Û     FONT - 8 wide, 16 high    Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Video character font
+0AE ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ 
+    Û     FONT - 9 wide, 16 high    Û
+    Û                               Û
+    Û  First byte indicates the     Û
+    Û    character to replace       Û
+    Û  Followed by 16 bytes of data Û
+    Û    (the 9th bit is provided   Û
+    Û    by the EGA/VGA adapter     Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Video character font
+0AF ÛßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßÛ 
+    Û       VIDEO MODE TABLES       Û
+    Û                               Û
+    Û Note: The following structure Û
+    Û       is based on most EGA/   Û
+    Û       VGA adapters.  Since    Û
+    Û       they are used only      Û
+    Û       internally the table    Û
+    Û       may not follow the      Û
+    Û       standard shown.         Û
+    Û                               Û
+    Û  EGA Cards - Mode order       Û
+    Û       0-0Fh, 10h normal       Û
+    Û       0Fh, 10h  16K RAM EGA   Û
+    Û       0-3, high res emulate   Û
+    Û  VGA Cards - Mode order       Û
+    Û       0-Fh, 10-13h normal     Û
+    Û       0-3, high res emulate   Û
+    Û                               Û
+    Û  THIS IS A GUIDELINE AND MAY  Û
+    Û  VARY DEPENDING ON THE CARD   Û
+    ÛÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÛ
+    Number of columns on display
+0B0 Number of rows on display
+0B1 Pixels per character
+0B2 Bytes per page
+0B3 Sequencer register values
+0B4 Miscellaneous register value
+0B5 CRT controller register values
+0B6 Attribute register values
+0B7 Graphics register values
+0B8 System boot 
+end
+
+
+
+ :::::::::::::::::::::::::::::: LOCATION REMARKS ::::::::::::::::::::::::::::::
+
+    ----------------------- Location Reference Remarks ------------------------
+
+01
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 1 ±±±±±±±
+     
+       SINGLE STEP
+
+
+02
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 2 ±±±±±±±
+     
+      NON-MASKABLE HARDWARE INTERRUPT
+     
+         This function is called in the event of a memory parity error or may
+         occur in the event of other hardware problems or failures (depends on
+         the specific manufacturer's hardware).  Displays the appropriate
+         error message and halts the processor.
+
+03
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 3 ±±±±±±±
+     
+      DEBUG BREAKPOINT
+
+04
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 4 ±±±±±±±
+     
+      OVERFLOW
+
+05
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 5 ±±±±±±±
+     
+      PRINT SCREEN
+     
+         Send the present active display screen contents to the printer if
+         the printer is idle and not out of paper.  The status of the print
+         screen function is in prn_screen_stat at 0050:0000.  Control-Break
+         will terminate an active print screen operation.
+
+06
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 6 ±±±±±±±
+     
+      BAD OPCODE DETECTED
+
+07
+
+08
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 8 ±±±±±±±
+     
+      TIMER TICKS  (called by hardware 8259-1, IRQ 0)
+          
+         This is the primary timer used to control the clock and other key
+         system resources.  It is called indirectly by channel A of the 8253
+         timer every 18.2 milliseconds.  Every timer tick also calls int 1Ch
+         for user needs (int 1Ch points to an iret instruction unless changed
+         by a resident program).  The timer interrupt is given the highest
+         maskable interrupt priority upon power up.
+     
+         The main timing functions of int 8 include increment of a 32-bit
+         time since powered on counter, timer_hi and timer_low, and after 24
+         hours since powered on, timer_rolled is incremented.
+     
+         The last task of int 8 is turning off the floppy drive motor after
+         2 seconds of non-use.  The counter dsk_motor_tmr is decremented upon
+         each occurrence of int 8.  When the count reaches zero, the motor is
+         set off, and the motor running flags are cleared in dsk_motor_stat.
+
+09
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 9 ±±±±±±±
+     
+      KEYBOARD I/O  (called by hardware 8259-1, IRQ 1)
+     
+         When any key is pressed on the keyboard, the hardware calls this
+         interrupt to service the pressed key or key combination.   The
+         hardware provides the key pressed in a non-ASCII scan code format
+         read at i/o port 60h.  The servicer acknowledges receipt of the key
+         by toggling bit 7 of port 61h.  (Port 61h should be read first, then
+         bit 7 ored on, output to port 61h, then anded off, and resent to
+         port 61h).
+     
+         The read key is decoded to yield an ASCII character, special function
+         key (such as F1) or a control function like Left Shift Key down.
+         The converted ASCII character is placed into the next available
+         position in the circular queue keybd_queue to keybd_q_end.  It is
+         put in the position indicated by keydb_q_tail when it will not
+         cause the loss of earlier entered data.  The value keybd_q_head
+         points to the oldest key pressed in the buffer which has not been
+         removed from the queue (the normal process uses int 16h to remove
+         keys from the queue and return the key value to the int 16h caller).
+     
+         The 16 word queue holds up to 16 keys.  If keybd_q_head equals the
+         keybd_q_tail, the queue is empty.  Valid keys in the queue comprise
+         the upper byte scan code and the lower byte ASCII character.  If the
+         key pressed has no ASCII equivalent (i.e F1 to F12), the lower byte
+         is zero.
+     
+         Toggle and shift keys are not placed in the buffer, but appear in 2
+         status registers keybd_flags_1 and keybd_flags_2.
+     
+         Special key combinations will cause other events to occur:
+            Ctrl-Alt_Del  -  Reset computer by jumping to power_on_reset
+            Print screen  -  Call int_5_prn_scrn to print the current screen
+            Ctrl-Break    -  Call int_1Bh control break key processor (DOS)
+            Pause         -  Wait until an ASCII key is pressed, without
+                             placing the key in the queue
+
+0A
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 0Ah ±±±±±
+     
+      LAN ADAPTER (called by hardware 8259-1, IRQ 2 - see below)
+     
+         On systems equipped with 2 interrupt controller chips (8259), IRQ 2
+         is used to support the second interrupt controller.  In this case,
+         int 71h (IRQ 9) is used to replace IRQ 2.  Hardware calls to int 71h
+         are redirected to this interrupt to maintain compatibility.
+
+0B
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 0Bh ±±±±±
+     
+      RS-232 SERIAL HANDLER (called by hardware 8259-1, IRQ 3)
+     
+         Called by the secondary serial port chip.
+
+0C
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 0Ch ±±±±±
+     
+      RS-232 SERIAL HANDLER (called by hardware 8259-1, IRQ 4)
+     
+         Called by the primary serial port chip.
+
+0D
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 0Dh ±±±±±
+     
+      XT HARD DISK CONTROLLER (called by hardware 8259-1, IRQ 5)
+
+0E
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 0Eh ±±±±±
+     
+      FLOPPY DISK CONTROLLER (called by hardware 8259-1, IRQ 6)
+
+0F
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 0Fh ±±±±±
+     
+      PRINTER CONTROLLER (called by hardware 8259-1, IRQ 7)
+     
+         This interrupt is normally avoided.  If a bad interrupt occurs,
+         it will vector to this spot (when caused by a misprogrammed 8259
+         interrupt controller)
+
+10
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 10h ±±±±±
+     
+      VIDEO DISPLAY SERVICES
+     
+         Called with:  ah = primary function number
+     
+         Returns: (unless otherwise indicated)
+                       ax - altered (some systems may not alter ax)
+     
+         Functions:
+           ah = 0     Set video display mode in al.
+           ah = 1     Set cursor size
+                        Call with:  ch = top line, 0-32
+                                    cl = bottom line, 0-32
+           ah = 2     Set cursor location
+                        Call with:  bh = page number, 0 = 1st page
+                                    dh = row (0 for top row)
+                                    dl = column (0 for leftmost)
+           ah = 3     Get cursor location
+                        Call with:  bh = page number, 0 = 1st page
+                        Returns:    ch/cl = cursor size (top & bottom)
+                                    dh/dl = row and column of cursor
+           ah = 4     Get light pen location
+                        Returns:    ah = 0 not on/unsupported & bx,cx,dx changed
+                                         1 status valid
+                                    bx = pixel column
+                                    cx = horizontal line number
+                                    dh/dl = row and column
+           ah = 5     Set Page number al, 0 = 1st page
+           ah = 6     Up scroll screen
+                        Call with:  al = # bottom lines to clear, set 0 for all
+                                    bh = attribute to fill cleared lines
+                                    ch/cl = row/column of top left scroll corner
+                                    dh/dl = row/column of bottom right scroll corner
+           ah = 7     Down scroll screen
+                        Call with:  al = # top lines to clear, set 0 for all
+                                    bh = attribute to fill cleared lines
+                                    ch/cl = row/column of top left scroll corner
+                                    dh/dl = row/column of bottom right scroll corner
+           ah = 8     Get character & attribute at cursor
+                        Call with:  bh = page number, 0 = 1st page
+                        Returns:    ah/al = attribute/character
+           ah = 9     Write character & attribute at cursor (graphics modes)
+                        Call with:  al = character
+                                    bh = page number, 0 = 1st page
+                                    bl = attribute, bit 7 = 1 to xor with old color
+                                    cx = Number of same characters to write
+           ah = 0Ah   Write character at cursor (graphics modes)
+                        Call with:  al = character
+                                    bh = page number, 0 = 1st page
+                                    cx = Number of same characters to write
+           ah = 0Bh   Set colors (typically in low res modes)
+                        Call with:  bh = 0, bl = color low res background, border
+                                    bh = 1, bl = 0/1 for low res color group 0/1
+           ah = 0Ch   Write graphics dot
+                        Call with:  al = color, bit 7 = 1 to xor bit with old color
+                                    cx/dx = pixel row/pixel column
+           ah = 0Dh   Read graphics dot
+                        Call with:  cx/dx = pixel row/pixel column
+           ah = 0Eh   Write in ASCII mode (cr, lf, bell, and bs as operators)
+                        Call with:  al/bl = character/color
+           ah = 0Fh   Get video info
+                        Returns:    ah = columns active
+                                    al = active video mode
+                                    bh = active page, 0 = 1st page
+           ah = 10h   Colors  (EGA/VGA)   Called with al = subfunction
+                        al = 1    bl = color register (0-15)  bh = color to set
+                        al = 2    es:dx = ptr to change all 16 colors & overscan #
+                        al = 3    bl = color high bit as: 0-intensity, 1-blink
+                      For VGA equipped systems only
+                        al = 7    bl = color register to get in bh
+                        al = 8    bh = returned overscan value
+                        al = 9    es:dx = ptr where to put all 16 colors & overscan
+                        al = 10h  bx = color register to set; ch/cl/dl = grn/blu/red
+                        al = 12h  es:dx = ptr to change color registers
+                                  bx = 1st register to set, cx = # of registers
+                        al = 13h  bl = 0, set color page mode in bh
+                                  bl = 1, set page;  bh = page number
+                        al = 15h  bx = color reg to read; ch/cl/dl = grn/blu/red
+                        al = 17h  es:dx = ptr where to load color regs
+                                  bx = 1st register to get, cx = # of registers
+                        al = 1Ah  get color page info; bl = mode; bh = page #
+           ah = 11h   Reset mode with new character set (leave memory as-is)
+                        al = 0    Character set load
+                                  es:bp = ptr to table of chars
+                                  bl/bh = which block/bytes per char
+                                  cx/dx = # of characters/where to start in block
+                        al = 1    bl = block to load the mono character set
+                        al = 2    bl = block to load the double wide character set
+                        al = 3    bl = block select related to attribute
+                        al = 4    bl = block to load the 8 by 16 set (VGA)
+                        al = 10h - 14h same as 0 - 4, must occur after setting mode
+                        al = 20h  es:bp = ptr to table of char, using int 1Fh ptr
+                        al = 21h  es:bp = ptr to table of char, using int 43h ptr
+                                  bl = 0-dl=# rows; 1-14 rows; 2-25 rows; 3-43 rows
+                                  cx = number of bytes per character in table
+                        al = 22h  use 8 by 14 char set, bl=rows (see al=21h)
+                        al = 23h  use double wide char set, bl=rows (see al=21h)
+                        al = 24h  use 8 by 16 char set, bl=rows (see al=21h)
+                      Get table pointer and info
+                        al = 30h  es:bp = ptr returned; cx=bytes per char; dl=rows
+                                  bh = 0, get int 1Fh      bh = 4, get double wide
+                                  bh = 1, get int 43h      bh = 5, get mono 9 by 14
+                                  bh = 2, get 8 by 14      bh = 6, get 8 by 16 (VGA)
+                                  bh = 3, get double wide  bh = 7, get 9 by 16 (VGA)
+           ah = 12h   Miscellaneous functions, bl = sub-function
+                        bl = 10h  Get info,  bh = 0-now color, 1-now mono
+                                  ch/cl = info bits/switches
+                        bl = 20h  Set print screen to work with EGA/VGA
+                      Functions for VGA only (bl = 30-34h return al = 12h)
+                        bl = 30h  Set # of scan lines, 0-200, 1-350, 2-400
+                                    activates after mode change
+                        bl = 31h  ax = 0/1  allow/prevent palette load with new mode
+                        bl = 32h  al = 0/1  video off/on
+                        bl = 33h  al = 0/1  gray scale summing off/on
+                        bl = 34h  al = 0/1  scale cursor size to font off/on
+                        bl = 35h  switch between adapter and motherboard video
+                                  al = 0, adapter off, es:dx = save state area
+                                  al = 1, motherboard on
+                                  al = 2, active video off, es:dx = save area
+                                  al = 3, inactive video on, es:dx = save area
+                        bl = 36h  al = 0/1  screen off/on
+           ah = 13h   Write character string (cr, lf, bell, and bs as operators)
+                        Call with:  al = 0/1 write characters, cursor not/is moved
+                                          bl = attribute of all characters
+                                       = 2/3 write characters, cursor not/is moved
+                                          string alternates character & attribute
+                                    bh = page number, 0 = 1st page
+                                    cx = number of characters
+                                    dh/dl = row and column to start
+                                    es:bp = ptr to character string
+           ah = 14h   LCD display support, al = sub-function
+                         al = 0,    es:di = ptr to font table to load
+                                    bl/bh = which block/bytes per char
+                                    cx/dx = # of characters/where to start in block
+                         al = 1,    bl = block # of ROM font to load
+                         al = 2,    bl = how to support high intensity
+           ah = 15h   LCD info table ptr returned in es:di
+                         ax = 0      there is no alternate adapter
+                         ax = 5140h  LCD is the alternate
+                         ax = 5153h  CGA is alternate
+                         ax = 5151h  MDA is alternate
+     
+                              **** VGA SUPPORT ONLY ****
+           ah = 1Ah   Get/Set types of displays which are operating
+                         al = 0, get displays, returns al = 1Ah
+                                 bl = in use display code
+                                 bh = alternate display code
+                         al = 1, set codes, returns al = 1Ah
+                                 bl = in use display code
+                                 bh = alternate display code
+                         codes:   0 = no display
+                                  1 = mono display
+                                  2 = CGA
+                                  4 = EGA, color
+                                  5 = EGA, mono
+                                  6 = PGA
+                                  7 = VGA, mono  (PS/2 MCA only)
+                                  8 = VGA, color (PS/2 MCA only)
+                                 Bh = VGA, mono  (PS/2 non MCA)
+                                 Ch = VGA, color (PS/2 non MCA)
+                                FFh = display type not known
+           ah = 1Bh   Get video system information
+                         call with:  bx = 0
+                                     es:di = ptr to buffer where to put info
+           ah = 1Ch   Video system save & restore, al = sub-function
+                         call with:  al = 0, get buffer size
+                                        = 1, save system, buffer at es:bx
+                                        = 2, restore system, buffer at es:bx
+                                     cx bit 0 = 1 for hardware registers
+                                        bit 1 = 1 for software states
+                                        bit 2 = 1 for colors & DAC registers
+
+11
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 11h ±±±±±
+     
+      EQUIPMENT INSTALLED
+     
+         Returns:   ax = equip_install word
+     
+                         15   14   13   12   11   10    9    8
+                          \    /       game  \          /
+                         # of printer  port   # of RS-232
+                          ports 0-3    used    ports 0-4
+     
+                          7    6    5    4    3    2    1    0
+                          \    /    \    /    \    /  Math   |
+                           # of   video mode   RAM     uP    no
+                          floppy  at boot up  00=16K       floppy
+                          drives  00=EGA      01=32K       drive
+                            1-4   01=CGA-40   10=48K       if 0
+                          if bit  10=CGA-80   11=64K
+                           0 = 1  11=MDA-80   (old PCs)
+      
+                         Note: bit 13 = modem on PC lap-tops
+                               bit  2 = mouse on PS/2
+         
+         Regs used: ax
+
+12
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 12h ±±±±±
+     
+      SYSTEM MEMORY SIZE
+     
+         Returns:   ax = number of contiguous 1K bytes blocks of memory
+                         from 0 to 640 K.
+     
+         Regs used: ax
+
+13
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 13h ±±±±±
+     
+      FLOPPY DISK SERVICES
+     
+         Note: Floppy disk services may be vectored to this routine from int 40h
+               on newer systems with hard disk support inside the BIOS.
+     
+         Call with: ah = sub-function number
+                    dl = drive number (unless otherwise noted), drive a: = 0
+     
+         Returns:   carry = 0 if function ok
+                    ah = status (unless otherwise noted)
+                      ah = 0    Function ok
+                      ah = 1    Invalid value passed or unsupported function
+                      ah = 2    Can not locate address mark
+                      ah = 3    Floppy write protected
+                      ah = 4    Sector not found
+                      ah = 6    Floppy changed line on (1.2 meg drives)
+                      ah = 8    DMA overrun occurred
+                      ah = 9    DMA attempted across 64K byte boundary
+                      ah = 0Ch  Media type not found
+                      ah = 10h  CRC read error
+                      ah = 20h  Floppy controller failure
+                      ah = 40h  Seek operation failed
+                      ah = 80h  Floppy drive not ready
+     
+         Functions:
+           ah = 0     Floppy disk controller reset
+           ah = 1     Get last status
+           ah = 2     Read sectors
+                        Call with:  al = number of sectors to read
+                                    ch/cl = starting track/starting sector
+                                    dh = head number, head 0 = 0
+                                    es:bx = ptr to buffer where to put data
+           ah = 3     Write sectors
+                        Call with:  al = number of sectors to write
+                                    ch/cl = starting track/starting sector
+                                    dh = head number, head 0 = 0
+                                    es:bx = ptr to buffer where to get data
+                        Return:     al = number of sectors written
+           ah = 4     Verify sectors
+                        Call with:  al = number of sectors to compare
+                                    ch/cl = starting track/starting sector
+                                    dh = head number, head 0 = 0
+                                    es:bx = ptr to buffer where to compare data
+                        Return:     al = number of sectors checked
+           ah = 5     Format track
+                        Call with:  al = number of sectors to format
+                                    ch/cl = starting track/starting sector
+                                    dh = head number, head 0 = 0
+                                    es:bx = ptr to table of address fields
+           ah = 8     Get drive information (not supported by all systems)
+                        Returns:    ax/bh = 0          size dia.     size dia.
+                                    bl = drive type: 1=360K 5.25   3=720K 3.5
+                                                     2=1.2M 5.25   4=1.4M 3.5
+                                    cx bits 7&6, 15-8 = number of tracks, 0=1 track
+                                       bits 5-0 = number of sectors per track
+                                    dh/dl = # of heads/number of floppy drives
+                                    es:di = ptr to floppy parameter table
+           ah = 15h   Get drive type (not supported by all systems)
+                        Returns:    ah = 0 no drive
+                                    ah = 1/2  floppy changed line not/is available
+           ah = 16h   Get changed floppy status (not supported by all systems)
+                        Returns:    ah = 0   floppy in drive,     carry = 0
+                                    ah = 1   bad drive number,    carry = 1
+                                    ah = 6   floppy out of drive, carry = 1
+                                    ah = 80h drive not ready,     carry = 1
+           ah = 17h   Specify media type for a drive
+                        Call with:  al = 1  use a 320/360K floppy in 360k drive
+                                    al = 2  use a 360K floppy in a 1.2M drive
+                                    al = 3  use a 1.2M floppy in a 1.2M drive
+                                    al = 4  use a 720K disk in a 720K drive
+           ah = 18h   Prepare for format (not supported by all systems)
+                        Call with:  cx bits 7&6, 15-8 = number of tracks, 0=1 track
+                                       bits 5-0 = number of sectors per track
+                        Returns:    es:di = ptr to floppy parameter table
+
+14
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 14h ±±±±±
+     
+      RS-232 SERIAL PORTS SERVICES
+     
+         Call with: ah = sub-function number
+                    dx = communications number, com1 = 0
+     
+         Returns:   ah = line status,  bit 0 = Data ready
+                                       bit 1 = Overrun error
+                                       bit 2 = Parity error
+                                       bit 3 = CRC framing error
+                                       bit 4 = Break detect
+                                       bit 5 = Xmit buffer register empty
+                                       bit 6 = Xmit shift out register empty
+                                       bit 7 = No response, ignore bits 0-6
+     
+                    al = modem status, bit 0 = Change in Clear To Send
+                                       bit 1 = Change in Data Set Ready
+                                       bit 2 = Falling edge ring detect
+                                       bit 3 = Change in receive detect line
+                                       bit 4 = Clear to Send (CTS)
+                                       bit 5 = Data Set Ready (DTS)
+                                       bit 6 = Ring detected
+                                       bit 7 = Receive detect line
+     
+         Functions:
+           ah = 0     Reset the specified port
+                        Call with:  al serial port register values
+                                       bits  7    6    5    4    3    2    1    0
+                                            --baud-rate--  -Parity- Stop  --Word--
+                                             000 =  110      bits    bit    size
+                                             001 =  150                    (bits)
+                                             010 =  300    00 = off  0=1
+                                             011 =  600    01 = odd  1=2   10 = 7
+                                             100 = 1200    10 = off        11 = 8
+                                             101 = 2400    11 = even
+                                             110 = 4800
+                                             111 = 9600
+          ah = 1      Transmit a character
+                        Call with:  al = character to send (not changed on exit)
+          ah = 2      Received a character
+                        Returns:    al = character received
+          ah = 3      Get status
+          ah = 4      Advanced Initialization (not supported on all systems)
+                        Call with:  al = 0/1  no break/break
+                                    bh = Parity,    0 = none     3 = stick odd
+                                                    1 = odd      4 = stick even
+                                                    2 = even
+                                    bl = 0/1 Stop bits set to 1/2
+                                    ch = Word size, 0 = 5 bits   2 = 7 bits
+                                                    1 = 6 bits   3 = 8 bits
+     
+                                    cl = Baud rate, 0 =  110     5 =  2400
+                                                    1 =  150     6 =  4800
+                                                    2 =  300     7 =  9600
+                                                    3 =  600     8 = 19200
+                                                    4 = 1200
+           ah = 5     Advanced port control (not supported on all systems)
+                        al = 0  Get modem register
+                                  Returns: bl bit 0 = Data Terminal Ready (DTR)
+                                              bit 1 = Request To Send (RTS)
+                                              bit 2 = Out 1
+                                              bit 3 = Out 2
+                                              bit 4 = Loop modem
+                        al = 1  Set modem register
+                                  Call with:  bl = value for register (see above)
+
+15
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 15h ±±±±±
+     
+      GENERAL SERVICES
+     
+         On old PCs this function is only used for cassette servicing.
+         Additional functions have been added for advanced features with
+         newer equipment.
+     
+         Called with: ah = function code
+     
+         Returns:     CF = 0 if successful
+                      CF = 1 if failure or function not supported
+     
+         Functions:
+           ah = 0     Cassette motor set on
+           ah = 1     Cassette motor set off
+           ah = 2     Read cx bytes from cassette, es:bx = ptr to load area
+           ah = 3     Write cx bytes to cassette,  es:bx = ptr to read area
+           ah = 0Fh   Disk format hook, called from disk format routines
+                        after a cylinder access completed.  Called with:
+                        al = 1-undergoing surface analysis, 2-if formating
+           ah = 21h   Error log (PS 2), al = 0 to read, al = 1 to write
+     
+                           ***  LAP TOP MACHINES ONLY - 40h to 44h  ***
+           ah = 40h   Systems info in cx, bx - al = 0 to read, 1 to write
+                        for modem info in bx - al = 2 to read, 3 to write
+           ah = 41h   Wait for an event, dx = i/o port to read or use es:di
+                        as ptr to user event.  al = type of event 0-4,11-14
+                        bh = event mask, bl = # of 55ms counts to timeout
+           ah = 42h   Power off, al = 0 or 1 for mode of power off
+           ah = 43h   Get system status in al
+                            7     6     5     4       3     2     1    0
+                          low   extrn  bad  pwr up  modem  ports      LCD
+                        battery  pwr  time  alarm    on     on      missing
+           ah = 44h   Modem power, al = 0 turn off,  al = 1 turn on
+     
+                         *** FUNCTIONS IN RECENT BIOS VERSIONS ONLY ***
+           ah = 4Fh   Keyboard input hook, called every keystroke with
+                        al = scan code.  CF = 1 to change or use the scan
+                        code in al.  CF = 0 to ignore the key.
+           ah = 80h   Open device number bx, in process number cx.
+           ah = 81h   Close device number bx, in process number cx.
+           ah = 82h   Terminate device number bx
+           ah = 83h   Wait for timeout, and set bit 15 at ptr es:bx when
+                        timed out.  al = 0 to set wait period cx:dx uSec,
+                        al = 1 to stop timeout timer.
+           ah = 84h   Game port read, dx = 0 to read switches into al
+                        high nibble,  dx = 1 to read linear position
+                        (Unit 1: ax = x, bx = y   Unit 2: cx = x, dx = y)
+           ah = 85h   Get system request key state, al = 0 down, al = 1 up
+           ah = 86h   Wait cx:dx microseconds before return
+           ah = 87h   Transfer cx words to/from memory above 1 meg
+                        es:si ptr to table with source & destination ptrs:
+                        es:si -> zeros          db  16dup(0)
+                                 src_seg_limit  dw  ?        ; 1-64K bytes
+                                 scr_ptr_low    dw  ?        ; 0-64K range
+                                 scr_ptr_high   db  ?        ; 0-16 Meg range
+                                 scr_rights     db  93h      ; r/w access
+                                 scr_zero       dw  0
+                                 dst_seg_limit  dw  ?        ; 1-64K bytes
+                                 dst_ptr_low    dw  ?        ; 0-64K range
+                                 dst_ptr_high   db  ?        ; 0-16 Meg range
+                                 dst_rights     db  93h      ; r/w access
+                                 dst_zero       dw  0
+                                 zeros2         db  16dup(0)
+                        Notes:
+                          cx = 32K words max xfer, ptr_low & ptr_high form
+                          a 24 bit physical address (do not use a segment)
+                        Return codes: al = 0 if ok, al = 1 parity error
+                          al = 2 other errors, al = 3 gate addr line 20 bad
+           ah = 88h   Get extended memory size (above 1 Meg boundary)
+                        ax = (number of bytes / 1024)
+           ah = 89h   Go to protected mode of operation. es:si ptr to table
+                        comprised of 8 groups of 8 byte ptr sub-arrays.  Each.
+                        group is formed from 8 bytes as follows:
+                            seg_limit    dw  ?     ; 1-64K bytes
+                            ptr_low      dw  ?     ; 0-64K range
+                            ptr_high     db  ?     ; 0-16 Meg range
+                            rights       db  93h   ; read/write access
+                            zero         dw  0     ; set to zero
+                        Ptr_low & high form a 24 bit physical address.
+     
+                        The 8 groups are as follows:
+                          es:si ->  Group_1   Set to all zero
+                                    Group_2   ptr to beginning of Group_1
+                                    Group_3   ptr to Interrupt Descript Table IDT
+                                    Group_4   ptr to present DS segment
+                                    Group_5   ptr to present ES segment
+                                    Group_6   ptr to present SS segment
+                                    Group_7   ptr to present CS segment
+                                    Group_8   ptr where to jump to when done
+                        Also: bh & bl set as offset from beginning of IDT to
+                          spot where 1st & 2nd set of 8 hardware interrupts begin.
+                        Returns ah = 0 if ok, regs changed: ax,bp,ds,es,ss,cs
+           ah = 90h   Device busy - used to signal DOS when it must wait.
+                        Type   0  Disk timeout          0FCh  Hard disk timeout
+                        codes  1  Floppy timeout                (PS 2 only)
+                        (al)   2  Keyboard no timeout   0FDh  Floppy motor timeout
+                               3  Mouse timeout         0FEh  Printer timeout
+                             80h  Local area network (es:bx = network cntrl block
+                        Returns CF = 0 if failure, 1 if minimum wait time occurred
+           ah = 91h   Interrupt done - used to signal DOS when hardware done
+                        al = type code (Device busy type codes)
+           ah = C0h   Get ROM system information table ptr in es:bx.  See data
+                        area starting at byte "sys_info_size".
+     
+                         *** PS 2 & COMPATIBLES ONLY - C1h to C4h ***
+           ah = C1h   Get Extended BIOS data area segment in es
+           ah = C2h   Mouse support (BIOS).  Sub-function code in al
+                          al = 0  if bh = 0 mouse off, bh = 1 mouse on
+                          al = 1  reset mouse & parameters, returns bh = 0
+                                    bl altered on return
+                          al = 2  Set number of updates per second in bh,
+                                    bh = 0 - 10 updates/sec  4 - 80  updates/sec
+                                         1 - 20 updates/sec  5 - 100 updates/sec
+                                         2 - 40 updates/sec  6 - 200 updates/sec
+                                         3 - 60 updates/sec
+                          al = 3  Set resolution in counts per millimeter:
+                                    bh = 0 - 1 cnts per mm   2 - 4 cnts per mm
+                                         1 - 2 cnts per mm   3 - 8 cnts per mm
+                          al = 4  Get device type, bh = 0
+                          al = 5  Initialize pointing device interface data size
+                                    bh = size 1 to 8 (1 to 8 bytes)
+                          al = 6  Additional sub-functions in bh:
+                                    bh = 0  Get status, cl = cnts per mm (see al=3)
+                                            dl = updates/sec in hex, bl = status:
+                                                 bit 6 = mode (0=stream, 1=remote)
+                                                     5 = 0 disabled, 1 enabled
+                                                     4 = scaling (0=1:1, 1=2:1)
+                                                     2 = Left button pressed
+                                                     0 = right button pressed
+                                    bh = 1  Set scaling to 1:1
+                                    bh = 2  Set scaling to 2:1
+                          al = 7  Set location to "call far" when data available
+                                     in es:bx
+                        Return code for all sub-functions in al:
+                          al = 0  successful             3  interface error
+                               1  bad function call      4  resend
+                               2  invalid input          5  no far call installed
+           ah = C3h   Watchdog timer mode al = 0 disable, al = 1 enable,
+                        bx = set counter value 1 to FFh
+           ah = C4h   Bus option select (POS) subfunction in al,
+                        al = 0  Get base POS adapter register address in dx
+                             1  Enable setup for slot bl
+                             2  Adapter enable
+
+16
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 16h ±±±±±
+     
+      KEYBOARD SERVICES
+     
+         Call with:   ah = sub-function number
+     
+         Functions:
+           ah = 0     Get a key, and wait until one is available if none are
+                        in the queue.
+                        Returns:    ah = keyboard scan code
+                                    al = ASCII character, or 0 if non-ASCII
+           ah = 1     Get key status
+                        Returns:    zero flag = 0 if a valid key is in the queue
+                                        ah = keyboard scan code
+                                        al = ASCII character, or 0 if non-ASCII
+                                    zero flag = 1 if no keys in the queue
+           ah = 2     Get shift status register
+                        Returns:    al = bits  7    6    5    4    3    2    1    0
+                                             right left ctrl alt scrl  num  cap insrt
+                                             -------shifts------ ------toggles-------
+                                                   1 = down            1 = on
+           ah = 3     Set repeating character rate (not supported in all systems)
+                        Call with:  al = 5
+                                    bh = start delay, 0 = 250 ms    2 =  750 ms
+                                                      1 = 500 ms    3 = 1000 ms
+                                    bl = speed in characters per second - values
+                                           range from 0 = 30 cps, to 1Fh = 2 cps
+           ah = 5     Load keyboard queue (not supported in all systems)
+                        Call with:  ch/cl = scan code/character to load into the queue
+                        Returns:    al = 0 if ok, 1 if keyboard queue is full
+     
+                           **** Support for extended keyboard functions ****
+           ah = 10h   Get a key (similar to ah = 0, not supported in all systems)
+           ah = 11h   Get key status (similar to ah = 1, not supported in all systems)
+           ah = 12h   Get shift info (similar to ah = 2, not supported in all systems)
+
+17
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 17h ±±±±±
+     
+      PRINTER SERVICES
+     
+         Call with:  ah = function code
+                     dx = printer number 0-2 (some systems allow 0-3)
+     
+         Returns:    ah = status bits
+                           7      6      5      4      3     2  1     0
+                          not  acknow-  no   select   I/O   unused   no
+                          busy  ledge  paper         error        response
+                          __________from printer__________
+     
+         Functions:
+           ah = 0   Send character to printer, al = character
+           ah = 1   Printer port initialization
+           ah = 2   Get printer status in ah
+
+18
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 18h ±±±±±
+     
+      ROM BASIC
+
+19
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 19h ±±±±±
+     
+      BOOTSTRAP LOADER
+     
+         Floppy drive a: attempts a read from the first sector of the disk.
+         If read properly (i.e a boot disk is in drive a:), control is
+         transferred to the loaded program.  The boot sector at track 0,
+         sector 1 is transfered to memory at 0:7C00h.  dh = drive which
+         was used (0=A:).  Control is passed to 0:7C00h.
+
+1A
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 1Ah ±±±±±
+     
+      REAL-TIME CLOCK SERVICES
+     
+         Call with:   ah = sub-function number
+     
+         Functions:
+           ah = 0     Get system timer (increments every 54.92 ms from int 8)
+                        Returns:    al = # of 24 hour periods since read/powered up
+                                    cx:dx = 32 bit count
+           ah = 1     Get system timer & reset 24 hour counter
+                        Returns:    cx:dx = 32 bit count
+     
+                        **** System must have CMOS clock for services 2-0Bh ****
+           ah = 2     Get time in BCD format
+                        Returns:    ch/cl = hours/minutes
+                                    dh = seconds
+                                    dl = 0/1 if daylight savings time operation off/on
+                                    carry flag = 0 if clock ok, 1 if stopped
+           ah = 3     Set time in BCD format
+                        Call with:  ch/cl = hours/minutes
+                                    dh = seconds
+                                    dl = 0/1 if daylight savings time operation off/on
+           ah = 4     Get date in BCD format
+                        Returns:    cx = four digit year
+                                    dh/dl = month/day
+                                    carry flag = 0 if clock ok, 1 if stopped
+           ah = 5     Set date in BCD format
+                        Call with:  cx = four digit year
+                                    dh/dl = month/day
+           ah = 6     Set 24 hour alarm (alarm vectors to int 4Ah)
+                        Call with:  ch/cl = hours/minutes
+                                    dh = seconds
+           ah = 7     Clear alarm
+           ah = 9     Get alarm time & status
+                        Returns:    ch/cl = hours/minutes
+                                    dh = seconds
+                                    dl = 0/1 alarm off/on
+           ah = 0Ah   Get days counter
+                        Returns:    cx = number of days since 1-Jan-80
+           ah = 0Bh   Set days counter
+                        Call with:  cx = number of days since 1-Jan-80
+
+1B
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 1Bh ±±±±±
+     
+      KEYBOARD BREAK (when Control-Break pressed)
+
+1C
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 1Ch ±±±±±
+     
+      TIMER TICKS - Called every 18.2 ms
+
+1D
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 40h ±±±±±
+     
+      FLOPPY DISK SERVICES
+
+1E
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 70h ±±±±±
+     
+      REAL-TIME CLOCK  (called by hardware 8259-2, IRQ 8)
+     
+         This interrupt services the real-time clock hardware.  The hardware
+         supports 2 modes of operation, an interrupt at a specific 24 hour
+         interval (i.e 9:42 am), or repeatedly every 0.976 ms (1,024 Khz).
+         Both modes can operate at the same time if needed.
+     
+         In the 24 hour alarm mode, the interrupt is vectored here by hardware
+         and interrupt 4Ah is called to alert the application program of the
+         alarm.  Int 4Ah is not handled by the BIOS other than to return, and
+         is normally revectored by a particular application using the alarm.
+     
+         When repeating interrupt mode is active, the 32-bit microsecond
+         counter consisting of timer_clk_low and timer_clk_hi is decremented
+         by 976 us on every interrupt.  When the timer reaches zero, the
+         byte pointed to by the offset @timer_wait_off and and segment
+         @timer_wait_seg is set to 80h (this pointer is set by an application
+         program through int 1Ah function ah=6).
+
+1F
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 71h ±±±±±
+     
+      LAN ADAPTER 1  (called by hardware 8259-2, IRQ 9)
+     
+         Calls interrupt 0Ah.
+
+20
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 72h ±±±±±
+     
+      Hardware servicer (called by hardware 8259-2, IRQ 10)
+
+21
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 73h ±±±±±
+     
+      Hardware servicer (called by hardware 8259-2, IRQ 11)
+
+22
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 74h ±±±±±
+     
+      Hardware servicer (called by hardware 8259-2, IRQ 12)
+
+23
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 75h ±±±±±
+     
+      MATH CO-PROCESSOR (called by hardware 8259-2 IRQ 13)
+     
+         The math co-processor 80287 invokes this interrupt.  Int 75h calls
+         the non-maskable interrupt int 2 to halt the system (80287 is not
+         used if this vector is left pointing here).  Programs which use
+         the 80287 must re-vector this interrupt to use the 80287.
+
+24
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 76h ±±±±±
+     
+      HARD DISK CONTROLLER (called by hardware 8259-2 IRQ 14)
+     
+         When the hard disk controller has completed its task, it signals
+         completion though hardware activation of int 76h.  The status in
+         hdsk_int_flags is set to "done", a value of 0FFh.  Interrupt 15,
+         function 91h may also be called to signal the interrupt is done.
+
+25
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 77h ±±±±±
+     
+      Future servicer (called by hardware 8259-2 IRQ 15)
+
+26
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 13h ±±±±±
+     
+      HARD DISK SERVICES
+     
+         Call with: ah = sub-function number 
+                    dl = drive number (unless otherwise noted) 80h or 81h
+                           for fixed disk 0 or 1.
+     
+         Returns:   carry = 0 if function ok
+                    ah = status (unless otherwise noted)
+                      ah = 0    Function ok
+                      ah = 1    Invalid value passed or unsupported function
+                      ah = 2    Can not locate address mark
+                      ah = 3    Write protected
+                      ah = 4    Sector not found
+                      ah = 5    Reset failure
+                      ah = 7    Parameter activity failed
+                      ah = 8    DMA overrun occurred
+                      ah = 9    DMA attempted across 64K byte boundary
+                      ah = 0Ah  Sector flag bad
+                      ah = 0Bh  Cylinder bad
+                      ah = 0Dh  Wrong # of sectors (format)
+                      ah = 0Eh  Detected control data address mark
+                      ah = 0Fh  DMA arbitration level has invalid range
+                      ah = 10h  CRC or EDC (Error Detect & Correct) has an
+                                  unresolvable error
+                      ah = 11h  Data corrected by EDC
+                      ah = 20h  Disk controller failure
+                      ah = 40h  Seek operation failed
+                      ah = 80h  Hard disk not ready
+                      ah = BBh  Error not defined
+                      ah = CCh  Write error
+                      ah = E0h  Error register is zero
+                      ah = FFh  Disk sense error
+                    If dl bit 7 was set to 1 on entry:
+                      cx bits 7&6, 15-8 = highest cylinder number
+                         bits 0-5 = highest sector number
+                      dh = highest head number
+                      dl = number of hard disks (1 or 2)
+     
+         Functions:
+           ah = 0     Hard disk controller reset
+           ah = 1     Get last status
+           ah = 2     Read sectors
+                        Call with:  al = number of sectors to read
+                                    cx bits 7&6, 15-8 = cylinder number
+                                       bits 0-5 = sector number
+                                    dh = head number, head 0 = 0
+                                    es:bx = ptr to buffer where to put data
+           ah = 3     Write sectors
+                        Call with:  al = number of sectors to write
+                                    cx bits 7&6, 15-8 = cylinder number
+                                       bits 0-5 = sector number
+                                    dh = head number, head 0 = 0
+                                    es:bx = ptr to buffer where to get data
+           ah = 4     Verify sectors
+                        Call with:  al = number of sectors to compare
+                                    cx bits 7&6, 15-8 = cylinder number
+                                       bits 0-5 = sector number
+                                    dh = head number, head 0 = 0
+           ah = 5     Format cylinder (non-ESDI type disks)
+                        Call with:  cx bits 7&6, 15-8 = cylinder number
+                                    dh = head number, head 0 = 0
+                                    es:bx = ptr to bad sector map (non XT)
+                                    al = interleave number (XT only)
+           ah = 6     Format cylinder & set bad sector flags (XT only)
+                        Call with:  al = interleave number
+                                    cx bits 7&6, 15-8 = cylinder number
+                                    dh = head number, head 0 = 0
+           ah = 7     Format drive, begin at specific cylinder (XT only)
+                        Call with:  al = interleave number
+                                    cx bits 7&6, 15-8 = cylinder number
+                                    dh = head number, head 0 = 0
+           ah = 8     Get drive parameters
+                        Returns:    cx bits 7&6, 15-8 = max cylinder number
+                                       bits 0-5 = max sector number
+                                    dh = max head number, head 0 = 0
+           ah = 9     Set parameters for drive (ignored for ESDI drives)
+                        Call with   dh = 80h to use int 41h ptr, drive 0
+                                    dh = 81h to use int 46h ptr, drive 1
+           ah = 0Ch   Disk seek
+                        Call with:  cx bits 7&6, 15-8 = cylinder number
+                                    dh = head number, head 0 = 0
+           ah = 0Dh   Secondary Disk Reset
+           ah = 10h   Check if drive is ready
+           ah = 11h   Recalibrate drive
+           ah = 15h   Get drive type (all but XT systems)
+                        Returns:    ah = 0 no drive (cx & dx = 0)
+                                    ah = 3 hard disk
+                                    cx:dx = size of disk in 512 byte blocks
+                                    al = 4  use a 720K disk in a 720K drive
+           ah = 19h   Park disk heads (PS/2 systems only)
+           ah = 1Ah   Format hard disk (ESDI only)
+                        Call with:  al = number of blocks in defect table (0=none)
+                                    cl bit 0 = 1 when no primary defect map
+                                       bit 1 = 1 when no secondary defect map
+                                       bit 2 = 1 allow logging found surface errors
+                                                   in the secondary defect map
+                                       bit 3 = 1 Do extended surface analysis
+                                       bit 4 = 1 interrupt after each cyldr format
+
+27
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± unused ±±±±±
+     
+      Unused interrupt vector termination
+     
+         This routine processes invalid and unused interrupt requests.  The
+         hardware IRQ number is loaded into gen_int_occured, and the interrupt
+         cleared.  For software calls to an unused interrupt, a value 0FFh is
+         loaded into gen_int_occured, and the routine returns to the caller
+         without changing registers.
+     
+         Alternatively, some systems simply return (iret).
+
+28
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± int 18h ±±±±±
+     
+      ROM BASIC
+     
+         Note: ROM basic points to F600 segment, and has been adjusted to
+               segment F000 to process in-line with the balance of the
+               BIOS code.  Internal data references may shift to segment
+               F600 depending on implementation.
+
+29
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± System Reset ±±±±±
+     
+      SYSTEM RESET
+     
+         Reset the computer system.  General operation includes a test of
+         of the CPU, ROM checksum, and initialization of hardware including:
+     
+            Memory system
+            Timer/Counter (which is also used for RAM refresh)
+            Interrupt Controller(s)
+            DMA Controller(s)
+            Keyboard Controller
+            Video Controller & Video RAM
+            Floppy Controller
+            Hard Disk Controller (if present)
+     
+         Portions of the hardware may also have specific tests made to
+         insure reliable operation.  Test failures may display error code
+         on the screen if the video subsystem is operational, or generate
+         beeps or LED blinks to signify the error.
+           
+         Note: A soft reset uses the warm_boot_flag to skip the memory
+               tests. (i.e. from pressing Ctrl-Alt-Del).
+     
+         The system checks for installed ROMs by searching memory from
+         C000h to the beginning of the BIOS, in 2K chunks.  ROM memory is
+         identified if it starts with the word AA55h.  It is followed a one
+         byte field length of the ROM (divided by 512).  If ROM is found,
+         the BIOS will call the ROM at an offset of 3 from the beginning.
+         This feature was not supported in the earliest PC machines.
+     
+         The last task turns control over to the bootstrap loader (assuming
+         the floppy controller is operational)
+
+2A
+    ÍÍÍÍÍÍ BIOS EXTERNAL ENTRY POINT ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
+
+2B
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± BIOS Setup ±±±±±±±
+     
+      BIOS SETUP ROUTINES
+      
+         When a special key combination is pressed, this setup routine is
+         run to allow changing CMOS BIOS values.  Typical key combinations
+         include CTRL-ALT-ESC, CTRL-ALT-S, or others to start the setup.
+          
+         Once invoked, it may issue a system reset to let other application
+         software, other BIOS routines, and TSR's to configure the system
+         with the new information.
+          
+         Typical options include:
+        
+                Present time and date
+                Floppy disk settings
+                Hard disk table selection
+                Video display
+                Memory size
+                Speed of clock and/or bus
+
+2C
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± INTERRUPT ±±±±±
+     
+2D  
+    ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±± BIOS Initialization ±±±±±±±
+      
+      This portion is called when the main computer BIOS passes control to
+      allow this BIOS to perform it's one-time start up code.  
+     
+end
+
+
+ ::::::::::::::::::::::::::::: SUBROUTINE REMARKS :::::::::::::::::::::::::::::
+
+    ---------------------- Subroutine Reference Remarks -----------------------
+end
+
+
+        NOTES:  1)  Entries must be in consecutive sequential order.
+                2)  Remark characters ";" are automatically inserted.
+                3)  Up to 64,000 characters per remark, 32M maximum file size.
+
+

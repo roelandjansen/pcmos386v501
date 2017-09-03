@@ -1,0 +1,22 @@
+
+
+
+This diskette contains the file PKZ110.EXE.  Type
+
+PKZ110
+
+followed by pressing the Enter key to create the program and
+documentation files for PKUNZIP, PKZIP, and PKSFX version 1.1.
+To print the documentation files after running PKZ110, type
+
+COPY *.DOC PRN
+
+followed by the return key.
+
+
+If you distribute PKUNZIP, PKZIP, and PKSFX to friends, associates, 
+or to a computer bulletin board system (BBS), please distribute the 
+file PKZ110.EXE rather than the individual files for PKUNZIP, PKZIP
+and PKSFX.
+
+

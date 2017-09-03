@@ -1,0 +1,561 @@
+
+
+     PKZIP, PKUNZIP and PKSFX Version 1.1 includes several new features.
+     They are described in this addendum to the PKZIP, PKUNZIP and PKSFX
+     Version 1.0 manual.
+
+
+     PKZIP
+
+     The following new features have been incorporated into the PKZIP
+     Version 1.1 software release.
+
+     -3  Disable 80386 instruction usage
+     -----------------------------------
+
+          This option is available for users with 80386 type computers.
+          It is used to turn OFF the added 80386 instructions or
+          registers.  When these instructions are available, PKZIP will
+          utilize them to allow the program to function even faster.
+          However, if you are running a different program that may
+          conflict with use of the 80386 instructions, you can disable
+          them by using this command.
+
+          The 80386 instructions will be disabled only for the current
+          PKZIP operation.  They will then be enabled immediately after
+          the command operation is completed.
+
+          C:\PKWARE> PKZIP FILES.ZIP  -3   -a  *.DOC
+
+          In the above example,  all of the *.DOC files in the current
+          directory will be added to the ZIP file, FILES.ZIP.  The 80386
+          instructions will be disabled while the command is being
+          executed.
+
+
+          You can also disable the 80386 instructions when you start
+          PKZIP by using the PKNO386 environment variable.  To set the
+          environment variable, type PKNO386=xxxx, where "xxxx" is any
+          string you choose.  If the string PKNO386 is present in the
+          environment, then PKZIP (and PKUNZIP) will not use the 80386
+          instructions or registers.
+
+          To enable the 80386 instructions after they have been
+          disabled, type SET PKNO386=<Enter>, where <Enter> refers to
+          the Enter key.
+
+
+          NOTE:  Disabling the 80386 usage will make PKZIP run up to
+                 twenty percent slower than if the 80386 instructions
+                 are used.
+
+
+
+
+     PKWARE Version 1.1  Addendum         1
+
+
+
+     -^  Echo the command line
+     -------------------------
+
+          This command is used to display the PKZIP command that you
+          entered on the console.  It is useful for example, when you
+          are using the View file option; the file specifications that
+          you entered will be echoed on the console along with the
+          command output.
+
+          E:\> PKZIP  docs.zip  -vd -^ *.doc
+
+          In this example, technical information about all of the *.doc
+          files included in the DOCS.ZIP  ZIP file will be displayed.
+          The information will be sorted by date, and the command line
+          will be redisplayed on the screen above the output.
+
+
+     -x@file  Exclude list file
+     --------------------------
+
+          This option is used to exclude a List File from the current
+          operation.  Recall that a List File is a file containing a
+          list of files that are grouped together.  List Files can be
+          used with all the PKZIP and PKUNZIP command options.  They are
+          always preceded by the @ symbol on the command line.
+
+          This command can be useful when you want to exclude a few
+          files from an operation and the DOS wild cards cannot be used
+          effectively.
+
+          C:\ACTNG> PKZIP STORE  *.* -x@ACCOUNTS.LIS
+
+          In the above example, all of the files in the current
+          directory, except for the List File, ACCOUNTS.LIS, will be
+          compressed into the ZIP file STORE.ZIP.
+
+
+     -$[d]   Save volume label
+     -------------------------
+
+          This command is used to save the volume label of a specific
+          drive along with the ZIP file.  The default drive is the
+          current drive, unless another is specified.  The drive letter
+          is not saved in the ZIP file, only the volume label.
+
+          C:\ACCTNG> PKZIP  FILES.TAX  -a -$  *.*
+
+          In the above example, all of the files in the current directory
+          will be compressed into the ZIP file, FILES.TAX. They will be
+          stored along with the volume label for the C: drive.
+
+
+     PKWARE Version 1.1  Addendum         2
+
+
+
+     -t  ZIP only files with a date equal to or later than specified
+     ---------------------------------------------------------------
+
+          With this option, you can specify a date so that only files
+          with a date that is equal to or more recent than the date
+          specified will be included in the PKZIP operation.  If no date
+          is specified, today's date will be used by default.
+
+          When specifying a date, use six digits in the following
+          format:  mmddyy.  For example, February 14, l990 will be
+          listed:  -t021490.  This is true for all computers setup as
+          American.  If your computer is setup as European, use the
+          following format: ddmmyy.  If your computer is setup as
+          Japanese, use the following format:  yymmdd.  If you are not
+          sure how your computer is setup, consult your user's manual.
+
+          C:\BACKUP> PKZIP BAKS.ZIP  -t010190
+
+          In this example, all files in the current directory with a
+          date later than or equal to January 1, l990 will be compressed
+          into the ZIP file, BAKS.ZIP.
+
+
+     -ei   Implode files only
+     ------------------------
+
+          This option is used along with the mini-PKSFX program,
+          PKSFXjr.  Only files that have been imploded can be extracted
+          with PKSFXjr.  Shrunk files cannot be extracted.  In order to
+          create a PKSFXjr.EXE file, this option must be used.
+
+          E:\BATS> PKZIP  EXT.ZIP  -ei
+
+          In this example, all of the files in the current directory
+          will be compressed into the ZIP file, EXT.ZIP.  All of the
+          files will be imploded.
+
+
+     PKZIP Configuration File
+     ------------------------
+
+          The PKZIP Configuration file can be used to set parameters to
+          values other than the normal default values.  There are three
+          additional Configuration file options available.  They are
+          explained on the following page.
+
+
+
+
+
+
+
+     PKWARE Version 1.1  Addendum         3
+
+
+
+          SHRINK > nnnnn
+          Where nnnn is some number specifying that files that are
+          greater than this number are to be Shrunk.  This option is
+          used to save time when you are compressing large files.
+          Typically, large files take longer to compress when the
+          imploding method is used.
+
+          LISTCHAR=
+          This option is used to designate a special character to be used
+          to indicate a List file.  By default the  @ character is used,
+          as in @FILE.  If you want to use  @ as the first character in a
+          file name, you can designate an alternate character to be used
+          to indicate List files.  For example, you could use the # or
+          the % characters.
+
+          OPTIONCHAR=
+          This option is used to designate a special character to be
+          used to indicate a command on the command line.  By default,
+          the minus sign  - is used.  If you want to use the minus sign
+          as the first character in a file name, you can designate an
+          alternate character to be used to indicate a command.  For
+          example, you could use the / character.
+
+
+          Also, PKZIP 1.1 will now search for the Configuration file in
+          the following order:
+
+          1.  In the current directory.
+          2.  In the path specified by the PKZIP.CFG=  environment
+              variable.
+          3.  In the path where PKZIP was started from, if DOS version
+              greater than or equal to 3.x is being used.
+
+
+     Additional Error Code
+     ---------------------
+
+          There is an additional error code available with PKZIP version
+          1.1.  PKZIP will exit with an errorlevel of 18 when it is
+          unable to open one or more specified files.  It should be noted
+          that this is a "warning" condition only,  and otherwise PKZIP
+          was able to construct the ZIP file without any errors.
+
+
+     NOTE:  There is no longer a 3900 file limit with PKZIP.  The total
+            number of files that can be processed is limited only by the
+            memory available in the system you are using.  Approximately
+            8000 files can be compressed in a ZIP file with 500K+ of
+            memory free.
+
+
+
+     PKWARE Version 1.1  Addendum         4
+
+
+
+     Authenticity Verification
+     -------------------------
+
+      -!  Encrypt authenticity verifiable data into the .ZIP file.
+
+          This feature allows you to create ZIP files that PKUNZIP or
+          PKSFX can test for authenticity while extracting, providing for
+          detection of tampered, hacked, or virus infected files.
+
+          To use this feature, you need to be a registered user of the
+          software, and mail the form AUTHVERI.FRM to PKWARE.  PKWARE
+          will then send you a postcard listing your name or the name of
+          your company, and a unique serial number.
+
+          You must then use the PUTAV.EXE program included with the
+          PKWARE program files to install this information.  To do this,
+          use the following steps.
+
+          Step 1.  Type PUTAV.  Make sure that PKZIP.EXE is also in the
+                   current directory when you do this.  The program will
+                   then prompt you to enter your company name.
+
+          Step 2.  Enter your name or the name of the company the
+                   software is registered to.  Enter it the same as it
+                   appears on the postcard that PKWARE sent.  Press the
+                   Enter key when you are done.
+
+          Step 3.  Enter the serial number at the prompt.  Then press
+                   the Enter key.
+
+          After successfully completing the above steps, "Serial number
+          installation complete" will appear on the screen.  Your name
+          and unique serial number will then be encrypted in the program.
+
+          To use this option, include -! on the PKZIP command line. When
+          you then extract or test a file using PKUNZIP, it will
+          automatically be verified for authenticity.  An example is
+          shown below.
+
+          D:\> PKZIP -! ALL.ZIP *.*
+
+          In this example, all of the files in the current directory
+          will be ZIPPED into a file called ALL.ZIP, and they will
+          include the Verify Authenticity option.  When this file is
+          UNZIPPED using PKUNZIP, a message will appear stating the
+          authenticity has been checked.
+
+    NOTE: The authenticity verification feature is available in the
+	  U.S.A. and Canada only.  File encryption and authenticity
+	  verification is not available in export versions of the software.
+
+
+     PKWARE Version 1.1  Addendum         5
+
+
+
+     PKUNZIP
+
+     The following new features have been incorporated into the PKUNZIP
+     Version 1.1 software release.
+
+
+     -3  Disable 80386 instruction usage
+     -----------------------------------
+
+          This option is available for users with 80386 type computers.
+          It is used to turn OFF the added 80386 instructions or
+          registers.  When these instructions are available, PKUNZIP
+          will utilize them to allow the program to function even
+          faster.  However, if you are running a different program that
+          may conflict with the use of the 80386 instructions, you can
+          disable them by using this command.
+
+          The 80386 instructions will be disabled only for the current
+          PKUNZIP operation.  They will be enabled immediately after the
+          command operation is completed.
+
+
+          C:\PKWARE> PKUNZIP -3 COMP.ZIP  DAT*.*
+
+          In the above example,  all of the DAT*.* files in the ZIP file
+          COMP.ZIP will be extracted.  The 80386 instructions will be
+          disabled while the command is being executed.
+
+
+          You can also disable the 80386 instructions when you start
+          PKUNZIP by using the PKNO386 environment variable.  To set the
+          environment variable, type PKNO386=xxxx, where "xxxx" is any
+          string you choose.  If the string PKNO386 is present in the
+          environment, then PKUNZIP will not use the 80386 instructions
+          or registers.
+
+          To enable the 80386 instructions after they have been
+          disabled, type SET PKNO386=<Enter>, where <Enter> refers to
+          the Enter key.
+
+          NOTE:  Disabling the 80386 usage will make PKUNZIP run up to
+                 forty percent slower than if the 80386 instructions are
+                 used.
+
+
+
+
+
+
+
+
+
+     PKWARE Version 1.1  Addendum         6
+
+
+
+     -^  Echo the command line
+     -------------------------
+
+          This command is used to display the PKUNZIP command that you
+          entered on the console.  It is useful for example, when you are
+          using the View file option.  It allows the file specifications
+          that you entered to be echoed on the screen along with the
+          command output.
+
+          E:\> PKUNZIP  -^ -vn  MAY.ZIP
+
+          In this example, technical information about all of the files
+          included in the MAY.ZIP  ZIP file will be displayed.  The
+          information will be sorted by name in ascending order, and the
+          command line will be redisplayed on the screen above the
+          output.
+
+
+     -$   Restore volume label
+     -------------------------
+
+          This command is used to restore any volume label that has been
+          stored in the ZIP file.  It is important to remember that the
+          PKZIP command used to save a volume label does not store a
+          drive letter along with the label.  Upon extraction, the
+          volume label will be assigned to the extract drive.
+
+          C:\> PKUNZIP  stuff  -$ d:\misc
+
+          In the above example, all of the files STUFF.ZIP will be
+          extracted to the D:\MISC\ directory, and the volume label for
+          drive D: will be reset to the one contained in STUFf.ZIP.
+
+
+     -f   Freshen files in extract directory
+     ---------------------------------------
+
+          This function is the inverse of the Freshen option in PKZIP.
+          When this option is used, files will be extracted from the ZIP
+          file if and only if:
+
+          a)  the files already exist in the target extract directory,
+          AND
+          b)  the files in the ZIP file are newer then the files in the
+              extract directory.
+
+          D:\MISC> PKUNZIP -f  files.zip  a:
+
+          In this example, only those files that meet both of the above
+          criteria will be extracted to the A: drive.
+
+
+     PKWARE Version 1.1  Addendum         7
+
+
+
+     -x or -e[c,d,e,n,p,s]  Extract files in designated order
+     --------------------------------------------------------
+
+          The above option is used to specify a particular order in
+          which to extract files from a ZIP file.  These options are
+          used along with  -x or -e, the default PKUNZIP extract option.
+          All of the options are defined below.
+
+          -xc or -ec   Extract files in order of CRC value
+          -xd or -ed   Extract files in order of date
+          -xe or -ee   Extract files in alphabetical order by extension
+          -xn or -en   Extract files in alphabetical order by file name
+          -xp or -ep   Extract files in order of percentage (ratio) of
+                       compression
+          -xs or -es   Extract files in order by size
+
+
+          NOTE:  Future versions of PKUNZIP will only support the -e
+                 option and support of the -x option will be discontinued
+                 in future versions of PKUNZIP.
+
+          C:\ZIPS>  PKUNZIP  -en -cm  keep.zip
+
+          In this example, all of the files in KEEP.ZIP will be
+          extracted to the monitor in alphabetical order.
+
+
+     ZIP2EXE
+
+          ZIP2EXE no longer requires external PKSFX.PRG files.  There are
+          new command line features available with version 1.1 of the
+          ZIP2EXE program.  The features available depend on whether you
+          are using the MS-DOS or OS/2 versions of the sofware.
+
+          ZIP2EXE  MS-DOS version   -j    Use PKFSXjr program
+          ZIP2EXE  OS/2 version     -f    Use PKSFX family mode program
+
+
+          ZIP2EXE -j   Use the PKSFXjr program
+
+          This option is available only if you have the MS-DOS software
+          version.  If the -j option is specified, the mini version,
+          PKSFXjr, will be used.  For details on this option, see the
+          section on PKSFXjr on page 10.  If this option is not
+          specified, the ZIP2EXE program will utilize the standard PKSFX
+          program.
+
+
+
+
+
+
+     PKWARE Version 1.1  Addendum         8
+
+
+
+          ZIP2EXE -f  Create family mode self-extracting file
+
+          This option is used when you are using the OS/2 software
+          version.  It specifies that an OS/2 family mode .EXE file is to
+          be created, which will run under OS/2 and MS-DOS. If this
+          option is not included on the command line, the software will
+          create an OS/2 protected mode .EXE file.
+
+
+
+     PKSFX  -s<password>   Support password decryption
+     -------------------------------------------------
+
+          PKSFX now supports the -s<password> decryption option.  This
+          option functions the same as with the PKUNZIP option.  When
+          unzipping a ZIP file, including a self-extracting ZIP file,
+          that has been encrypted, the files cannot be extracted unless
+          the correct password is specified on the command line.
+
+          When specifying the password, there is no space between the s
+          and the password.  Also, the password is case sensitive.
+          Recall, it is important that you remember or somehow record
+          the passwords that you use, because PKWARE does not retain a
+          record of these passwords anywhere.
+
+          D:\> a:files -sCode b:
+
+          In the above example, the self-extracting ZIP file, FILES.EXE,
+          will be extracted to the B: drive if the correct password for
+          the file is Code.
+
+
+
+     PKSFX   Confirm before extracting files
+     ---------------------------------------
+
+          If the ZIP comment for a file contains a Ctrl-S (0x13), PKSFX
+          will display the ZIP comment followed by this statement: "Do
+          you want to extract these files now (y/n)?"
+
+          After viewing the ZIP comment, you can decide if you actually
+          want to extract these particular files.  Press Y to extract the
+          files.  Press N to abort the PKSFX process.  If the process is
+          aborted, PKSFX will exit with with an ErrorLevel of 12.
+
+          The Ctrl-S character string will not be displayed in the ZIP
+          comment.
+
+
+
+
+
+     PKWARE Version 1.1  Addendum         9
+
+
+
+     PKSFXjr
+     -------
+
+          This is a mini-PKSFX program.  You can create a self-
+          extracting ZIP file with it by using the -j option on the
+          command line when running the ZIP2EXE version 1.1 program.  An
+          example is shown below.
+
+          C:\MISC> ZIP2EXE  -j  miscfile.zip
+
+
+          PKSFXjr includes the following features.
+
+          - PKSFXjr is only 2936 bytes in size.
+
+          - PKSFXjr also supports the comment pausing feature added to
+            the standard PKSFX program.  For details on this feature, see
+            the explanation above.
+
+          - PKSFXjr will extract all of the files in the self-extracting
+            ZIP file.  Individual file names cannot be specified.
+
+          - The only PKUNZIP command line option supported by PKSFXjr is
+            the  -o Overwrite option.
+
+          - A maximum of approximately 500 files can be contained within
+            a PKSFXjr.EXE file.  However, there is no limit on the
+            overall size of the .EXE file that can be created with
+            PKSFXjr.
+
+          - PKSFXjr only supports the Exploding of files.  Files that
+            have been compressed using the Shrinking method will not be
+            extracted.  In order to create a PKSFXjr.EXE file, the -ei
+            Implode only option of PKZIP must be used.
+
+          - PKSFXjr requires only about 32K of memory to run.
+
+          - PKSFXjr has the following ErrorLevel exit codes:
+
+            1.  Warning error (failed CRC etc.)
+            2.  Can't find .EXE file
+            3.  Error in .EXE file
+            4.  File has a bad table
+            5.  Can't create file
+            6.  Disk full
+            7.  Too many files
+            8.  User aborted at comment pausing
+
+
+
+
+
+     PKWARE Version 1.1  Addendum         10
+
+

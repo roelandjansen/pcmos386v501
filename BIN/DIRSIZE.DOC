@@ -1,0 +1,237 @@
+
+
+
+
+
+
+
+
+
+                       Directory Size Information v1.1
+
+                          Released April 6, 1991
+
+                    Copyright (c) 1991 by Keith Ledbetter
+
+
+         This program may be used and/or distributed free of charge!
+
+
+
+                              _______
+                         ____|__     |               (tm)
+                      --|       |    |-------------------
+                        |   ____|__  |  Association of
+                        |  |       |_|  Shareware
+                        |__|   o   |    Professionals
+                      -----|   |   |---------------------
+                           |___|___|    MEMBER
+
+
+
+                     Written by Keith Ledbetter
+                                4240 Ketcham Drive
+                                Chesterfield, VA  23832
+                                (804) 674-0780
+                                (6:00pm - 10:00pm Eastern Time)
+
+
+                    Electronic mail on GEnie     : ORION.MICRO
+                                       CompuServe: 72240,1221
+
+
+
+     Program and Documentation are Copyright (c) 1991 by Keith Ledbetter.
+                             All rights reserved.
+
+
+     Portions Copyright Borland, International.  Written with Borland C++.
+
+                           Directory Size Information                 Page 1
+
+
+                                  Introduction                                
+
+
+
+Introduction
+------------
+
+  Thank you for taking the time to download DIRSIZE.   DIRSIZE is a program
+that allows you to quickly and easily determine the total size (in both
+files and bytes) of any directory.    Please note that by "directory"
+DIRSIZE means the "named directory" plus all "child directories" under that
+directory.   In other words, if you do a DIRSIZE of your C:\ root directory,
+you'll actually see how many files/bytes are occupied on your entire C: hard
+drive.
+
+
+How it works
+------------
+
+  Invoking DIRSIZE is simple.  First, you should copy DIRSIZE to one of the
+directories listed in your PATH variable (most people have a directory named
+UTILS or PROGRAMS, etc).   Then you will be able to execute DIRSIZE no matter
+where you currently are on your hard drive.
+
+  To invoke DIRSIZE, simply type:
+
+                DIRSIZE [directory_name]
+
+  If you don't specify a directory name, DIRSIZE will operate on the current
+default directory.   You can also specify directory names on other drives,
+or "logical" directories (such as "..").   A few examples:
+
+         DIRSIZE                  -  the current directory
+         DIRSIZE E:\windows       -  the E:\WINDOWS\ directory
+         DIRSIZE ..               -  the current directory's parent directory
+
+  You can also specify a FILEMASK with DIRSIZE if you wish.  I doubt that
+this option will be used very often, but you can use it to only get the file
+sizes of specific files in a directory.  Some examples:
+
+         DIRSIZE *.c              -  all .C files in this directory
+         DIRSIZE E:\WINDOWS\*.BAT -  all .BAT files in the Windows directory
+
+                           Directory Size Information                 Page 2
+
+
+                             Command Line Switches                            
+
+
+
+     Switch:  -P
+    Meaning:  page break
+Description:  The '-p' switch tells DIRSIZE to stop the screen display and
+              wait for a keypress after every 24 display lines.  Note that
+              this switch is ignored if you are redirecting the output of
+              DIRSIZE to something other than the screen.
+
+
+     Switch:  -T
+    Meaning:  only show the totals
+Description:  The '-t' switch tells DIRSIZE to only display the totals and
+              not each individual directory.   Only the "top level"
+              directory name will be shown, but all "child" directories
+              WILL be scanned as normal.
+
+
+     Switch:  -?
+    Meaning:  help!
+Description:  The '-?' causes DIRSIZE to display a short help screen and
+              then abort the program.
+
+                           Directory Size Information                 Page 3
+
+
+                                Software Catalog                              
+
+
+
+My Software Catalog
+-------------------
+
+    Listed below is a chart of my other shareware and freeware utilities,
+along with the current version number of each.  Also listed is the
+filename that you will find them under on BBS systems (please note that
+they may be different on your favorite BBS's, but it should help you at
+least get close to locating them).   When you register one of my Shareware
+programs, you will receive a disk with ALL of these utilities on it.
+
+
+   Filename      Version            Description
+  -----------    -------     -------------------------------
+  SST_52A.ZIP      5.2a      The ultimate file-finder program.  Until
+                             recently this was simply called "WhereIs".
+                             It's now been renamed to "Supersonic Search
+                             Tool" to avoid confusion with other programs.
+                             Shareware: $15
+
+  LCD_21A.ZIP      2.1a      "Led's Change Directory" is an intelligent
+                             directory changing program.  This program was
+                             voted one of "the 10 best utilities of 1990"
+                             by the "Public (software) Library" magazine.
+                             Shareware: $15
+
+  AV_12.ZIP        1.2       "Archive Viewer" is used to display the names
+                             of members of all of the popular archiving
+                             programs (ZIP, ARC, LHARC, PKARC, ZOO, PAK).
+                             No longer do you have to struggle remembering
+                             the syntax to 6 different archiving programs.
+                             Freeware: $0
+
+  X_30.ZIP         3.0       "X: The Executioner" can save you a lot of
+                             disk space.  X allows you to ZIP down those
+                             seldom-used-but-hard-to-delete .COM, .EXE,
+                             and .BAT files into one system "Command
+                             Library".  You can then execute them easily
+                             by simply typing an "x" in front of the
+                             command line (eg: "x chkdsk c:").
+                             Freeware: $0
+
+  ADMENU20.ZIP     2.0       If you own an Adlib Music card, you need this
+                             program.  It allows you to ZIP down all of
+                             those .ROL song files you've accumulated, yet
+                             still play them with no extra effort!  Uses
+                             a mouse-able, easy-on-the-eyes window system.
+                             Freeware: $0
+
+  DELDIR12.ZIP     1.2       "Delete Directory" allows you to delete an
+                             entire directory (and all directories under
+                             it) with one quick command.  You will be
+
+                           Directory Size Information                 Page 4
+
+
+                                Software Catalog                              
+
+
+                             shown totals of what you are about to delete
+                             and then be asked to confirm (the confirm
+                             process can be over-ridden from the command
+                             line).
+                             Freeware: $0
+
+  DIRSIZ11.ZIP     1.1       "Directory Size Information" allows you to
+                             easily determine the total size (in both
+                             files and bytes) of any directory.
+                             Freeware: $0
+
+  DUPICO10.ZIP     1.0       "Duplicate Icon Deleter" is for any Windows
+                             3.0 user who has accumulated tons of icons.
+                             It will go through a directory and delete all
+                             duplicate icon images, regardless of what they
+                             are named.
+                             Freeware: $0
+
+  TIMER10.ZIP      1.0       This program allows you to easily time the
+                             execution of any program.  Simply use TIMER
+                             to invoke the command (eg: "timer chkdsk C:")
+                             and you will be shown, at the completion of
+                             the command, the elapsed time.
+                             Freeware: $0
+
+  UNTAB10.ZIP      1.0       One of the fastest "un-tab" programs you will
+                             find.  It takes the specified input file and
+                             copies it to the specified output file,
+                             replacing all tab characters with hard blanks
+                             (you specify the "tab size").
+                             Freeware: $0
+
+
+
+Bulletin Board Numbers:
+
+
+  You can find the latest versions of all of my PC utilities listed
+above on the following BBS's:
+
+
+         Name               Location          Number
+   ------------------      ----------       ------------
+   Blue Ridge Express      East coast       804-790-1675  (23 lines)
+   Hard Disk Cafe          Midwest          618-684-3990  (file area "Z")
+   C & C                   Midwest          618-253-3608
+   ATT-PAC                 West coast       415-829-6062
+
+End of document.

@@ -1,0 +1,58 @@
+
+Several new features have been added to PKZIP/PKUNZIP/PKSFX
+version 1.1.  Read the file ADDENDUM.DOC for a complete
+description of these changes and enhancements.  Highlights
+of PKZIP/PKUNZIP/PKSFX etc. version 1.1 include:
+
+- PKZIP 1.1 Imploding is up to 5X faster, particularly on large
+  spreadsheet and database type files where PKZIP 1.02 would run
+  relatively slowly.  Most 'typical' types of files should
+  implode 5% to 25% faster.  In addition, compression has been
+  improved over version 1.02 as well.
+
+- Authenticity Verification.
+
+- A 2,934 byte "mini" PKSFX self-extracting module.
+
+- ZIP2EXE no longer requires the external file PKSFX.PRG.
+
+- The ability to save & restore volume labels.
+
+- Defensive use of the 32 bit accumulator EAX on 80386 or 80486
+  computers. In many instances, such as when using MultiSoft's
+  PC-KWIK cache or Novell non-dedicated NetWare software, if you
+  needed to set the PKNO386 environment variable with
+  PKZIP/PKUNZIP version 1.02, you probably don't need to set this
+  anymore with PKZIP/PKUNZIP version 1.1.
+
+  There appear to be many programs that use exTENded memory
+  and/or '80286 protected mode' that have absolutely no regard to
+  saving or restoring the EAX register when switching to and from
+  protected mode on an 80386 or 80486 CPU.  There were no bugs in
+  PKZIP/PKUNZIP 1.02 regarding usage of the 80386 instructions or
+  registers.  However, PKZIP/PKUNZIP 1.02 did not expect that the
+  EAX register would be wantonly corrupted from one instruction
+  to the next.  PKZIP/PKUNZIP 1.1 do expect that other programs
+  may randomly destroy the EAX register, and defends against
+  this.  PKZIP/PKUNZIP 1.1 treat all references to EAX as a
+  critical section, briefly disallowing programs from
+  interrupting PKZIP/PKUNZIP when the EAX register is used.
+
+  If it sounds ludicrous that a program would need to protect
+  access to a CPU register like this, particularly the
+  accumulator, that's because it is!  Considering that 80386
+  computers have commonly been available for over two years now,
+  it is unfortunate that many '80286 specific' programs don't
+  have any consideration that they could be running on an 80386
+  or 80486 CPU.  It takes approximately 30 bytes of code for a
+  program to determine if it is running on an 80286 CPU versus an
+  80386/80486 CPU, and two instructions (namely PUSH EAX and POP
+  EAX) to save and restore the EAX register.  Any program that
+  uses exTENded memory or 80286 protected mode has little excuse
+  not to save and restore EAX when running on an 80386 or 80486
+  CPU, especially if they are going to interrupt the currently
+  executing program!  Programs that are negligent of this will
+  only cause additional problems in the future as more software
+  is developed to take advantage of the 80386 and 80486
+  instruction sets and 32-bit registers.
+

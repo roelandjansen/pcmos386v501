@@ -1,0 +1,30 @@
+
+** by:  Dorn W. Stickle ** 
+
+System Storage Map
+Version 1.4                               
+
+ Addr    Program   Parent   Sg   Bytes           Hooked Vectors
+컴컴컴  컴컴컴컴  컴컴컴컴  컴  컴컴컴  컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴�
+(3106)  DOS       N/A        2    7008 
+(3106)  Program                   6496
+(329D)  Program memory             512
+
+(32D1)  N/A       N/A        2   38944 
+(32BE)  Program memory             288
+(32D1)  Program                  38656
+
+(3C56)  NSREQ     DOS        2   70992  2F  7B 
+(3C42)  Environment                304
+(3C56)  Program                  70688
+
+
+Free memory                  2  337504
+(4D99)  Unallocated Segment        304
+(4DAD)  Unallocated Segment     337200
+
+
+Next command load address: 4DAD
+
+              ROM Version: 04/09/90
+             Machine type: PC/AT

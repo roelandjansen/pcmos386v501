@@ -1,0 +1,22 @@
+
+xxii	System Requirements: Fixing Keyboard Problems with  FIXSHIFT.COM
+	----------------------------------------------------------------
+	On some COMPAQ(R) machines with keyboards that have separate arrow
+	keys (not part of the numeric keypad), and on some machines with
+	compatible keyboards, a bug in the ROM BIOS may cause problems with
+	the QuickC editor. A program named FIXSHIFT.COM is provided on
+	distribution disk 4 to fix this bug. Simply copy this program to the
+	directory where you have loaded the QuickC program files, type
+
+	    fixshift
+
+	and press ENTER. If your machine's BIOS does not have the bug, FIXSHIFT
+	displays a message to tell you so.  If your machine's BIOS has the bug,
+	FIXSHIFT displays prompts that guide you through the appropriate
+	actions.
+
+	FIXSHIFT requires approximately 450 bytes of memory.  Except for fixing
+	the BIOS bug, FIXSHIFT has no effect on other programs that you run. It
+	can be placed in your AUTOEXEC.BAT file.
+
+

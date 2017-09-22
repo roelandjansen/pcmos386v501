@@ -1,0 +1,299 @@
+                           CD-LINK USER'S GUIDE
+                           --------------------
+
+
+Copyright 1992, 1993 Rod Roark
+
+INTRODUCTION
+------------
+
+CD-Link is a device driver that allows DOS applications to access CD-ROM disk 
+readers as if they were "standard" DOS-compatible disk drives.  For DOS users, 
+it is an alternative to Microsoft's CD-ROM Extensions.  CD-Link is also 
+available separately for The Software Link's PC-MOS operating system.
+
+Supporting High Sierra and ISO 9660 disk formats, the driver will work with 
+most popular CD-ROM drives and controllers.  
+
+Some significant features of the product are:
+
+  * Ability to use the hard disk as a large cache, for greatly
+    improved performance without sacrificing memory.
+
+  * Redirection of DOS function calls at the INT 21 level for
+    easy interfacing to networks and alternative operating 
+    systems.
+
+  * RAM overhead approximately 8K for PC-MOS, 10K for DOS.
+
+  * Works with vendors' existing low-level drivers, for
+    compatibility with most popular CD-ROM hardware.
+
+  * CDSTAT utility reports usage statistics, to simplify fine-
+    tuning of the installation.
+
+
+INSTALLATION
+------------
+
+YOUR USE OF THIS PRODUCT IS SUBJECT TO THE LICENSE AGREEMENT THAT IS CONTAINED
+IN THE FILE LICENSE.DOC, PROVIDED WITH THIS SOFTWARE.  BE SURE TO PRINT THIS 
+AGREEMENT AND DO NOT PROCEED FURTHER UNLESS YOU HAVE READ IT AND AGREE TO ITS 
+TERMS AND CONDITIONS.
+
+Installation of the product consists of copying CDLINK.SYS and CDSTAT.COM from
+the installation diskette to your hard disk, adding a line to your CONFIG.SYS 
+file, and rebooting the system.
+
+The config.sys statement to be added has the following format:
+
+  For DOS:
+
+     DEVICE=CDLINK.SYS [D=devicename]
+                       [C=cachefilespec] 
+                       [K=cachefilesize]
+                       [N=numberofdrives] 
+                       [O=offsetvalue]
+                       [H=numberofhandles] 
+                       [L=longreadsectors]
+
+  for PC-MOS:
+
+     DEVICE=CDLINK.SYS [D=devicename]
+                       [C=cachefilespec] 
+                       [K=cachefilesize]
+                       [N=numberofdrives] 
+                       [O=offsetvalue]
+                       [H=numberofhandles] 
+                       [L=longreadsectors]
+                       [T=numberoftasks]
+
+Parameters must be all entered on one line, and are separated from each other 
+by one or more spaces.  No spaces should be entered within a parameter, nor 
+immediately before or after an "equals" sign.
+
+More specifically, the optional parameters are as follows:
+
+     <devicename> is the system name assigned to the hardware- 
+     dependent CD-ROM device driver.  This name will either be 
+     specified on the DEVICE= command line for that driver, or 
+     will have a default value in that driver.  Default is 
+     "MSCD001".
+
+     <cachefilespec> is the fully qualified file specification 
+     for the work file that CD-Link creates and uses for cacheing 
+     of CD-ROM data.  "Fully qualified" means that a drive letter 
+     and complete path specification must be supplied - e.g., 
+     "C:\WORK\CACHE.DAT".  Default is "C:\CDLINKCA.CHE".  This 
+     cache file is typically maintained on a hard disk, but users 
+     with RAM to spare may want to implement it on a RAM-disk.
+
+     <cachefilesize> is the number of kilobytes of disk space to 
+     be allocated to the cache file.  Default is 122.  The 
+     specified number may be rounded down by as much as 41K, 
+     since the cache file is allocated in increments of 
+     approximately this size.  This parameter is used only when 
+     creating a new cache file, and is ignored if the file 
+     already exists.
+
+     <longreadsectors> is a number from 2 to 65,535 which specifies 
+     the minimum number of whole CD-ROM sectors in a single read 
+     request that will cause cacheing to NOT occur.  The theory is 
+     that if there is a "long" read request for some large number 
+     of contiguous sectors, then it may be better to always read 
+     them directly from the CD-ROM as opposed to consuming large 
+     portions of the cache file.  You use L= to specify this minimum 
+     number.  Default is 16.
+
+     <numberofdrives> is the number of physical CD-ROM drives 
+     that are to be supported.  Default is 1.
+
+     <offsetvalue> does not normally need to be specified.  It is 
+     used to tell the system how to identify which file handles 
+     are for CD-ROM files.  A byte value in the PSP handle table 
+     that is greater than or equal to <offsetvalue>, but less 
+     than <offsetvalue+numberofhandles>, is deemed to specify a 
+     CD-ROM file handle.  This parameter is provided as a way to 
+     resolve possible conflicts with other products, such as LAN 
+     operating systems, that also apply offsets to file handle 
+     table entries.  BEWARE THAT <OFFSETVALUE+NUMBEROFHANDLES> 
+     MUST NEVER BE GREATER THAN 255.  Default is 200.  Allowable 
+     range is 20-250.
+
+     <numberofhandles> indicates the maximum number of CD-ROM 
+     file handles that may be open at one time.  Default value is 
+     20.  Allowable range is 5-235.  If you specify a value 
+     greater than 63, then you will also have to specify 
+     offsetvalue (see above).
+
+     <numberoftasks> applies only to PC-MOS installations.  It 
+     specifies the maximum number of system tasks that may access 
+     CD-ROMs.  Default is 5 (1 if DOS is used).
+
+No separate utilities are required to create or maintain the cache file.  The 
+driver will at boot time automatically recognize and use an already-existing 
+cache file with the name specified with the "C=" parameter, or if one does not
+exist a new one will be created.  Therefore if you want to create a new cache 
+file (e.g., to change its size), all you have to do is delete the old one and 
+re-boot.
+
+You are encouraged to make the cache file as large as practical.  Any size from
+roughly 128K to several megabytes is reasonable.  Cached data remains in the 
+file and will be re-used even after you power off your computer; this will 
+translate to a significant performance benefit as the system "learns" your 
+CD-ROMs.
+
+IMPORTANT NOTE: Cacheing performance is closely tied to the performance of your
+hard disk.  We strongly recommend that you use a cacheing utility for your hard
+disk - or if you use PC-MOS, take the time to optimize your "cache=" parameters
+(write cacheing IS recommended).
+
+
+THE CDSTAT UTILITY
+------------------
+
+CDSTAT.COM is a program that you run to display statistical information about 
+CD-Link.  Simply type CDSTAT at the command prompt, and the following 
+information is displayed:
+
+Short (cached) reads  - The total number of CD-ROM reads processed since 
+                        the last time the computer was booted, where
+                        the number of sectors requested was less than
+                        the value of the "L=" parameter (see below); this
+                        is regardless of whether the read was satisfied
+                        from the cache.
+
+Cache hits            - The number of read requests satisfied from the
+                        cache since the last boot.
+
+Cache index rewrites  - The number of times that a cache index record has
+                        been modified since the last boot.  Frequent index
+                        rewrites are an indication that performance can
+                        be improved by making the cache file bigger.
+
+Long (uncached) reads - The number of reads since the last boot where the
+                        number of sectors requested was greater than or 
+                        equal to the "L=" parameter.
+
+Cache file opens      - The number of times since the last boot that the
+                        cache file has been opened.  Normally, these opens
+                        are infrequent.
+
+Cache file errors     - The number of times since the last boot that an
+                        I/O error occurred while processing the cache 
+                        file.  A nonzero value here indicates a problem.
+
+Capacity (sectors)    - The number of 2K CD-ROM sectors that may be held
+                        in the cache file at any given time.
+
+Sectors cached        - The number of CD-ROM sectors currently stored in 
+                        the cache file.  Under normal use, this number
+                        will reach the capacity fairly quickly.
+
+
+DOS 5/6 AND WINDOWS
+-------------------
+
+The ability of DOS 5 and 6 to put itself, device drivers, and TSRs into upper 
+memory is a big plus.  CDLINK (for DOS) appears to work well when loaded with 
+the "DEVICEHIGH=" config.sys statement.
+
+As noted above, use of a disk cacheing utility is strongly recommended.  We 
+have had good results with SMARTDRV.EXE, which can also be loaded into upper 
+memory with DOS 5 and greater.
+
+If you are using EMM386.EXE or a similar memory manager, be sure to tell it to
+avoid using the memory address space occupied by your SCSI controller.  For 
+example, if your SCSI card uses 16K of address space starting at C8000, then 
+the appropriate parameter for EMM386 is X=C800-CBFF.
+
+Similarly, if you are using Windows 3.x in enhanced mode, you will need to add
+an "emmexclude" statement to the [386Enh] section of your SYSTEM.INI file.  In
+the above situation, the statement would be "emmexclude=C800-CBFF".
+
+The following are the relevant CONFIG.SYS statements for a sample system using
+a Corel LS2000 SCSI controller set for memory address C8000 with a NEC CD-ROM 
+drive (this is only an example; your system will probably require different 
+parameters):
+
+  DEVICE=C:\DOS\HIMEM.SYS
+  DEVICE=C:\DOS\EMM386.EXE X=C800-CBFF I=CC00-EFFF NOEMS
+  DOS=HIGH,UMB
+  DEVICEHIGH=C:\CORELDRV\NEC_LS2.SYS /ID:0 /MEM:C800 /N:1 /D:MSCD001
+  DEVICEHIGH=C:\CDLINK.DOS C=C:\$CACHE$ D=MSCD001 K=1024 L=8
+
+Some SCSI drivers may not let you specify the memory address of the board, 
+instead looking for boards at all of the possible addresses.  This will cause a
+problem if you have already loaded EMM386.  In such a case we suggest using a 
+"DEVICE=" statement to load the hardware driver BEFORE the "DEVICE=" statement
+for EMM386.
+
+
+CONSIDERATIONS FOR PC-MOS USERS
+-------------------------------
+
+Note that CD-Link for DOS and MOS are DIFFERENT products.  The DOS version will
+not work with PC-MOS, and vice versa.
+
+To minimize CPU and RAM overhead, CD-ROM controllers using DMA are NOT 
+recommended for use with PC-MOS.
+
+Be sure to FREEMEM around the memory address space occupied by your SCSI 
+controller!  For example, if your SCSI card uses 16K of address space starting
+at C8000, then your PC-MOS config.sys parameter might be "FREEMEM=CC000,F0000"
+(assuming the given range is otherwise not occupied by ROM or other hardware 
+devices).
+
+The following are the relevant CONFIG.SYS statements for a sample system using
+a Corel LS2000 SCSI controller set for memory address C8000 with a NEC CD-ROM 
+drive (this is only an example; your system will probably require different 
+parameters):
+
+  MEMDEV=C:\PCMOS\$386.SYS
+  FREEMEM=CC000,F0000
+  CACHE=1024,2,10,2,A,B,C
+  SMPSIZE=64K
+  DEVICE=C:\PCMOS\UPDAT501.SYS
+  DEVICE=C:\CORELDRV\NEC_LS2.SYS /ID:0 /MEM:C800 /N:1 /D:MSCD001
+  DEVICE=C:\CDLINK.MOS C=C:\$CACHE$ D=MSCD001 K=2048 L=8
+
+
+PC-MOS USERS: IF YOUR CD-ROM CONTROLLER USES DMA
+------------------------------------------------
+
+Your best bet is to avoid DMA with PC-MOS.  However if this is not an option, 
+do the following in your CONFIG.SYS file:
+
+1. Set up a "split SMP" by using a SMPSIZE statement of the form
+   "SMPSIZE=nnnK,nnnK", specifying enough memory in the second parameter
+   to contain the CD-ROM hardware driver and the CDLINK.MOS driver
+   (this requirement is usually less than 32K).
+
+2. Use "LDEVICE=" (not "DEVICE=") to load both the CD-ROM hardware driver
+   and CDLINK.MOS into the lower segment of the SMP.  In some cases this
+   may not be necessary with the hardware driver.
+
+3. Specify "L=500" in the CDLINK.MOS command line.  This will ensure that no 
+   reads are performed directly into an application's task space.
+
+
+WARNING - IF YOU ARE UPGRADING FROM 1.00
+----------------------------------------
+
+CD-Link release 1.00 had a different cache file format from subsequent
+releases.  Therefore if you are converting from 1.00 (or a beta version) be 
+sure to delete your old cache file and reboot!
+
+
+WARNING FOR HITACHI CD-ROM DRIVE USERS
+--------------------------------------
+
+A pecularity was found with the driver HITACHIA.SYS version 2.20, and may also
+exist in other versions.  This driver requires that it be the LAST device in 
+your config.sys file (let's hope this does not become a common requirement from
+developers of device drivers!).
+
+While we normally ask that CD-Link be installed after the associated hardware 
+driver, it does appear to work correctly if the Hitachi driver comes last.
+
+                            - End of Document -

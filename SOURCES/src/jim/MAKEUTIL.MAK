@@ -251,7 +251,7 @@ remtask.com:    remtask.asm page.inc mostcb.inc mosscbdf.inc moxutl.inc \
 
 search.com:     search.asm page.inc version.inc
 
-serinfo.com:    serinfo.com
+serinfo.com:    serinfo.asm
 
 setmouse.com:   setmouse.asm page.inc
 

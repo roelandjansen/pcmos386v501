@@ -57,6 +57,9 @@ extrn scbcursz:word	; mosheman usage
 extrn scbcurad:word	; mosheman usage
 extrn scbavsiz:word	; mosheman usage
 extrn scbdrivs:byte	; # active drive units
+extrn scbflops:byte	; # active floppy units
+extrn scbdevs:byte	; # active block devices
+extrn scbhddboot:abs	; start hdd from this number or more
 extrn scbnoswt:byte	; mos no switch flag
 extrn scbtskfg:byte	; task selection flags
 extrn scbdrvr:dword	; -> first device driver in list

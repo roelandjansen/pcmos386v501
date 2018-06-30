@@ -15,6 +15,7 @@
 ======================================================================
 
 mjs 04/01/92	created this module
+jts 06/30/18	added code to allow build under bcc or tcc
 
 =======================================================================
 */
@@ -28,6 +29,11 @@ mjs 04/01/92	created this module
 #include <asmtypes.h>
 #include "ulib.h"
 
+#ifndef __BORLANDC__
+#ifndef FA_NORMAL
+#define FA_NORMAL 0x00			// normal file type
+#endif
+#endif
 /*======================================================================
 ;,fs
 ; byte ul_remove_files(byte *filespec, byte search_attr)
@@ -94,4 +100,3 @@ byte ul_remove_files(byte *filespec, byte search_attr) {
     }
   }
 
-

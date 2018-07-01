@@ -1,3 +1,2 @@
-tcmake -fulib -Dcdir=c:\cutils
+make -fulib -Dcdir=c:\sources\src\cutils -Dccomp=%1
 
-

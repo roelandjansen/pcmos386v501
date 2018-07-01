@@ -15,6 +15,7 @@
 ======================================================================
 
 mjs 12/10/92	created this module
+jts 06/30/18	added code to allow build under bcc or tcc
 
 =======================================================================
 */
@@ -23,7 +24,10 @@ mjs 12/10/92	created this module
 #include <dos.h>
 #include <dir.h>
 #include <string.h>
+
+#ifdef __BORLANDC__
 #include <malloc.h>
+#endif
 
 #include <asmtypes.h>
 #include "ulib.h"
@@ -194,4 +198,3 @@ word ul_trace_dirl(byte *dpbuf, fspc_type *fsptr) {
   *orig_end = 0;
   return(0);
   }
-

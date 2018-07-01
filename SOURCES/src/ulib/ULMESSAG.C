@@ -15,13 +15,16 @@
 ======================================================================
 
 mjs 04/01/92	created this module
+jts 06/30/18	added code to allow build under bcc or tcc
 
 =======================================================================
 */
 
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef __BORLANDC__
 #include <malloc.h>
+#endif
 #include <string.h>
 
 #include <asmtypes.h>
@@ -69,7 +72,11 @@ static word ul_storetag(byte *buf, word tag_index) {
       (*s++) = (*t++);
       }
     (*s) = '\0';
+#ifdef __BORLANDC__
     if((msgtags[tag_index] = _fmalloc(sizeof(msgtype))) == NULL) {
+#else
+    if((msgtags[tag_index] = malloc(sizeof(msgtype))) == NULL) {
+#endif
       return(ul_msg_er_memory);
       }
     if((msgtags[tag_index]->tag = strdup(temp)) == NULL) {
@@ -317,4 +324,3 @@ word ul_disp_msg(word x, word y, byte vidattr, byte *srchtag, byte tranflag) {
   return(0);
   }
 
-

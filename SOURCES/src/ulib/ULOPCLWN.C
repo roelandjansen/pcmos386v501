@@ -15,13 +15,16 @@
 ======================================================================
 
 mjs 04/01/92	created this module
+jts 06/30/18	added code to allow build under bcc or tcc
 
 =======================================================================
 */
 
 #include <stdlib.h>
 #include <dos.h>
+#ifdef __BORLANDC__
 #include <malloc.h>
+#endif
 
 #include <asmtypes.h>
 #include "ulib.h"
@@ -41,11 +44,20 @@ wintype ul_open_window(byte xl,byte yt,byte xr,byte yb,byte vattr1,byte vattr2,b
   wintype win;
   word retval;
 
+#ifdef __BORLANDC__
   if((win = (wintype) _fmalloc(sizeof(twin))) == NULL) {
+#else
+  if((win = (wintype) malloc(sizeof(twin))) == NULL) {
+#endif
     return(NULL);
     }
+#ifdef __BORLANDC__
   if((win->winptr = _fmalloc((xr-xl+1)*(yb-yt+1)*2)) == NULL) {
     _ffree(win);
+#else
+  if((win->winptr = malloc((xr-xl+1)*(yb-yt+1)*2)) == NULL) {
+    free(win);
+#endif
     return(NULL);
     }
   win->xl = xl;
@@ -76,8 +88,12 @@ void ul_close_window(wintype win) {
 
   ul_restore_window(win->xl,win->yt,win->xr,win->yb,win->winptr);
   ul_set_cursor(win->x_coord,win->y_coord);
+#ifdef __BORLANDC__
   _ffree(win->winptr);
   _ffree(win);
+#else
+  free(win->winptr);
+  free(win);
+#endif
   }
 
-

@@ -8,6 +8,10 @@
 #======================================================================
 #
 # mjs 05/21/92	added data for ulexptab.obj/.c
+# jts 06/30/18  added code for variable ccomp to allow selection of
+#               c compiler (bcc|tcc)
+#               commented out dead code for ulib.xxx and genndx.bat
+#               since extract command is not available
 #
 #======================================================================
 #
@@ -27,19 +31,20 @@
 # required switches:
 #
 # -Dcdir=d:\cutils   (substitute your cutils directory for 'd:\cutils')
+# -Dccomp=bcc        (substitute your compiler bcc or tcc)
 #
 
 #==== implicit rules
 
 .c.obj:
-    bcc -c -I$(cdir) $&.c
+    $(ccomp) -c -I$(cdir) $&.c
     tlib ulib -+$&.obj
-    del ulib.xxx
+#    del ulib.xxx
 
 .asm.obj:
     masm /mx /z $&;
     tlib ulib -+$&.obj
-    del ulib.xxx
+#    del ulib.xxx
 
 #==== the main target
 
@@ -54,8 +59,8 @@ ulib.xxx :	ulbeep.obj   ulstr2v.obj  ulclrbox.obj uldrwbox.obj \
 		ulwalktr.obj ulismos.obj  ulmkpth.obj  ulfsize.obj  \
 		ulwrlbl.obj  ulrdlbl.obj  ulformt.obj  ulqualt.obj
 
-    genndx
-    echo x>ulib.xxx
+#    genndx
+#    echo x>ulib.xxx
 
 #==== c dependencies
 
@@ -103,4 +108,3 @@ ulqualt.obj	: ulqualt.c	$(cdir)\ulib.h
 
 ulsvrswn.obj	: ulsvrswn.asm
 
-

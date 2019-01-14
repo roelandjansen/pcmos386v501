@@ -2,7 +2,7 @@ rem echo off
 cls
 REM SHIPPING.MOS CONTAINS THE ACTUAL CODE THAT IS SHIPPING.
 REM VERSION 5 UPDATE 6.
-path=c:\dos5.0;c:\borlandc;c:\lib;c:\bin;%PATH%
+path=%PATH%;c:\bin
 set TMP=c:\TMP
 mkdir %TMP%
 cd kernel

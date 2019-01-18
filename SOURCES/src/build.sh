@@ -12,7 +12,7 @@ fi
 # lowercase ones, they may collide
 rm -f kernel/*.SYS
 rm -f mos5src/*.SYS
-dosemu -td -E MAKEMOS.BAT -U 2 'path=%D\bin;%O'
+dosemu -td -K ./MAKEMOS.BAT -U 2 'path=%D\bin;%O'
 # MOS does not understand files with recent dates so set the old one
 S_DATE="Jan 29 1993"
 touch -d "$S_DATE" mos5src/*.sys

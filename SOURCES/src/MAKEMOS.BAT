@@ -5,11 +5,18 @@ REM VERSION 5 UPDATE 6.
 path=c:\dos5.0;c:\borlandc;c:\lib;c:\bin;%PATH%
 set TMP=c:\TMP
 mkdir %TMP%
+
+REM ====== The Kernel =====
 cd kernel
-make -f kernel.mak $$eval.sys
-REM make -f kernel.mak $$mos.sys is for internal R & D use only.
 del $$mos.sys
-ren $$eval.sys $$mos.sys
+
+REM make -f kernel.mak $$eval.sys
+REM ren $$eval.sys $$mos.sys
+
+REM this was for internal R & D use only.
+make -f kernel.mak $$mos.sys
+REM =======================
+
 cd ..\mos5src
 make -f makeutil.mak all
 rem make -f maketerm.mak all

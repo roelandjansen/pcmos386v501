@@ -15,16 +15,22 @@ REM ren $$eval.sys $$mos.sys
 
 REM this was for internal R & D use only.
 make -f kernel.mak $$mos.sys
+
+cd ..
 REM =======================
 
-cd ..\mos5src
+cd mos5src
 make -f makeutil.mak all
 rem make -f maketerm.mak all
 del $*.*
 ren __*.* $$*.*
 ren _*.sys $*.sys
-rem CD ..\import
+cd ..
+
+rem cd import
 rem make -f import.mak import.exe
-rem cd ..\export
+rem cd ..
+
+rem cd export
 rem make -f export.mak export.exe
-cd \
+rem cd ..

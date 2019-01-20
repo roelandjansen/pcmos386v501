@@ -30,9 +30,9 @@ ren __*.* $$*.*
 ren _*.sys $*.sys
 cd ..
 
-rem cd import
-rem make -f import.mak import.exe
-rem cd ..
+cd import
+make -f import.mak import.exe
+cd ..
 
 rem cd export
 rem make -f export.mak export.exe

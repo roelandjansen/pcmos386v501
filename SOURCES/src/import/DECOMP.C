@@ -55,6 +55,8 @@
 #include <ctype.h>
 #include <rsa\rsa.h>
 
+#define FOREVER while(1)
+
 extern char     yes[],
                 O_flag,
                 disk_label[];
@@ -340,4 +342,3 @@ Continue_to_next_disk(char *infile)
     printf("\nContinuing import of %s\n", infile);  /* @@XLATN */
     return(0);
 }
-

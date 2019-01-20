@@ -6,7 +6,7 @@ path=%PATH%;c:\bin
 set TMP=c:\TMP
 mkdir %TMP%
 
-set INCLUDE=..\..\..\include
+set INCLUDE=..\..\..\include;..\include
 set LIB=..\..\..\lib;..\libs
 
 REM ====== The Kernel =====

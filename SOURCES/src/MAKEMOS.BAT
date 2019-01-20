@@ -6,6 +6,9 @@ path=%PATH%;c:\bin
 set TMP=c:\TMP
 mkdir %TMP%
 
+set INCLUDE=..\..\..\include
+set LIB=..\..\..\lib;..\libs
+
 REM ====== The Kernel =====
 cd kernel
 del $$mos.sys

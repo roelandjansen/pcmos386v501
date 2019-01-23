@@ -33,6 +33,8 @@
 #include <stdlib.h>
 #include <rsa\rsa.h>
 
+#define FOREVER while(1)
+
 extern char     source_path[],
                 target_path[];
 

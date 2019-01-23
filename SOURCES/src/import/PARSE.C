@@ -44,6 +44,8 @@
 #include <rsa\rsa.h>
 #include <rsa\keycodes.h>
 
+#define FOREVER while(1)
+
 extern char     yes[],
                 cpath[],
                 source_path[],
@@ -248,4 +250,3 @@ void Display_usage()
     puts("        /S           - Restore nested subdirectories."); /* @@XLATN */
     puts("        /?           - This HELP page.\n"); /* @@XLATN */
 }
-

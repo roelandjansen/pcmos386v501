@@ -6,6 +6,9 @@ path=%PATH%;c:\bin
 set TMP=c:\TMP
 mkdir %TMP%
 
+set INCLUDE=..\..\..\include;..\include
+set LIB=..\..\..\lib;..\libs
+
 REM ====== The Kernel =====
 cd kernel
 del $$mos.sys
@@ -15,16 +18,22 @@ REM ren $$eval.sys $$mos.sys
 
 REM this was for internal R & D use only.
 make -f kernel.mak $$mos.sys
+
+cd ..
 REM =======================
 
-cd ..\mos5src
+cd mos5src
 make -f makeutil.mak all
 rem make -f maketerm.mak all
 del $*.*
 ren __*.* $$*.*
 ren _*.sys $*.sys
-rem CD ..\import
-rem make -f import.mak import.exe
-rem cd ..\export
+cd ..
+
+cd import
+make -f import.mak import.exe
+cd ..
+
+rem cd export
 rem make -f export.mak export.exe
-cd \
+rem cd ..

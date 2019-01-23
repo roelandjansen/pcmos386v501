@@ -46,6 +46,8 @@
 #include <stdlib.h>
 #include <rsa\rsa.h>
 
+#define FOREVER while(1)
+
 extern int      source_drive;
 
 static char     buffer[80];

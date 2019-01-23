@@ -30,7 +30,5 @@ OBJECTS =       import.obj  parse.obj  decomp.obj  get_next.obj \
 
 OBJLIST =       import +parse +decomp +get_next +term +mos_util +globals
 
-LIBRARIES = ${LIB}\RSASMALL.LIB
-
-import.exe : $(OBJECTS) $(LIBRARIES)
+import.exe : $(OBJECTS)
         link $(OBJLIST)/e,,,rsasmall

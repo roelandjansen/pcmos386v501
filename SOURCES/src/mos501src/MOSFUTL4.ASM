@@ -1252,8 +1252,8 @@ mgx1:
 ; systems will modified the class bits, if not 'A' - 'Z' range
 ; mark file with null class
 
-	xor	al,al			; default to space
-	mov	al,byte ptr [si+dbbbuf+dclass0]
+	xor	ax,ax			; default to space
+	mov	ah,byte ptr [si+dbbbuf+dclass0]
 	cmp	ah,'A'
 	jb	mgfbc1
 	cmp	ah,'Z'
@@ -1981,4 +1981,3 @@ fbdbcx:
 
 ddt	ends
 	end
-

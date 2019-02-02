@@ -35,17 +35,23 @@ OBJLIST = acu +sysgen +globals +init +cpu_type +read_exi +ed_mos \
         +ed_vna +get_file +write +term +freemem +draw_ed +errors +ranges \
         +shell +status
 
-ALL:    acu.exe  acu.mnu  acu-help.hlp
+#  Cannot build acu.mnu or acu-help.hlp due to missing
+#  source for menmak and helpcom (for now)
+#ALL:    acu.exe  acu.mnu  acu-help.hlp
+ALL:    acu.exe
 
-acu.exe : $(OBJECTS) ${LIB}\rsalarge.lib
+acu.exe : $(OBJECTS) 
         link $(OBJLIST)/m/e,,,rsalarge
 
-acu.mnu : m1.mmk m160.mmk
-        if exist acu.mnu del acu.mnu
-        menmak acu m1 m160 /c
+#  Cannot build acu.mnu or acu-help.hlp due to missing
+#  source for menmak and helpcom
+#  Perhaps someone would like to reverse engineer them?
+#acu.mnu : m1.mmk m160.mmk
+#        if exist acu.mnu del acu.mnu
+#        menmak acu m1 m160 /c
 
-acu-help.hlp : acu-help.txt
-        helpcom acu-help
+#acu-help.hlp : acu-help.txt
+#        helpcom acu-help
 #--------------------------------------------------------------------------
 # Multi-file dependencies
 #--------------------------------------------------------------------------

@@ -131,7 +131,8 @@ ALL:    adddev.com  addtask.com  dirmap.com  alias.com  class.com  debug.com \
         _kbpo.sys  _kbsf.sys  _kbsg.sys  _kbsp.sys  _kbsv.sys  _kbuk.sys \
         _mouse.sys  _netbios.sys  _pipe.sys  _ramdisk.sys  _serial.sys \
         init.com   __shell.sys _arnet.sys filter.com  patchid.com \
-        minbrdpc.sys  mispeed.com compfile.exe helpgen.exe
+        minbrdpc.sys  mispeed.com compfile.exe helpgen.exe \
+	vidpatch.com ed.exe
 
 ############ General purpose publics #############
 
@@ -427,6 +428,8 @@ _arnet.sys:    _arnet.asm page.inc options.inc jmpmacro.inc
 
 init.com:       init.asm
 
+vidpatch.com:   vidpatch.asm
+
 #******************************************************************************
 #       MOS Command processor - $$shell.sys
 #******************************************************************************
@@ -472,6 +475,10 @@ compfile.exe: compfile.c
 helpgen.exe: helpgen.c
         cl -c helpgen.c
         link helpgen/e,,,rsasmall
+
+ed.exe: ed.c
+	cl -c -AL ed.c
+	link ed,,,rsalarge
 
 help.exe: help.pas help.inc
         tpc help

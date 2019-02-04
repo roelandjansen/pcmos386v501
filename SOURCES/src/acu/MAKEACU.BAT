@@ -10,7 +10,7 @@ mkdir %DIST%
 set INCLUDE=..\..\..\include;..\include
 set LIB=..\..\..\lib;..\libs
 
-make -f makefile
+make -f makefile.new
 
 echo Distributing ACU.EXE ACU.MNU ACU-HELP.HLP
 

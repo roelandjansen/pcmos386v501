@@ -893,8 +893,8 @@ mosbd1b:
 mosbd2:
 	pop	es			; address of bdb
 	push	ax			; save error code
-	mov	al,1
-	mov	al,'B'
+	mov	ah,1			; remove memory block
+	mov	al,'B'			; remove BDB entry
 	call	mosliman		; call mosliman
 	pop	ax
 mosbd3:
@@ -1179,4 +1179,3 @@ setbdbc3:
 mosseg	ends
 	end
 
-

@@ -23,7 +23,7 @@
 
 OBJECTS = acu.obj  sysgen.obj  globals.obj  init.obj  \
           cpu_type.obj  read_exi.obj  ed_mos.obj  ed_mm.obj  ed_video.obj \
-          ed_cache.obj  ed_misc.obj  write.obj  cmos.obj  calc.obj \
+          ed_cache.obj  ed_misc.obj  newwrite.obj  cmos.obj  calc.obj \
           ed_fre.obj  ed_dev.obj  ed_ems.obj  ed_ser.obj  ed_serop.obj \
           ed_mouse.obj  ed_pipe.obj  ed_ramd.obj  ed_keyb.obj  ed_vna.obj \
           get_file.obj  term.obj  freemem.obj  draw_ed.obj  errors.obj \
@@ -32,7 +32,7 @@ OBJECTS = acu.obj  sysgen.obj  globals.obj  init.obj  \
 OBJLIST = acu +sysgen +globals +init +cpu_type +read_exi +ed_mos \
         +ed_mm +ed_video +ed_cache +ed_misc +cmos +calc +ed_fre +ed_dev \
         +ed_ems +ed_ser +ed_serop +ed_mouse +ed_pipe +ed_ramd +ed_keyb \
-        +ed_vna +get_file +write +term +freemem +draw_ed +errors +ranges \
+        +ed_vna +get_file +newwrite +term +freemem +draw_ed +errors +ranges \
         +shell +status
 
 #  Cannot build acu.mnu or acu-help.hlp due to missing
@@ -58,7 +58,7 @@ acu.exe : $(OBJECTS)
 globals.obj : globals.c  acu.h
 init.obj : init.c acu.h
 read_exi.obj : read_exi.c acu.h
-write.obj : write.c acu.h
+newwrite.obj : newwrite.c acu.h
 ed_ser.obj : ed_ser.c acu.h
 ed_serop.obj : ed_serop.c acu.h
 ed_vna.obj : ed_vna.c acu.h

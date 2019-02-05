@@ -276,7 +276,7 @@ Initialize(int argc, char **argv)
     vtype = 0;                      /* Default NO VTYPE */
     maximize_vtype = 0;             /* Default NO 'F' on VTYPE */
     max_tasks = 1;                  /* Default to 1 task in system */
-    strcpy(system_path, "C:\\MOS410");  /* Location of system files */
+    strcpy(system_path, "C:\\PCMOS");  /* Location of system files */
 	base_SMP = 16;
 	add_SMP = 0;
     total_SMP = 16;

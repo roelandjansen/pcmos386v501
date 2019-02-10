@@ -1,10 +1,7 @@
-REV=`dosemu -v | grep Revision | cut -d " " -f 2`
-if [ -z "$REV" ]; then
-    echo "Your dosemu is too old"
-    exit 1
-fi
-if [ $REV -lt 3684 ]; then
-    echo "Your dosemu is too old"
+#!/bin/sh -eu
+REV="$(dosemu --version | grep Revision | cut -d " " -f 2)"
+if [ -z "$REV" ] || [ "$REV" -lt 3684 ]; then
+    echo "At least dosemu2 revision 3684 is required (see dosemu --version)."
     exit 1
 fi
 

@@ -122,7 +122,7 @@
 
 ALL:    adddev.com  addtask.com  dirmap.com  alias.com  class.com  debug.com \
         dirmap.com  diskcopy.com  diskid.com  filemode.com  \
-        format.com  hdsetup.com  keymap.com  monitor.com serinfo.com \
+        format.com  keymap.com  monitor.com serinfo.com \
         more.com mos.com  mosadm.com  mosdd7f.sys  moxcptsk.com  msys.com  \
         netname.com  print.com  remdev.com  remtask.com  search.com \
         setmouse.com  spool.com  verify.exe  _286n.sys  _386.sys  _all.sys \
@@ -209,7 +209,7 @@ filter.com:     filter.asm page.inc
 format.com:     format.asm page.inc options.inc mboot.pub dskstruc.inc \
                 mboot.inc macros.inc fmcommon.inc
 
-hdsetup.com:    hdsetup.asm page.inc mbrdef.inc mbr.inc
+;hdsetup.com:    hdsetup.asm page.inc mbrdef.inc mbr.inc
 
 keymap.com:     keymap.asm page.inc
 

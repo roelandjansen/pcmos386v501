@@ -422,7 +422,8 @@ smp2dev dw	0			; smp #2 device drivers size
 
 wordten dw	10
 
-enbedded db	'X0X0X0X0X0'
+include	serial.inc			; generated serial number file
+;enbedded db	'X0X0X0X0X0'
 
 msgheap  label	byte			;021588
 msgheap1 db	5 dup (' '), 'K SMP #1 allocated; $ '  ;021588 ;@@xlat
@@ -6705,4 +6706,3 @@ endif
 initseg ends
 	end
 
-

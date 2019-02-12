@@ -10,6 +10,10 @@ mkdir %DIST%
 set INCLUDE=..\..\..\include;..\include
 set LIB=..\..\..\lib;..\libs
 
+echo Generating Serial Number
+make -f makeser.mak all
+echo Creating registration script
+
 echo Building Kernel
 make -f kernel.mak $$eval.sys
 ren $$EVAL.SYS $$MOS.SYS

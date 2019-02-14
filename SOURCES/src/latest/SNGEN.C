@@ -10,7 +10,6 @@ int main()
 	char buffer[11];
 	char tmpbuf[6];
 	int count=0;
-	int counts=0;
 	FILE *serfil=NULL;
 	FILE *regfil=NULL;
 
@@ -23,13 +22,14 @@ int main()
 	/* Everybody gets 25 user licenses now */
 	/* Followed by Version Number          */
 	strcpy(buffer, "25502"); 
+	strcpy(tmpbuf, "00000");
 
 	/* Generate random serial number for   */
 	/* last 5 digits.  We don't care if    */
 	/* duplicates exist in the world, we   */
 	/* aren't charging for this stuff!     */
-	time(&tseed);
-	srand((int) tseed);
+	(void) time(&tseed);
+	srand((unsigned int) tseed);
 
 	rand_num=rand();
 
@@ -45,7 +45,7 @@ int main()
 
 	fprintf(serfil, "enbedded\tdb\t'%s'\n", buffer);
 
-	fclose(serfil);
+	(void) fclose(serfil);
 
 	/*  Create registration script        */
 
@@ -58,7 +58,7 @@ int main()
 
 	fprintf(regfil, "snreg.com /I %s 1 > c:\\distro\\regme.bat\n", buffer);
 
-	fclose(regfil);
+	(void) fclose(regfil);
 
 	return 0;
 }

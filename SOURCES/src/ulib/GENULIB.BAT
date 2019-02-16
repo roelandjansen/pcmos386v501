@@ -1,2 +1,2 @@
-make -fulib -Dcdir=c:\sources\src\cutils -Dccomp=%1
+make -fulib -Dcdir=..\cutils -Dccomp=%1
 

@@ -1,0 +1,753 @@
+                         PC-MOS 5.02 README File
+
+IMPROVEMENTS INCLUDED IN THIS RELEASE
+
+The following improvements have been incorporated into PC-MOS 5.02:
+
+1. Fix for the August 1, 2012 date bug.
+
+2. Removal of dummy serial number.  Serial numbers are automatically
+   generated as part of the build process.  A script is provided
+   to register the software.
+
+3. Code automatically builds a 25 user version of PC-MOS.
+
+4. Fixes from previous versions of UPDAT501.SYS have been incorproated
+   directly into the code.  Adding this driver is no longer required.
+   If it is added, it may hang MOS.
+
+5. Various code and build related fixes.
+
+	Contributors to PC-MOS 5.02:
+
+	Roeland Jansen 		(roelandjansen)
+	James T. Sprinkle 	(the-grue)
+	Andrew Bird 		(andrewbird)
+	Stas Sergeev 		(stsp)
+	Darren L. LaChausse 	(dlachausse)
+	Andreas Gnau 		(Rondom)
+	sub205
+	galazwoj
+
+			PC-MOS 5.01 README File
+
+This file contains additional information that was not included in the user
+documentation at the time of printing:
+
+The following improvements were incorporated into PC-MOS 5.01:
+
+1. PC-MOS 5.01 includes support for DOS large volumes (disk partitions of
+   greater than 32MB made by DOS 5.X).
+
+2. Improved AUTOINSTALL and HDSETUP programs.
+
+3. Improved and easier to use IMPORT and EXPORT programs for backing up and
+   restoring your data.
+
+4. Improved $SERIAL.SYS serial communications driver.  Efficiency of serial
+   communications has been improved, plus input and output FIFO support for
+   16550A UARTs has been added.
+
+5. New SERINFO.COM utility added that provides information about the serial
+   communication ports that are in use on your system.
+
+6. Enhanced support for hard disks that require DMA buffering.
+
+7. Improved overall system throughput by incorporating a "disk busy task
+   switching" feature which allows other tasks on the system to receive their
+   share of processing time when another task is reading or writing to disk. 
+
+8. Improved EMS driver that allows loading the EMS page frame outside of the
+   normal FREEMEM area on certain systems.
+
+9. Improved MOS ROUTE utility command that displays any printer redirection
+   currently set and active on the system.  Type MOS ROUTE and press ENTER.
+
+
+DOS LARGE VOLUME SUPPORT
+
+PC-MOS 5.01 includes support for DOS large volumes (disk partitions of greater
+than 32MB made by DOS 5.X).  This gives PC-MOS compatibility with the latest
+version of DOS in dual-boot MOS and DOS installations.
+
+
+IMPROVED AUTOINSTALL AND HDSETUP PROGRAMS
+
+The AUTOINSTALL program that is used for automatic installation of PC-MOS on
+your system has been improved and expanded to handle some new installation
+situations.  The HDSETUP program that is used to partition your hard disk has
+also been improved.  It can now create DOS large volumes, has a new menuing
+system plus on-line help, and is easier to use.
+
+     IMPORTANT: The new program HDSETUP.EXE has replaced HDSETUP.COM.
+     You should manually delete HDSETUP.COM if you are upgrading from
+     a previous release.  If you don't, the new program will not run
+     since the .COM file will be called and run before the .EXE file.
+
+
+NEW IMPORT AND EXPORT PROGRAMS
+
+Upgraded and improved IMPORT.EXE and EXPORT.EXE programs are included to
+replace the old IMPORT.COM and EXPORT.COM programs.  The new programs are more
+flexible and easier to use.  For an on-screen review of the new command line
+syntax enter IMPORT /? or EXPORT /? at the system prompt.
+
+An easy to use Query Mode is also available by entering IMPORT /q or EXPORT /q.
+This is an interactive mode that asks users a series of questions about the
+operation they want to perform - and then runs the requested IMPORT or EXPORT
+operation without the need for entering any command line operands.
+
+     IMPORTANT: If you are upgrading from PC-MOS version 4.10 or earlier,
+     your old IMPORT and EXPORT programs will not get overwritten during
+     installation, since their file names have changed.
+
+     New programs EXPORT.EXE and IMPORT.EXE have replaced EXPORT.COM and
+     IMPORT.COM.  You should manually delete the files with the .COM
+     extension!  If you don't, the new programs will not run since the
+     .COM files will be called and run before the .EXE files.
+
+     WARNING:  Don't perform any backup operation with multiple tasks
+     active on the system.  Corruption of backup data is possible if files
+     exported are currently open by another application.  For safety, exit
+     all applications and enter the REMTASK ALL command from the host
+     partition (task 0) before running EXPORT or any other backup utility
+     compatible with PC-MOS.
+
+The EXPORT program now contains a new command line operand.  It also contains
+corrections for appending an export to an existing EXPORT diskette set and for
+importing exported files that were larger than a single backup diskette.
+
+New /F Operand:
+ 
+A new /f operand is available that selects an alternate behavior for the /s
+copy all subdirectories operand when specific wildcards are used, as follows:
+
+     EXPORT C:\*.* A: /S
+
+The above command will export all files in the root and all files in all
+subdirectories.
+
+     EXPORT C:\SALES\*.* A: /S
+
+The above command will export all files within C:\SALES (presuming that SALES
+is a directory rather than a file) and all files in all child directories.
+
+     EXPORT C:\SALES\M*.* A: /S
+
+The above command will export all files within the C:\SALES directory that
+start with the letter "m".  It will also find every subdirectory within
+C:\SALES whose name starts with an "m" and then export all files within those
+subdirectories and their child directories.
+
+     EXPORT C:\SALES\M*.* A: /S /F
+
+The above command will export all files within the C:\SALES directory that
+start with the letter "m".  It will also find every subdirectory within
+C:\SALES and then export only those files within those subdirectories and their
+child directories that start with the letter "m".
+
+     NOTE:  The /f switch cannot be used without the /s switch.  Also,
+     the /f switch has no effect if exporting all files from all
+     subdirectories using a *.* wildcard specification (the default)
+     since there is not at least one character in the wildcard
+     specification to use to search for matching files or directories.
+     Therefore, all files in all subdirectories will be exported.
+
+     NOTE:  When using specific wildcards (that include at least one
+     character, e.g. B*.*) with /S or /S/F, only the files that match
+     the specified character(s) will be exported from the subdirectory
+     that the export is started from.  For example, EXPORT C:\B*.* A: /S
+     will export only those files in the root directory of drive C that
+     start with the letter B.  The files exported from child directories
+     behave as explained above.
+
+/A APPEND Operand:
+
+The EXPORT append operation has been corrected to properly identify the last
+diskette of an existing backup set.  If an attempt is made to start an append
+operation with a diskette other than the last diskette of an existing backup
+set, an error message will be displayed.  You will have to start the EXPORT
+append operation over again with the correct diskette in the drive.
+
+The first diskette used in an append operation (the last diskette of the
+current backup set) will not be cleared of existing data, but appended to.  Any
+subsequent diskettes used will be cleared of any existing data and overwritten
+with the new EXPORT data.
+
+/D OPERAND, Specified Date:
+
+The User Guide says that the /D operand selects files for export with dates
+that come after the specified date.  That is not correct.  Files with dates
+that match or come after the specified date will be selected for export.
+
+EXPORT Files that Span Multiple Diskettes:
+
+A problem has been reported in which an individual exported file that was
+larger than one backup diskette could sometimes not be properly restored with
+the IMPORT program.  This has been corrected in the new version of EXPORT.
+
+
+IMPROVED $SERIAL.SYS DRIVER
+
+Communications speed through standard serial ports has been improved by making
+the $SERIAL.SYS driver more efficient.  Also, input and output FIFO support for
+16550A UARTs has been added.  This provides an additional increase in serial
+transmission rates.  Two new operands (IF= and OF=) have been added to the end
+of the $SERIAL.SYS command statement to provide this support, as follows:
+
+     DEVICE={d:\path\}$SERIAL.SYS  /AD=nnnn,IB=nnnnn,
+     OB=nnnnn,HS={N,D,X,P,R},IN=n,IF=nn,OF=nn/...
+
+where:
+
+     IF=nn is the Input FIFO buffer size in bytes. Defaults to 0 - disabled.
+     (Can ONLY be used on serial ports using a 16550A UART. For such ports,
+     set to 14.)
+
+     OF=nn is the Output FIFO buffer size in bytes. Defaults to 0 - disabled.
+     (Can ONLY be used on serial ports using a 16550A UART. For such ports,
+     set to 16.)
+
+
+NEW SERINFO UTILITY PROGRAM
+
+This program can be used to see what serial communication ports are in use on
+your system and what optional parameters are set for each port.  To run the
+utility, enter the following command at the system prompt:
+
+     SERINFO
+
+
+ENHANCED HARD DISK DMA BUFFERING SUPPORT
+
+Hard disk DMA buffering support is provided with the PC-MOS MEMDEV= statement. 
+This statement is used to set the correct memory management driver for the
+processor in your computer and also to set a DMA buffer size if required for
+your hard disk.  (See the Configuration chapter of your User Guide for more
+information.)
+
+
+DISK BUSY TASK SWITCHING
+
+A "disk-busy task-switching" feature has been added to PC-MOS.  This
+effectively makes disk access an interruptable task.  This improves overall
+system throughput (the elapsed real time to complete all tasks) by allowing
+other tasks on the system to continue to receive their share of processing time
+when another task is reading or writing to disk.  This feature is ON by
+default.
+
+It is reasonable to expect that disk reads and writes will take longer with
+this feature on and other tasks active on the system since the other tasks get
+time slices, each of which must be completed before resuming an interrupted
+disk operation.
+
+The MOSADM TMFACTOR command is very significant in this case.  A larger
+TMFACTOR means shorter time slices, therefore shorter interruptions of disk
+operations, therefore faster disk I/O.  So it is important to use a reasonably
+large TMFACTOR to maximize disk performance, but not so large as to cause
+system throughput to suffer.  (The default TMFACTOR setting is 1.  Values in
+the range of 1 to 20 should be best in most cases.)  Keep in mind that disk
+performance and total system throughput are inversely proportional, so choose
+your settings to best suit your particular needs.
+
+If it is not desired, this feature can be turned OFF by including the following
+statement in your CONFIG.SYS file:
+
+     DISKSW=N
+
+This will return disk access to the non-interruptable state, i.e. all disk
+access will be completed before any other tasks receive their share of
+processing time.
+
+
+IMPROVED EMS DRIVER
+
+The EMS driver in PC-MOS 5.01 allows you to place the 64K EMS page frame at
+A0000 to B0000 Hex under certain conditions.  (This moves the EMS page frame
+out of the normal FREEMEM area providing a larger contiguous FREEMEM area, and
+therefore, possible larger tasks sizes.)
+
+To use the A0000 to B0000 page frame for EMS, your system meet the following
+two conditions:
+
+  1. System video must be MONOCHROME, HERCULES or CGA.  You can not have EGA or
+     VGA and use this option.
+
+  2. You can not use the VTYPE F "fill" option.  For example, if your system
+     has a Hercules mono graphics video adapter you can only use VTYPE=5, not
+     VTYPE=5F.
+
+If your configuration meets the above conditions, and you locate the EMS page
+frame at address A0000 Hex, the following also applies:
+
+  1. You will be allowed to add a task whose task space goes above A0000 Hex
+     (640K).  If you do so, and then try to enter a MOSADM EMSLIMIT command in
+     that task to add EMS memory to the task, you will get the following error
+     message:
+
+          EMS Page address of A0000 conflicts with task space.
+          Either reduce task size or change EMS Page Address.
+
+     If you get this error message, and you want to keep the EMS page frame at
+     A0000, use the MOS RESIZE command to resize the task to the same size as
+     task 0.  Then re-enter the MOSADM EMSLIMIT command.
+
+     If you get this error message, and you don't want to reduce your task
+     size, specify a valid address other than A0000 for the EMS page frame.
+
+Under PC-MOS 5.01, the EMS driver will check the current FREEMEM setting and
+return an error if a conflict with the EMS page frame address and the FREEMEM
+area occurs.
+
+
+MOS ROUTE COMMAND DISPLAY
+
+The MOS utility command program MOS.COM now contains a revised MOS ROUTE LPTn
+command option.  Entering just MOS ROUTE at the system prompt, with no
+operands, will display a list of any printer redirection presently set and
+active on the system.
+
+
+ORIGINAL PC-MOS FILES NOW MUST BE INITIALIZED
+
+PC-MOS version 5.01 original diskettes no longer include an EVALUATION Disk for
+use in deciding whether PC-MOS meets your needs.  Instead, the SYSTEM Disk now
+contains the time-out evaluation files.  You may use the SYSTEM Disk and
+AUXILIARY Disks to evaluate PC-MOS.  The time-out files will stop running after
+60 minutes.  You may reboot as often as you like to start another 60 minute
+evaluation session.
+
+Once you decide to keep PC-MOS open the sealed envelope to obtain the
+activation key code and instructions for converting your time-out evaluation
+files into full non-restricted program files.
+
+
+AUTO-CONFIGURATION UTILITY
+
+An Auto-Configuration Utility is included to assist you in building a
+CONFIG.SYS file (or modifying an existing CONFIG.SYS) to set up your system
+configuration.   The ACU should be run after you finish running the Auto-
+Install program to install PC-MOS on your computer.  There are instructions on
+how to run the ACU as you exit the Install program and in the Installation &
+Quick Start manual.
+
+
+DOS 5.0 SETUP PROGRAM WARNING
+
+If you ever use the MS-DOS 5.0 SETUP program to apply a DOS 5.0 upgrade to DOS
+on a dual-boot DOS/MOS system, you must see the section called "Correcting for
+the MS-DOS 5.0 SETUP Program" in your PC-MOS Installation Manual!
+
+Since the MS-DOS 5.0 SETUP program does not fully "understand" the PC-MOS
+Secondary partition structure, it will incorrectly modify the master boot
+record partition table type code of the Secondary boot partition for PC-MOS. 
+It will also change the boot status of the partition from bootable to NOT
+bootable, since DOS only allows one bootable partition!  You therefore will no
+longer be able to boot your machine under PC-MOS.
+
+     WARNING: These incorrect partition entries made by DOS must be
+     corrected before the affected partition can be used with PC-MOS.
+     Any data written to the partition before making these corrections
+     will probably be corrupted!
+
+
+MOS DOSVER COMMAND & DOSVER= CONFIGURATION STATEMENT
+
+Some applications require that they "see" a certain version of DOS in order to
+run properly.
+
+The DOSVER= configuration statement and MOS DOSVER command are used to set the
+DOS version that PC-MOS reports to an application.  Since you are actually
+running PC-MOS, you are fooling the application into thinking that it is
+running under a certain version of DOS.  (This is similar in function to the
+DOS SETVER command.)
+
+The DOS version may be set to: 3.0, 3.1, 3.2, 3.3, 3.31, 4.0, or 5.0.
+
+The DOSVER= configuration statement is entered in your CONFIG.SYS file and has
+a global effect, i.e. it affects applications running in any task on the entire
+system.
+
+For example, if you want to set a DOS version 3.3 version on your system, you
+would enter the following statement in your CONFIG.SYS file:
+
+     DOSVER=3.3
+
+NOTE: If a device driver on your system requires a certain DOS version to be
+set, you must use the DOSVER= configuration statement to set it.  A task-
+specific MOS DOSVER command will not properly set the version for a device
+driver.
+
+The MOS DOSVER command is task specific and only affects the task in which the
+command is entered.  For example, if an application requires a DOS version of
+3.2, you should enter the following command in any task that will run that
+application:
+
+     MOS DOSVER 3.2
+
+Entering a MOS DOSVER command in a task overrides any global setting made by a
+DOSVER= statement in your CONFIG.SYS file.
+
+(This command is changed in PC-MOS 5.01 in that it now defaults to DOS 5.0! 
+Under PC-MOS 4.10 the default was 3.2!  Therefore, if you have any applications
+that worked properly under 4.10 and have a problem under 5.01, try setting your
+MOS DOSVER back to 3.2 or 3.3!)
+
+   * WARNING:  DO NOT USE DISK UTILITIES WITH A DOS VERSION SET! *
+
+     If you set the DOSVER to a 3.X version and run a disk utility to
+     undelete a file, defragment a disk, or other disk operation, you
+     will probably lose or corrupt data on the disk!  Only use such
+     utilities with no MOS DOSVER set.
+
+
+LASTDRIVE=N STATEMENT
+
+This configuration statement sets the maximum number of drives that you can
+access.  The default is one more than the number of logical drives that your
+computer actually has.  (Remember, one physical hard disk might be partitioned
+into several logical drives!)  For "N", enter a letter in the range from A to
+Z.  For example, to allow your system to access seven logical drives, you would
+enter the following statement in your CONFIG.SYS file:
+
+     LASTDRIVE=G
+
+Normally you don't need to worry about specifying a value.  However, if your
+system is accessing network drives, you may need to increase the number of
+logical drives you can access by specifying a LASTDRIVE statement.
+
+
+ESDI CONTROLLER COMPATIBILITY
+
+The $386.SYS memory management driver allows increased compatibility with ESDI
+hard disk controllers.
+
+Normally, the BIOS on ESDI controllers uses a 1K area of RAM addresses just
+below 640K (A0000 hex).  This can conflict with the memory addresses that MOS
+assigns to task space and, if so, could cause the system to lock up when
+booting.
+
+Therefore, during boot up, PC-MOS will automatically check to see if that 1K
+area of memory is being used.  If so, PC-MOS will allow the ESDI BIOS to be
+relocated to use RAM addresses in a lower memory area (an area normally used
+for device drivers).  This will keep the ESDI BIOS from conflicting with the
+RAM space used for tasks.
+
+NOTE:  To properly handle this process, the memory manager must reduce task
+space by 4K.  Also, you will NOT be able to use the "F" option with your VTYPE
+statement to increase the available task size.
+
+If you are positive that your controller is NOT using this 1K area, but another
+component is (particularly a "scratch RAM" setup option) you might be able to
+use the /b operand with the $386.SYS driver to prevent this relocation from
+happening.  If possible, this will recover your 4K of task space, and allow the
+use of the "F" option with VTYPE.  
+
+An example statement would be:
+
+     DEVICE=C:\PCMOS\$386.SYS /B
+
+
+INCORRECT VIRUS REPORT BY SCAN
+
+The anti-virus program SCAN by McAfee Associates incorrectly reports that the
+7thSon virus has infected the PC-MOS file MSYS.COM.  MSYS is the program that
+writes the MOS boot record on a disk.  Because of the differences between MSYS
+and the DOS SYS command, SCAN thinks it detects something wrong with MSYS.COM
+and incorrectly reports that it has the 7thSon virus.  We are working with
+McAfee Associates to resolve this situation.
+
+
+MOSADM RETRY {TASK} LPTx ON/OFF COMMAND
+
+Entering the MOSADM RETRY {task} LPTx ON command for a task will cause that
+task to continually retry sending a print job to the specified printer.  (This
+is similar to the DOS MODE LPTn,P command.)
+
+This is helpful should there be a problem with the printer device.  If there is
+no paper in the printer, for example, the job will print once paper is added
+and the printer put back on-line.  When printing directly from MOS this
+continuous retry on printer time-out errors is inherent.  However, when
+printing from an application that uses int 17 to send a print job, you must use
+this command to enable continuous retry on printer time-out errors. 
+
+Entering the MOSADM RETRY {task} LPTx OFF command for the task will turn the
+continuous retry feature OFF.  The default condition is OFF.
+
+
+ESCAPE SEQUENCE CORRECTIONS
+
+The section in the User Guide on "Escape Sequences for non-PC Type Terminals"
+is unclear in its explanation of "ESC F nn" used for sending shifted function
+key scan codes.  The following chart shows the results more clearly:
+
+     Keys:                     Sends scan code for:
+
+     ESC 1 - ESC 9             F1 - F9
+     ESC 0                     F10
+
+     ESC F 1 0                 not used
+
+     ESC F 1 1 - ESC F 1 9     SHIFT F1 - SHIFT F9
+     ESC F 2 0                 SHIFT F10
+
+     ESC F 2 1 - ESC F 2 9     CTRL F1 - CTRL F9
+     ESC F 3 0                 CTRL F10
+
+     ESC F 3 1 - ESC F 3 9     ALT F1 - ALT F9
+     ESC F 4 0                 ALT F10
+
+
+LANLINK 5X FILES REQUIRED FOR RUNNING PC-MOS REL 5.01
+
+The following versions of LANLink 5X files are required for running under
+PC-MOS rel 5.01:
+
+     LAN.COM  v2.1
+     SERVER.SYS  v2.1
+     LANSERVE.COM  v2.1  (see note)
+
+If you have previous versions of these files you will need to upgrade your
+LANLink 5X software to run under PC-MOS rel 5.01.
+
+NOTE:  To work properly with PC-MOS 5.01, LANLink 5X and LANLink LapTop must
+have the following patches applied:
+
+          LL5M.PAT - This patch is REQUIRED for PC-MOS 5.01
+                     and LANLink 5X.  The patch is applied
+                     to LANSERVE.COM.
+
+          LL5MDEMO.PAT - This patch is REQUIRED for PC-MOS 5.01
+                     and LANLink 5X.  The patch is applied
+                     to LANSERVE.COM on the LANLink 5X DEMO Disk!
+
+          LL5XSAT.PAT - This patch is REQUIRED for PC-MOS 5.01
+                     and LANLink 5X.  The patch is applied to
+                     LANSAT.SYS.
+
+          LLLAP5M.PAT - This patch is REQUIRED for PC-MOS 5.01
+                     and LANLink LapTop.  The patch is applied
+                     to LANSERVE.COM.
+
+          LLLAPSAT.PAT -  This patch is REQUIRED for PC-MOS 5.01
+                     and LANLink LapTop.  The patch is applied
+                     to LANSAT.SYS.
+
+     The patch files themselves are ASCII text files that contain both
+     the patch and the instructions on how to apply the patch.  Use the
+     TYPE command to display the contents of the patch file on the screen
+     or the COPY command to send it to the printer.  Then follow the
+     instructions to apply the patch.
+
+
+EMULINK 3.1 PATCH & NEW DRIVER
+
+The EmuLink terminal device driver ELTERM.SYS now contains a correction for
+printing at the terminal using the MOS ROUTE LPTn TO TERM command.  (When
+printing from an application that caused the screen to scroll during the print,
+extra characters would be sent to the printer.)  Also, this driver makes sure
+that caps lock, num lock, and scroll lock work correctly at the EmuLink
+terminal.  In order for this second correction to work properly, the patch
+E31_P2.PAT must be manually applied to EmuLink 3.1.  Instructions on how to
+apply the patch are in the patch file itself.  Use the TYPE command to display
+the contents of the patch file on the screen.
+
+
+EMULINK 4.0 REQUIREMENTS & NEW DRIVERS
+
+The EmuLink terminal device drivers ELTERM.SYS and HGTERM.SYS now contain a
+correction for printing at the terminal using the MOS ROUTE LPTn TO TERM
+command.  (When printing from an application that caused the screen to scroll
+during the print, extra characters would be sent to the printer.)  Also, these
+drivers make sure that caps lock, num lock, and scroll lock work correctly at
+the EmuLink terminal.  
+
+The $SERIAL.SYS, ELTERM.SYS, and HGTERM.SYS drivers provided with PC-MOS 5.01
+are required for EMULINK 4.0.
+
+
+IMPORTANT NOTE FOR NOVELL NETWARE INTERFACE USERS
+
+You MUST have version 2.31 or above of PC-MOS GATEWAY for Novell's Netware to
+run properly under PC-MOS rel 5.01 and above.
+
+If you have a previous version of PC-MOS GATEWAY you will need to upgrade to
+run under PC-MOS rel 5.01 and above.  The current version of GATEWAY is 2.4.
+
+
+DCA IRMA/2 USERS
+
+Be sure to read the file IRMA.ZIP for information on using IRMA in the PC-MOS
+environment.  This file is available for downloading from The Software Link
+bulletin board at (404) 263-8772.
+
+
+FILTER.COM
+
+This is a new TSR program that will tell the application  that the file handle
+is remote, instead of local.  This will enhance compatibility with applications
+such as FRAMEWORK III LAN and LOTUS 123 v2.2.
+
+The program is run only once in each task that is running the affected
+application software.
+
+     Command format:  FILTER drive(s)   or   FILTER OFF
+
+     For example:     FILTER c,d,e,f
+
+You must supply at least one drive letter to capture, but could supply multiple
+drives separated by a comma.  Entering FILTER OFF removes FILTER from memory.
+
+
+INTEL INBOARD PC/386 USERS
+
+A new driver (MINBRDPC.SYS) and new speed control program (MISPEED.COM) are
+required for running under PC-MOS.  These replace the driver and speed control
+program supplied by INTEL for the INBOARD PC/386.  These programs, and
+instructions for using them, are available for downloading from The Software
+Link bulletin board at (404) 263-8772 under the filename INBRDPC.ZIP.
+
+
+MICROSOFT MOUSE.COM V7.00 USERS
+
+Microsoft's MOUSE.COM v7.00 is as old version of their mouse driver that will
+not work properly with PC-MOS without first applying a patch to the driver.
+
+The patch and instructions on how to apply it are available for downloading
+from The Software Link bulletin board at (404) 263-8772 under the filename
+MOUSE700.ZIP.
+
+The latest version of Microsoft's MOUSE.COM tested with PC-MOS is v8.1.  This
+version works properly without the patch.
+
+IMPORTANT:  The PC-MOS mouse driver $MOUSE.SYS must be used in place of any
+mouse driver supplied with your mouse.  The $MOUSE.SYS driver only works with
+100% MicroSoft-compatible mice.  Not all mice are 100% MicroSoft-compatible.
+
+
+CUSTOMIZING MOS HELP
+
+Appendix C of the User Guide contains instructions for customizing the PC-MOS
+on-line help messages by modifying the HELP.SRC file.  This is not normally
+necessary.  However, if you want to do so, you can obtain the HELP.SRC and
+HELPGEN.EXE files from The Software Link Bulletin Board at (404) 263-8772.  Or,
+if you want, you can build your own topic/help message file from scratch by
+creating your own HELP.SRC ascii text file, following the manual instructions
+on how to format and edit that file, and then run HELPGEN.EXE.
+
+
+PATCHID.COM PROGRAM
+
+Entering PATCHID and pressing <ENTER> at the system prompt will generate a
+screen report that tells you what patch level of the PC-MOS kernel ($$MOS.SYS)
+you are currently running.  (The command must be entered at the prompt of the
+drive that contains your PC-MOS system files.)
+
+The report will also tell you what patches, by number, have been applied to
+your PC-MOS kernel.  This information will assist our Technical Support
+department in troubleshooting your installation.
+
+
+NEW UNITED KINGDOM KEYBOARD DRIVERS
+
+Two new keyboard drivers have been provided for use with United Kingdom DOS 3.X
+and DOS 4.X keyboards.  The drivers are $KBUK3.SYS and $KBUK4.SYS respectively. 
+These new drivers replace the old $KBUK.SYS driver.  Read the section on
+foreign keyboard drivers in your User Guide for information on using these
+drivers.
+
+
+FOXPRO 2.0 COMPATIBILITY
+
+FoxPro v2.0 requires version 3.3 of DOS to function properly.  Therefore, the
+PC-MOS command MOS DOSVER 3.3 must be entered in any task that will run FoxPro.
+Also, a program called SFT.COM must be run BEFORE you try to install FOXPRO on
+your system.  SFT.COM is a TSR program that allows FOXPRO's install program to
+"see" the setting it requires for FILES= so that it will function properly.
+
+
+ARNET SMARTPORT SERIAL PORT BOARD DRIVER
+
+The device driver $ARNET.SYS is provided for using the "Smartport" intelligent
+multiple serial port board by Arnet Corporation.
+
+This driver presently supports only one Smartport board installed in a computer
+running PC-MOS.  To date, only the "SmartPort-8" and "SmartPort Plus-16" boards
+have been tested.
+
+PC-MOS version 4.10 or above is required.  The memory management driver
+$386.SYS on a 386-based or 486-based system is required for using the Smartport
+boards.
+
+HARDWARE - Board Switch Settings:
+
+Switch S1 - select an I/O address that does not conflict with any other
+hardware components in your system, such as our VNA hardware.
+
+Switch S2 - for proper operation with PC-MOS, you MUST select a memory location
+for the board that is ABOVE the 1 Megabyte boundary (100000H), i.e. make sure
+the left most digit of the six digit hex address is 1 or above.  We suggest
+using and address above F00000H.
+
+Switch 3 - set all switch positions to OFF - IRQ not used!
+
+Switch 4 - set all switch positions to OFF - 64K address block, location set by
+switch S2.
+
+SOFTWARE - Driver Memory Requirements:
+
+The device driver $ARNET.SYS requires 8K of memory in the normal PC-MOS FREEMEM
+area from C0000 hex to F0000 hex.  Load the driver in your CONFIG.SYS file with
+a DEVICE= statement, for example:
+
+     DEVICE= C:\PCMOS\$ARNET.SYS C8000
+
+NOTE:  Make sure you set your FREEMEM statement(s) to exclude the 8K used by
+the $ARNET.SYS driver.  In this example, the board would use from C8000 to
+CA000 hex.  Therefore, your FREEMEM statement should NOT include those
+addresses.
+
+IMPORTANT:  There are four companion files that are required by the $ARNET.SYS
+driver.  They are:  BOX.BIN, BOX2.BIN, PATCH.BIN and PATCH2.BIN.  These files
+MUST reside in the same directory as the $ARNET.SYS driver.  This would
+normally be the same directory that the rest of your PC-MOS files are in.
+
+
+DISK MANAGER - BY ONTRACK COMPUTER SYSTEMS
+
+The Installation and Quick Start manual states that if your hard drive has more
+than 1024 cylinders and sector translation is not supported by the drives BIOS,
+you should use Disk Manager to partition your hard disk.
+
+Since PC-MOS 5.01 is compatible with DOS 5.0, you must use a version of Disk
+Manager that is compatible with DOS 5.0.  According to OnTrack technical
+support, version 4.21 or above of Disk Manager (presently through versions 5.0
+and 5.1) are DOS 5.0 compatible.  OnTrack technical support also states that
+versions 4.0 to 4.20 can support DOS 5.0 disk partitioning structures if loaded
+with the /4 parameter, e.g. type DM /4 and press Enter to load Disk Manager. 
+This parameter tells Disk Manager to use DOS 4.0 and above partitioning rules.
+
+
+MOS SYSTEM MONITOR ENHANCEMENT
+
+The MOS System Monitor (MONITOR.COM) has been updated with a new /U option.
+This option is only available the first time you load the program during each
+session on your computer.  Entering MONITOR /U will load the program and
+immediately display the main menu, as opposed to having to press CTRL - SPACE
+to bring up the menu.
+
+
+REVISED $386.SYS MEMORY MANAGEMENT DRIVER
+
+The $386.SYS memory management driver has been revised to compensate for a
+known problem in some of the early IBM 386SLC microprocessors used in some IBM
+PS/2 computers.
+
+
+NEW UNTERM.SYS DRIVER
+
+The UNTERM.SYS driver for Video Network Adapter Plus (VNA Plus) and Video
+Graphic Network Adapter Plus (VGNA Plus) hardware has been revised to fix a
+problem with printing through the parallel port on workstation Interface Units
+and random workstation lock-ups.
+                                                     

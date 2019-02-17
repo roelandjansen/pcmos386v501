@@ -27,7 +27,7 @@ make -f makeutil.mak all
 rem Doing this outside makefile in case
 rem user doesn't have Turbo Pascal
 echo Attempting to build HELP.EXE
-echo Requires Turbo Pascal 
+echo Requires Turbo Pascal
 tpc help
 
 echo Attempting to generate HELP

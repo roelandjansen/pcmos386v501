@@ -1,11 +1,15 @@
 echo off
 cls
 echo Setting up environment
+envsize 4096
 path=%PATH%;c:\bin
 set TMP=C:\TMP
 mkdir %TMP%
 set DIST=C:\DISTRO
 mkdir %DIST%
+set CCOMPL=%1
+set BDIR=%2
+set BORBIN=%3
 
 set INCLUDE=..\..\include;include
 set LIB=..\..\lib;libs
@@ -18,8 +22,6 @@ rem in the repo and the HELP.EXE which
 rem requires Turbo Pascal to rebuild
 copy latest\sidecar\*.* c:\distro
 
-pause
-
 echo Building Base Operating System
 
 rem Build serial, kernel, utilities, and drivers
@@ -27,43 +29,46 @@ cd latest
 bosmake.bat
 cd ..
 
-pause
-
 rem Build ACU
 cd acu
 makeacu.bat
 cd ..
-
-pause
 
 rem Build unterm terminal driver
 cd unterm
 makeutrm.bat
 cd ..
 
-pause
-
 rem Build import program
 cd import
 makeimp.bat
 cd ..
 
-pause
-
+set PATH=%BORBIN%;C:\BIN;C:\PCMOS
 rem Build ULIB library
 cd ulib
-genulib.bat %1
+genulib.bat %CCOMPL%
 cd ..
-
-pause
 
 rem Build cutils
 cd cutils
-makcutil.bat %2
+
+make -f cutils.mak -Dbdir=%BDIR%
+
+echo Distributing HDSETUP.EXE and required files
+copy HDSETUP.EXE %DIST%
+copy HDSETUP.MSG %DIST%
+
+echo Distributing INSTALL.EXE and required files
+copy INSTALL.EXE %DIST%
+copy INSTALL.MSG %DIST%
+
+echo Distributing EXPORT.EXE
+copy EXPORT.EXE %DIST%
+
 cd ..
 
-pause
-
+path=c:\bin;c:\pcmos
 rem Begin Distribution
 cd c:\distro
 
@@ -101,12 +106,12 @@ del acu*.*
 
 mkdir mosfiles
 copy *.* mosfiles
-del *.*
+del *.* /y
 
 echo Making auxfiles.exe
 cd auxfiles
 pkzip ..\auxfiles.zip *.*
-del *.* 
+del *.* /y
 cd ..
 rmdir auxfiles
 zip2exe auxfiles.zip
@@ -115,7 +120,7 @@ del auxfiles.zip
 echo Making mosfiles.exe
 cd mosfiles
 pkzip ..\mosfiles.zip *.*
-del *.*
+del *.* /y
 cd ..
 rmdir mosfiles
 zip2exe mosfiles.zip

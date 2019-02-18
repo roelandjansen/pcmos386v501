@@ -1,6 +1,6 @@
 #======================================================================
 #
-#	makefile for:	export.exe, hdsetup.exe, and install.exe
+#       makefile for:   export.exe, hdsetup.exe, and install.exe
 #
 #======================================================================
 #
@@ -14,7 +14,7 @@
 # -Dudir=..\ulib\    (substitute your ulib directory for 'd:\ulib\')
 # -Dmdir=..\latest\  (substitute your MOS source directory)
 #
-# -Ddebug	(to produce a version of hdsetup.exe with debugging info)
+# -Ddebug       (to produce a version of hdsetup.exe with debugging info)
 #
 # required libraries:
 #
@@ -51,7 +51,7 @@ export.exe : export.obj expasm.obj
 
 export.obj : export.c ulib.h asmtypes.h
   bcc -c $(bcc_dbg_option) $*.c
-  
+
 expasm.obj : expasm.asm
   masm expasm;
 
@@ -59,7 +59,7 @@ hdsetup.exe  : hdsetup.obj
   tlink $(tl_dbg_option) $(bdir)c0s hdsetup,hdsetup,,$(bdir)cs $(udir)ulib
 
 hdsetup.obj  : hdsetup.c vidattr.h asmtypes.h dskstruc.h ulib.h \
-	       mbrbuf.inc summary.h
+               mbrbuf.inc summary.h
   bcc -c $(bcc_dbg_option) $*.c
 
 mbrbuf.inc : genmbr.exe
@@ -75,9 +75,9 @@ install.exe : install.obj insasm.obj
   tlink $(tl_dbg_option) $(bdir)c0s install insasm,install,,$(bdir)cs $(udir)ulib
 
 install.obj : install.c insasm.h vidattr.h asmtypes.h \
-	      dskstruc.h  ulib.h summary.h
+              dskstruc.h  ulib.h summary.h
   bcc -c $(bcc_dbg_option) $*.c
 
-insasm.obj : insasm.asm 
+insasm.obj : insasm.asm
   masm insasm;
 

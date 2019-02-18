@@ -1,0 +1,320 @@
+  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+
+                            HDSETUP HELP UTILITY
+
+  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+
+                       Section 1:  Using Function Keys
+
+                       Section 2:  Partition Types
+
+                       Section 3:  Creating Partitions
+
+                       Section 4:  Deleting (or Resizing) Partitions
+
+ If you are unfamiliar with disk partitioning programs, you should review all
+ the information in this file before using HDSETUP to partition your drive.
+
+ If you are more experienced, you may cursor to the appropriate section to find
+ the information that you need or the answer to your question.
+
+  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+
+                     Section 1:  USING FUNCTION KEYS
+
+  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+
+ Function keys are used to perform various operations with HDSETUP.
+
+ When HDSETUP is in a mode where a certain function key does not apply, the
+ associated operation is enclosed in parenthesis. For example, "F2 (Chg Drive)"
+ would display on a system with only one hard disk installed.
+
+ NOTE: The "Memory Data" and "Disk Data" status indicators show whether the
+ disk partition structure data is just changed in memory or actually changed on
+ (written to) the disk.  This allows the user to see that no changes are
+ physically made to the disk's partition structure until they exit HDSETUP and
+ answer "Y" to the "SAVE? Y/N" prompt.
+
+ F1 - brings up information on how to use HDSETUP, including what the function
+      keys and other editing keys do. You are viewing this file now.
+
+ F2 - when two hard drives exist, F2 will toggle between them.
+
+      If you have more than one physical hard disk in your computer, this
+      option lets you change to the next hard disk for defining its partition
+      structure. The "Drive 1 of 2" display will change to "Drive 2 of 2" and
+      vice versa.
+
+ F3 - adds a Primary partition.
+
+      Only one Primary partition can exist per physical hard drive. Therefore,
+      F3 will only be active (not shown in parenthesis) when no partitions
+      exist, i.e. one gap entry covering all of the cylinders on the drive will
+      be displayed.
+
+      NOTE: The Primary partition takes up one of four available slots in the
+      master boot record partition table.
+
+ F4 - adds an Extended partition.
+
+      This will only be active after there is a Primary partition, when there
+      are still available cylinders to make a new addition, and when the
+      highest drive letter in use has not reached "Z".
+
+      NOTE: Since Extended partition are allocated in a chain more can exist
+      than there are free slots for in the master boot record partition table.
+      All Extended partitions combined (up through drive letter "Z") only take
+      up one of four available slots in the master boot record partition table.
+
+      Since they are chained, all Extended partitions must be in a group in the
+      partition table, i.e. no other types of partitions can exist in between
+      any Extended partitions.
+
+ F5 - adds a Secondary partition.
+
+      This will only be active after there is a Primary partition, when there
+      are still available cylinders to make a new addition, when the highest
+      drive letter in use has not reached "Z", and when there is still a free
+      slot available within the master boot record partition table.
+
+      NOTE: Each Secondary partition takes up one of four available slots in
+      the master boot record partition table.
+
+      IMPORTANT: Do NOT use Secondary partitions in a PC-MOS only system. Use a
+      Primary partition and (if desired) one or more Extended partitions.
+      Secondary partitions should ONLY be used as the MOS boot partition on a
+      dual boot system running BOTH PC-MOS AND MS-DOS!
+
+ The following chart shows the typical disk partition structures for a PC-MOS
+ only system and dual boot PC-MOS/MS-DOS systems. It also shows the maximum
+ number of Extended partitions that could be created in each case:
+
+                                                   Dual Boot
+        Partition Type:        PC-MOS only:        MOS & DOS:
+
+           Primary                  1                   1
+
+           Secondary                0                   1
+
+           Extended                23 (max)            22 (max)
+
+ NOTE: All Extended partitions will be assigned drive letters alphabetically
+ BEFORE any Secondary partitions are assigned letters. This is required to
+ maintain compatibility with DOS.
+
+ F6 - toggles the boot status of the currently selected partition to Y
+      or N. This only applies to the Primary partition and any Secondary
+      partitions.
+
+      Only Primary and Secondary partitions can be bootable, not Extended
+      partitions. If there is more than one bootable partition, a number will
+      also appear after the "Y", e.g. "Y 1" or "Y 2". This indicates the boot
+      partition number. (NOTE: Due to the support of Extended partitions AND
+      Secondary partitions, there is not a 1:1 correspondence between the drive
+      letter and the boot partition number. That is why the number is assigned
+      and displayed for you.)
+
+      If you designate only one active bootable disk, MOS automatically boots
+      from that disk. If you designate more than one bootable disk, each time
+      you boot your computer a prompt appears asking which partition you want
+      to boot from. You must then make a selection, e.g. press 1, or 2, or 3,
+      etc. as indicated by the HDSETUP display. If an entry is not made, your
+      computer will not boot.
+
+ F7 - deletes the currently selected partition.
+
+      This option is only active when an existing partition is selected. (This
+      option must be used to delete any MOS Large partitions made by PC-MOS
+      4.10 or earlier, since they can't be edited. Note that MOS Large Primary
+      partitions can be converted using the F10 key conversion utility.)
+
+ F8 - not used.
+
+ F9 - deletes ALL partitions on the present hard drive!
+
+ F10 - converts MOS Large Primary partitions to DOS Large Primary partitions.
+
+      This utility will convert existing MOS Large Primary partitions (made by
+      PC-MOS 4.10 or earlier) into DOS Large Primary partitions so that they
+      can be used with PC-MOS 5.X, DOS 4.X and 5.X.
+
+      IMPORTANT: Only MOS Large Primary partitions can be converted to DOS
+      Large Primary partitions!
+
+      If any MOS Large Secondary partitions exist, they must be dealt with
+      first. Any data on them should be backed up and the partitions deleted.
+      Then DOS Large Extended partitions should be created to replace them, and
+      the data restored to these new partitions.
+
+      Once this is done, any existing MOS Large Primary partitions can be
+      converted to DOS Large Primary partitions with the F10 option.
+
+ ESC - exits to the operating system. You will be given the opportunity
+      to save your changes to disk. Answering "Y" to the "SAVE? Y/N" prompt
+      will cause HDSETUP to write the new disk partitioning structure to the
+      hard disk(s).
+
+
+
+
+  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+
+                         Section 2:  PARTITION TYPES
+
+  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+
+ HDSETUP is used to assign your available hard disk space to one or more
+ logical disks or "partitions".
+
+ HDSETUP can partition hard disks with 1024 or less cylinders. Very large hard
+ disks may have more than 1024 cylinders. (HDSETUP can only partition hard
+ drives with greater than 1024 cylinders if sector translation is supported by
+ the drive's BIOS.)
+
+ The following are the possible entries in the partition "Type" column:
+
+      SML-p  a small Primary partition  (small means 32MB or less)
+      SML-e  a small Extended partition
+      SML-s  a small Secondary partition
+
+      MLG-p  a MOS large Primary partition  (large is greater than 32MB)
+      MLG-s  a MOS large Secondary partition
+
+      DLG-p  a DOS large Primary partition
+      DLG-e  a DOS large Extended partition
+      DLG-s  a DOS large Secondary partition
+
+      OTH    a non-DOS/non-MOS partition (e.g. OS/2, UNIX, etc.)
+
+ NOTE: All versions of PC-MOS can create and read SML type partitions.
+ However, PC-MOS 5.X will only create and read DLG type partitions, not MLG
+ type partitions. (This was done to gain compatibility with DOS 4.X and 5.X 
+ large partition structures.)  PC-MOS 4.10 and below will NOT read these new
+ DLG type partitions. Therefore, users with PC-MOS 4.10 and earlier
+ installations with existing MLG type partitions must deal with them first. 
+ Any MOS Large Secondary partitions must be backed up, deleted with HDSETUP,
+ replaced with newly created DOS Large Extended partitions, and the data
+ restored.  Any MOS Large Primary partitions can be non-destructively converted
+ to DOS Large primary partitions by using the HDSETUP F10 - MLG to DLG
+ conversion utility.
+
+ IMPORTANT:
+
+      A Primary partition is required. It must be created before
+      any other type of partition can be added. Extended and
+      Secondary partitions can then be added.
+
+      In a PC-MOS only system do NOT use Secondary partitions. Use
+      a Primary partition and (if desired) one or more Extended
+      partitions.
+
+      Secondary partitions should ONLY be used on a dual boot
+      system running BOTH PC-MOS AND MS-DOS! A Secondary partition
+      is required in such a system to provide a bootable partition
+      for PC-MOS. The Primary partition (C:) in such a system must
+      be the DOS bootable partition.
+
+
+
+
+  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+
+                       Section 3:  CREATING PARTITIONS
+
+  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+
+ HDSETUP is used to assign your available hard disk space to one or more
+ logical disks or "partitions".
+
+ HDSETUP can partition hard disks with 1024 or less cylinders. Very large hard
+ disks may have more than 1024 cylinders. (HDSETUP can only partition hard
+ drives with greater than 1024 cylinders if sector translation is supported by
+ the drive's BIOS.)
+
+ The F3, F4 and F5 keys are used to create partitions on your hard disk.
+
+ You can enter values for the size of the partitions in either Megabytes or
+ Cylinders. Enter the size you want using the 0 through 9 keys. The backspace
+ key deletes one digit at a time to the left so you can make a new entry.
+
+ Use the up and down arrows to scroll through the partition list. Use the left
+ and right arrows to select whether you want to make your entry in the Megs or
+ Cylds column.
+
+ NOTE: When a value is entered in the Megs column, the largest amount of
+ cylinders is used which still satisfy the Megs value. Due to the fact that
+ Megs values must be rounded when the corresponding cylinders value actually
+ produces a fractional portion, the arithmetic applied to the Megs value may
+ seem incorrect at times. For example, if a 40 Megabyte partition is currently
+ selected, and a 42 Megabyte gap follows it, the largest possible size might be
+ reported as 83 Meg. This is unavoidable and a consistent treatment is made in
+ the rounding. The cylinder numbers will always be correct. 
+
+ Gaps in the cylinder allocation (if any) are displayed along with the actual
+ partition entries. You can't edit the size of a gap.
+
+ When a partition has a neighboring gap on at least one side, you can increase
+ its allocation. This will be indicated by the "Maximum size:" display line.
+ (If there are no neighboring gaps, the line will display the existing size of
+ the selected partition.)
+
+ If you increase a partition's size and it is surrounded by gaps on both sides,
+ a prompt will appear to ask if you want to add to the beginning of the
+ partition by pulling cylinders from the preceding gap, or to add to the end by
+ pulling cylinders from the following gap.
+
+ If surrounded on both sides and if the increase will use up all of both a
+ preceding and following gap, no prompt appears.
+
+ If surrounded on both sides and if the new larger amount would use up one of
+ the gaps and part of the other, the prompt will still appear. You must select
+ which gap you want to be used first. For example, when increasing a partition
+ by 100 cylinders, where it is preceded by an 80 cylinder gap and followed by a
+ 60 cylinder gap, if you answer with "b" to the "add to beginning/end? (b/n)"
+ prompt, all of the 80 cylinders of the preceding gap will be used and then 20
+ out of the 60 in the following gap will be used.
+
+
+
+
+  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+
+                Section 4:  DELETING (or RESIZING) PARTITIONS
+
+  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+
+ To delete a partition, select it and press the F7 key.  You can also delete a
+ partition by entering "0" in either the Megs or Cylds column for the
+ partition.
+
+ When you DELETE A PARTITION. ALL DATA ON THE PARTITION WILL BE DESTROYED!  A
+ verification prompt will appear asking you if you really intend to do that.
+ (The Primary partition can only be deleted when it is the only partition.)
+
+ IMPORTANT: Decreasing a partition's size (but not to 0) WILL DELETE ALL THE
+ DATA IN THAT PARTITION, just as if you had deleted the partition entirely!
+ Therefore, first backup any data you want to keep. Resized partitions MUST
+ BE REFORMATTED! You can then restore your data to the resized partition.
+
+ If you decrease a partition's size (but not to 0) you must tell HDSETUP what
+ to do with the free cylinders. A prompt will appear asking if you want the
+ subtraction to be done from the beginning or end of the partition. Answering
+ "b" will create a new preceding gap or enlarge a pre-existing one. Answering
+ "e" will do the same with a following gap.
+
+ The one exception to this is when the allocation for the Primary partition is
+ reduced. HDSETUP will always make the subtraction from the end, creating or
+ enlarging a following gap. (Having a gap before the Primary partition is not
+ allowed.)
+
+
+
+
+
+
+
+
+
+
+                                <end of file>                                                             

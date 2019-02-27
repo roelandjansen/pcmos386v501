@@ -68,6 +68,12 @@ copy EXPORT.EXE %DIST%
 
 cd ..
 
+rem Build CDLINK
+
+cd cdlink
+asmcdmos.bat
+cd ..
+
 path=c:\bin;c:\pcmos
 rem Begin Distribution
 cd c:\distro
@@ -138,4 +144,7 @@ echo Copying mosfiles.exe
 copy mosfiles.exe a:
 echo Copying auxfiles.exe
 copy auxfiles.exe a:
+echo Adding CDLINK
+mkdir a:\cdrom
+copy cdrom\*.* a:\cdrom
 echo Distribution complete

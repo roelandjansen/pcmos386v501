@@ -6,10 +6,12 @@ del c:\distro\*.* /y
 del c:\distro\base\*.* /y
 del c:\distro\mosfiles\*.* /y
 del c:\distro\auxfiles\*.* /y
+del c:\distro\cdrom\*.* /y
 
 rmdir c:\distro\base
 rmdir c:\distro\mosfiles
 rmdir c:\distro\auxfiles
+rmdir c:\distro\cdrom
 
 rmdir c:\distro
 

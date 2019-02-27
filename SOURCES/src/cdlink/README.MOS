@@ -1,0 +1,115 @@
+This file contains additional information about CD-Link that was not
+included in the user documentation at the time of printing.
+
+WARNING
+-------
+
+CD-Link release 1.00 had a different cache file format from subsequent
+releases.  Therefore if you are converting from 1.00 (or a beta version)
+be sure to delete your old cache file and reboot!
+
+CHANGES IN RELEASE 1.03
+-----------------------
+
+The following are new to this release:
+
+1. Fixed a problem with handling certain INT21 functions when more 
+   than one CD-ROM drive is installed.
+
+2. Addition of the CDSTAT utility (see below).
+
+THE CDSTAT UTILITY
+------------------
+
+CDSTAT.COM is a program that you run to display statistical information
+about CD-Link.  Simply type CDSTAT at the command prompt, and the
+following information is displayed:
+
+Short (cached) reads  - The total number of CD-ROM reads processed since 
+                        the last time the computer was booted, where
+                        the number of sectors requested was less than
+                        the value of the "L=" parameter (see below); this
+                        is regardless of whether the read was satisfied
+                        from the cache.
+
+Cache hits            - The number of read requests satisfied from the
+                        cache since the last boot.
+
+Cache index rewrites  - The number of times that a cache index record has
+                        been modified since the last boot.  Frequent index
+                        rewrites are an indication that performance can
+                        be improved by making the cache file bigger.
+
+Long (uncached) reads - The number of reads since the last boot where the
+                        number of sectors requested was greater than or 
+                        equal to the "L=" parameter.
+
+Cache file opens      - The number of times since the last boot that the
+                        cache file has been opened.  Normally, these opens
+                        are infrequent.
+
+Cache file errors     - The number of times since the last boot that an
+                        I/O error occurred while processing the cache 
+                        file.  A nonzero value here indicates a problem.
+
+Capacity (sectors)    - The number of 2K CD-ROM sectors that may be held
+                        in the cache file at any given time.
+
+Sectors cached        - The number of CD-ROM sectors currently stored in 
+                        the cache file.  Under normal use, this number
+                        will reach the capacity fairly quickly.
+
+"L=" PARAMETER
+--------------
+
+CD-Link now supports the "L=" command line parameter, whereby you may 
+supply a number from 2 to 65,535 which specifies the minimum number of 
+whole CD-ROM sectors in a single read request that will cause cacheing 
+to NOT occur.  
+
+The theory is that if there is a "long" read request for some large 
+number of contiguous sectors, then it may be better to always read 
+them directly from the CD-ROM as opposed to consuming large portions 
+of the cache file.  You use L= to specify this minimum number.  
+Default is 3.
+
+FREEMEM CONSIDERATIONS
+----------------------
+
+Be sure to FREEMEM around the memory address space occupied by your
+SCSI controller!  For example, if your SCSI card uses 16K of address
+space starting at C8000, then your PC-MOS config.sys parameter might
+be "FREEMEM=CC000,F0000" (assuming the given range is otherwise not
+occupied by ROM or other hardware devices).
+
+The following are the relevant CONFIG.SYS statements for a sample
+system using a Corel LS2000 SCSI controller set for memory address
+C8000 with a NEC CD-ROM drive (this is only an example; your system 
+will probably require different parameters):
+
+  MEMDEV=C:\PCMOS\$386.SYS
+  FREEMEM=CC000,F0000
+  CACHE=1024,2,10,2,A,B,C
+  SMPSIZE=64K
+  DEVICE=C:\PCMOS\UPDAT501.SYS
+  DEVICE=C:\CORELDRV\NEC_LS2.SYS /ID:0 /MEM:C800 /N:1 /D:MSCD001
+  DEVICE=C:\CDLINK.MOS C=C:\$CACHE$ D=MSCD001 K=2048 L=8
+
+IF YOUR CD-ROM CONTROLLER USES DMA
+----------------------------------
+
+Your best bet is to avoid DMA with PC-MOS.  However if this is not an
+option, do the following in your CONFIG.SYS file:
+
+1. Set up a "split SMP" by using a SMPSIZE statement of the form
+   "SMPSIZE=nnnK,nnnK", specifying enough memory in the second parameter
+   to contain the CD-ROM hardware driver and the CDLINK.MOS driver
+   (this requirement is usually less than 32K).
+
+2. Use "LDEVICE=" (not "DEVICE=") to load both the CD-ROM hardware driver
+   and CDLINK.MOS into the lower segment of the SMP.  In some cases this
+   may not be necessary with the hardware driver.
+
+3. Specify "L=500" (or any larger number, up to 65535) in the CDLINK.MOS 
+   command line.  This will ensure that no reads are performed directly 
+   into an application's task space.

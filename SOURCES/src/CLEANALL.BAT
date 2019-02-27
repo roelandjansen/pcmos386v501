@@ -41,4 +41,13 @@ del *.pss
 del *.ndx
 cd ..
 
+cd cdlink
+del *.sys
+del *.exe
+del *.com
+del *.obj
+del *.map
+del *.pub
+cd ..
+
 echo Build files cleaned

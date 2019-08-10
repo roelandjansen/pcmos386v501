@@ -57,6 +57,9 @@ extrn scbcursz:word	; mosheman usage
 extrn scbcurad:word	; mosheman usage
 extrn scbavsiz:word	; mosheman usage
 extrn scbdrivs:byte	; # active drive units
+extrn scbflops:byte	; # active floppy units
+extrn scbdevs:byte	; # active block devices
+extrn scbhddboot:abs	; start hdd from this number or more
 extrn scbnoswt:byte	; mos no switch flag
 extrn scbtskfg:byte	; task selection flags
 extrn scbdrvr:dword	; -> first device driver in list
@@ -243,4 +246,3 @@ extrn SCB4013:word	; 40:13 value after memdev is loaded
 extrn scbvdrflg:byte	; vidram reentrance control flag
 extrn scbdopflg:byte	; dopoll reentrance control flag
 extrn scbdosver:word	; default dos version
-

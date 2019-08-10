@@ -10,8 +10,8 @@ set INCLUDE=..\..\..\include;..\include
 set LIB=..\..\..\lib;..\libs
 
 REM ====== The Kernel =====
-cd kernel
-del $$mos.sys
+cd latest
+del $*.*
 
 REM make -f kernel.mak $$eval.sys
 REM ren $$eval.sys $$mos.sys
@@ -19,13 +19,12 @@ REM ren $$eval.sys $$mos.sys
 REM this was for internal R & D use only.
 make -f kernel.mak $$mos.sys
 
-cd ..
+rem cd ..
 REM =======================
 
-cd mos5src
+rem cd mos5src
 make -f makeutil.mak all
 rem make -f maketerm.mak all
-del $*.*
 ren __*.* $$*.*
 ren _*.sys $*.sys
 cd ..

@@ -3456,7 +3456,7 @@ notvna:
 ; partition #)
 
 	and	al,7fh			; set mos drive id
-	add	al,2			; start hard drives at c
+	add	al,scbhddboot		; start hard drives at c
 	push	es
 	push	ax
 	int	12h			; get memory size
@@ -4100,6 +4100,8 @@ no286a:
 	mov	[tcbcdbpc],0		; clear pointer to cdb
 	mov	[tcbndriv],0		; clear # of drives
 	mov	[scbdrivs],0		; clear any count of drives for re-init
+	mov	[scbflops],0		; clear any count of drives for re-init
+	mov	[scbdevs],0		; clear any count of drives for re-init
 	mov	[scbbdbpf],0		; clear pointer to 1st block device
 	mov	[scbbdbpl],0		; clear pointer to last block device
 	mov	[scbgfbpf],0		; clear any active gfbs

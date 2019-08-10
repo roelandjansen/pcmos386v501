@@ -1,4 +1,4 @@
-# This is the initial release of PC-MOS/386 v5.01; the latest released version. 
+# This is the home of PC-MOS/386; based off the last released commercial version (v5.01), development now continues under a GPLv3 license in the hope that it will be both an educational and useful project.
 
 This tree:
 

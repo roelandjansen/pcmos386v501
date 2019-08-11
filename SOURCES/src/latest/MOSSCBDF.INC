@@ -114,7 +114,7 @@ public scblastw1, scblastw2, scbrdriv, scbirqd0a, scbirqd0b, scbirqd0c
 public scbirqd0d, scbirqd0e, scbirqd0f, scbinit, scbirqbnk, SCBSAVE, scbcon417
 public scbkbrate, scbout60, scbin60, scbmconly, scbi15off, scbnorst
 public scbpost, SCB_COM_owner, SCB_COM_timeout, scbdrtcb, scbnoi5
-public scbvdrflg, scbdopflg, scbdosver
+public scbvdrflg, scbdopflg, scbdosver, scbflops, scbdevs, scbhddboot
 
 scbtcbpf	dw	0	;* pointer to first task control block
 scbtcbpl	dw	0	;* pointer to last tcb
@@ -482,6 +482,8 @@ scbreg32	db	0	; flag to indicate 32 register support, 386/486
 		dw	7500h
 		dw	0bc31h
 
-scbfill		db	31 dup(0)	; carve new variables from this allocated space
+scbflops	db	0	; # active floppy units
+scbhddboot	equ	2	; start hdd from c or above
+scbdevs		db	0	; # active block devices
+scbfill		db	29 dup(0)	; carve new variables from this allocated space
 scblen		equ	$-scb		;*
-

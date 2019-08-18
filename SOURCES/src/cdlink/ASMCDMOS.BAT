@@ -11,7 +11,7 @@ public cdlink
 masm cdlink.asm;
 link /m cdlink.obj;
 exe2bin cdlink.exe cdlink.sys
-pause
+
 del cdlink.obj
 del cdlink.exe
 del cdlink.pub
@@ -21,7 +21,7 @@ public cdstat
 masm cdstat.asm;
 link /m cdstat.obj;
 exe2bin cdstat.exe cdstat.com
-pause
+
 del cdstat.obj
 del cdstat.exe
 del cdstat.pub
@@ -30,7 +30,7 @@ echo Building ADMIN
 public admin
 masm admin.asm;
 link /m admin.obj;
-pause
+
 del admin.obj
 del admin.pub
 del admin.map

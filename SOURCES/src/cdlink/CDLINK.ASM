@@ -3539,7 +3539,9 @@ DemoCheck proc	near
 	mov	[wDemoDiff],ax
 	cmp	ax,32760		; 18.2*30*60
 DemoJump:				; nop this instruction if not demo
-	jae	DemoExpired
+	nop
+	nop
+;	jae	DemoExpired
 	clc
 DemoReturn:
 	pop	ax
@@ -3786,11 +3788,11 @@ mainseg	ends
 
 initseg	segment	para
 
-notice		db	13,10,'CD-Link v1.07 for '
+notice		db	13,10,'CD-Link v1.08 for '
 		if	DOSCODE
 		db	'DOS '
 		else
-		db	'PC-MOS(tm) '
+		db	'PC-MOS(tm) ',13,10,'$'
 		endif
 sSerial		db	' 30-MINUTE DEMO',13,10
 		db	'Copyright 1991-1993 Rod Roark',13,10

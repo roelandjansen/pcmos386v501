@@ -78,6 +78,14 @@ path=c:\bin;c:\pcmos
 rem Begin Distribution
 cd c:\distro
 
+rem Auto-Register this MOS and copy updated
+rem $$mos.sys from root of c:\
+
+regme.bat
+copy c:\$$mos.sys .
+del $$mos.org
+del regme.bat
+
 mkdir base
 copy $$mos.sys base
 copy $$shell.sys base

@@ -5,8 +5,8 @@
 ;--------------------------------------------------------------------;
 
 uCIStruc	struc			; cache index structure
-dCIVolHash	dd	?		; identifies the cd-rom volume
-dCISector	db	3 dup(?)	; cd-rom sector number
+dCIVolHash	dd	?		; identifies the CD-ROM volume
+dCISector	db	3 dup(?)	; CD-ROM sector number
 bCILocation	db	?		; entry number within this bucket
 uCIStruc	ends
 

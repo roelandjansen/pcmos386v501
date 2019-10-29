@@ -64,7 +64,7 @@ Sectors cached        - The number of CD-ROM sectors currently stored in
 
 CD-Link now supports the "L=" command line parameter, whereby you may 
 supply a number from 2 to 65,535 which specifies the minimum number of 
-whole CD-ROM sectors in a single read request that will cause cacheing 
+whole CD-ROM sectors in a single read request that will cause caching 
 to NOT occur.  
 
 The theory is that if there is a "long" read request for some large 

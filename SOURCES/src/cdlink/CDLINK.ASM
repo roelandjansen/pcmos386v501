@@ -13,14 +13,14 @@
 ;	    Edit out reporting of "." and ".." in a root directory.  ;
 ;	    Adjust for "." in a path name.			     ;
 ;   9/01/92 Do stack switch in Executor.  Correct "copyname" proc    ;
-;	    to truncate target file name.ext to 8.3 characters.	     ;
+;	    to truncate target filename.ext to 8.3 characters.	     ;
 ;   9/13/92 Add "stofcdname" function to format a name without	     ;
 ;	    expecting wildcards; fixes problem where change dir-     ;
 ;	    ectory did not work if first char of name is numeric.    ;
 ;   9/14/92 Correct "checkvol" proc to treat "don't know if media    ;
 ;	    has changed" same as "media has changed".  This fixes    ;
 ;	    a problem with the HITACHIA.SYS driver.		     ;
-;   9/15/92 Added "execint21" public dword to accommodate new ver-    ;
+;   9/15/92 Added "execint21" public dword to accommodate new ver-   ;
 ;	    sion of executor.  Issue a "media check" call after      ;
 ;	    any critical error, to clear the change line.  Fix	     ;
 ;	    critical error handler to correctly handle the situ-     ;
@@ -909,7 +909,7 @@ f11bad:
 	jmp	i21fcberr
 
 getfcbnm proc	near
-	lea	si,[bx+1]		; save fcb file name to sesame1
+	lea	si,[bx+1]		; save fcb file name to sWSName1
 	mov	di,offset sWSName1
 	mov	cx,11
 	push	ds

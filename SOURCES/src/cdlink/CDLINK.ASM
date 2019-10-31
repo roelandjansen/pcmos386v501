@@ -20,7 +20,7 @@
 ;   9/14/92 Correct "checkvol" proc to treat "don't know if media    ;
 ;	    has changed" same as "media has changed".  This fixes    ;
 ;	    a problem with the HITACHIA.SYS driver.		     ;
-;   9/15/92 Added "execint21" public dword to accomodate new ver-    ;
+;   9/15/92 Added "execint21" public dword to accommodate new ver-   ;
 ;	    sion of executor.  Issue a "media check" call after      ;
 ;	    any critical error, to clear the change line.  Fix	     ;
 ;	    critical error handler to correctly handle the situ-     ;
@@ -41,7 +41,7 @@
 ;   5/13/93 Installed serial number validation and demo expiration.  ;
 ;	    Changed default dLongSize to 16 sectors from 3.	     ;
 ;   6/14/93 Changed default for wHandOff from 192 to 200, to	     ;
-;	    accomodate DOS 6.  Bumped release # to 1.05.	     ;
+;	    accommodate DOS 6.  Bumped release # to 1.05.	     ;
 ;   6/21/93 Added logic to confirm that the FCB we are reading       ;
 ;	    with is one that was created by us; if not, we return    ;
 ;	    with an eof indication.  This fixes an idiosyncracy      ;
@@ -113,7 +113,7 @@ TTESIZE		equ	72		; length of this structure
 ;---------------------- Handle Table Structure ----------------------;
 
 uHTStruc	struc
-bHTDrive	db	?		; relative cd-rom drive number
+bHTDrive	db	?		; relative CD-ROM drive number
 bHTDupCount	db	?		; number of psp handles for this entry
 dHTExtent 	dd	?		; starting block of file
 dHTSize	 	dd	?		; file size in bytes
@@ -126,8 +126,8 @@ HTLEN	 	equ	18		; length of the above structure
 ;------------------------ Cache Index Structure ---------------------;
 
 uCIStruc	struc
-dCIVolHash	dd	?		; identifies the cd-rom volume
-dCISector	db	3 dup(?)	; cd-rom sector number
+dCIVolHash	dd	?		; identifies the CD-ROM volume
+dCISector	db	3 dup(?)	; CD-ROM sector number
 bCILocation	db	?		; entry number within this bucket
 uCIStruc	ends
 CILEN		equ	8		; length of the above structure
@@ -229,7 +229,7 @@ lInt21Table 	label	word
 		dw	offset Int21Pass ; 26 create new PSP
 		dw	offset Fun27	 ; 27 random block read
 		dw	offset Fun28	 ; 28 random block write
-		dw	offset Int21Pass ; 29 parse filename
+		dw	offset Int21Pass ; 29 parse file name
 		dw	offset Int21Pass ; 2A get date 
 		dw	offset Int21Pass ; 2B set date
 		dw	offset Int21Pass ; 2C get time
@@ -279,8 +279,8 @@ lInt21Table 	label	word
 I21TLEN		equ	$-lInt21Table
 
 lInt2fTable 	label	word
-		dw	offset F2f00	 ; 00 get number of cd-rom drives
-		dw	offset F2f01	 ; 01 get cd-rom drive device list
+		dw	offset F2f00	 ; 00 get number of CD-ROM drives
+		dw	offset F2f01	 ; 01 get CD-ROM drive device list
 		dw	offset F2f02	 ; 02 get copyright file name
 		dw	offset F2f03	 ; 03 get abstract file name
 		dw	offset F2f04	 ; 04 get bibliographic doc file name
@@ -290,9 +290,9 @@ lInt2fTable 	label	word
 		dw	offset F2f08	 ; 08 absolute disk read
 		dw	offset i2fdone	 ; 09 absolute disk write
 		dw	offset i2fdone	 ; 0A reserved
-		dw	offset F2f0b	 ; 0B cd-rom drive check
+		dw	offset F2f0b	 ; 0B CD-ROM drive check
 		dw	offset F2f0c	 ; 0C this driver version
-		dw	offset F2f0d	 ; 0D get cd-rom drive letters
+		dw	offset F2f0d	 ; 0D get CD-ROM drive letters
 		dw	offset F2f0e	 ; 0E get/set volume descriptor pref
 		dw	offset F2f0f	 ; 0F get directory entry
 		dw	offset F2f10	 ; 10 send device request
@@ -377,18 +377,18 @@ lDirRecord	label	byte		; DIRECTORY RECORD WORK AREA
 bDRLength 	db	0		; length of record
 	 	db	0		; ext attribute record length
 dDRExtent 	dd	0		; location of extent
-	 	dd	0		; same in motorola format
+	 	dd	0		; same in Motorola format
 dDRFileSize 	dd	0		; data length
-	 	dd	0		; same in motorola format
+	 	dd	0		; same in Motorola format
 sDRDateTime	db	6 dup(0)	; recording date and time
 bDRFlags	db	0		; file flags
 	 	db	0		; reserved
 	 	db	0		; interleave size
 	 	db	0		; interleave skip factor
 	 	dw	0		; volume set sequence number
-	 	dw	0		; same in motorola format
-bDRNameLen	db	0		; length of filename
-sDRName	 	db	32 dup(0)	; filename
+	 	dw	0		; same in Motorola format
+bDRNameLen	db	0		; length of file name
+sDRName	 	db	32 dup(0)	; file name
 
 		even
 lPathTableEntry	label	byte		; PATH TABLE ENTRY WORK AREA
@@ -411,25 +411,25 @@ dRNBytesRead	dd	0		; length read so far for this request
 wNoRecords	dw	0		; scratch area
 wTrash	 	dw	0		; scratch area
 
-wSectorSize	dw	2048		; cd-rom sector size
-wThisBlkSize	dw	2048		; blocksize for current volume
+wSectorSize	dw	2048		; CD-ROM sector size
+wThisBlkSize	dw	2048		; block size for current volume
 wThisFormat	dw	0		; 0=HSG, FFFF=ISO
 wThisFCBOffset	dw	0		; 0=normal, 7=extended fcb
 bThisAtt	db	0		; attributes for current function
 bThisDrive	db	0		; drive for the current function
-sWorkDir	db	66 dup(0)	; path/filename for current function
+sWorkDir	db	66 dup(0)	; path/file name for current function
 
 sWSName1	db	11 dup(0)	; work areas for name compares
 sWSName2	db	11 dup(0)
 
 wpPathEnd 	dw	0		; end of path portion of ASCIIZ string
-waSaveArea 	dw	16 dup(0)	; savearea for critical errors
+waSaveArea 	dw	16 dup(0)	; save area for critical errors
 	 	db	0		; unused 
 bEnqCount	db	0		; 1 if this driver is busy
 
 		if	CACHELOGIC
 
-;	Cacheing-related variables follow
+;	Caching-related variables follow
 
 		even
 
@@ -777,7 +777,7 @@ F00Loop:
 	cmp	al,0ffh			; skip if unused slot
 	je	F00Next
 	sub	al,byte ptr [wHandOff]
-	jb	F00Next			; skip if not a cd-rom handle
+	jb	F00Next			; skip if not a CD-ROM handle
 	mov	bl,HTLEN		; compute index into our handle table
 	mul	bl
 	mov	bx,ax
@@ -796,7 +796,7 @@ F00Next:
 
 Fun0f	label	near
 	call	funfcbno		; entry logic for unopened-fcb call
-	call	getfcbnm		; put filename in sWSName1
+	call	getfcbnm		; put file name in sWSName1
 	call	ckdevnam		; get out if reserved device name
 	call	checkvol		; need volume info now
 	call	AddrTask
@@ -837,7 +837,7 @@ f0ffnf:
 ;-------------------------- Close FCB -------------------------------;
 
 Fun10	label	near
-	call	funfcbop		; pass the buck if not a cd-rom drive
+	call	funfcbop		; pass the buck if not a CD-ROM drive
 	jmp	f0fgood			; otherwise just tell 'em it worked
 
 	page
@@ -847,7 +847,7 @@ Fun10	label	near
 Fun11	label	near
 Fun12	label	near
 	call	funfcbno		; entry logic for unopened-fcb call
-	call	getfcbnm		; copy filename to sWSName1
+	call	getfcbnm		; copy file name to sWSName1
 
 ;	Note that DOS does support function 11 on a reserved device
 ;	name, taking action without accessing the current drive.  We
@@ -909,7 +909,7 @@ f11bad:
 	jmp	i21fcberr
 
 getfcbnm proc	near
-	lea	si,[bx+1]		; save fcb filename to sWSName1
+	lea	si,[bx+1]		; save fcb file name to sWSName1
 	mov	di,offset sWSName1
 	mov	cx,11
 	push	ds
@@ -988,7 +988,7 @@ f14stuff:
 	cmp	word ptr es:[bx+30],5a5ah ;930621 check if we opened it
 	je	f14ours			  ;930621 yes, jump
 	mov	al,1			  ;930621 no, return eof
-	jmp	f14done			  ;930621 to accomodate Xtree Gold
+	jmp	f14done			  ;930621 to accommodate Xtree Gold
 f14ours:
 	push	es			; point ds to fcb
 	pop	ds
@@ -1119,7 +1119,7 @@ Fun27:
 
 Fun23	label	near
 	call	funfcbno		; entry logic for unopened-fcb call
-	call	getfcbnm		; copy filename to sWSName1
+	call	getfcbnm		; copy file name to sWSName1
 	call	findfcb			; do the find
 	jc	f23bad			; jump if not found
 	mov	ax,word ptr [dDRFileSize]
@@ -1209,7 +1209,7 @@ f3bbad:
 Fun3d	label	near
 	mov	si,[wUserDX]		; offset to asciiz string
 F3dMain:
-	mov	al,07h			; include readonly/hidden/system files
+	mov	al,07h			; include read-only/hidden/system files
 	call	f3dfront		; front-end stuff - locate the file
 	call	getfhand		; find a free handle table entry
 	jc	f3dnhl			; error if no handles left
@@ -1270,7 +1270,7 @@ f3dfront proc	near
 	pop	ax
 	jc	f3dpnf
 	mov	[bThisAtt],al		; set search attributes
-	push	ds			; put filename in sWSName1
+	push	ds			; put file name in sWSName1
 	pop	es
 	mov	si,[wpPathEnd]
 	mov	ds,[wUserDS]
@@ -1289,7 +1289,7 @@ f3dskp1:
 	call	ckdevnam		; get out if device driver name
 	mov	si,2
 	and	si,[wThisFormat]	; si=2 if ISO, 0 if HSG
-	mov	ax,word ptr [dPTExtent+si] ; scan directory for filename
+	mov	ax,word ptr [dPTExtent+si] ; scan directory for file name
 	mov	dx,word ptr [dPTExtent+2+si]
 	call	sdisetup
 	call	sdinext
@@ -1341,7 +1341,7 @@ gphbad:
 	ret
 getpsph endp
 
-;-------------- Check if filename is a character device -------------;
+;-------------- Check if file name is a character device -------------;
 
 ckdevnam proc	near
 	push	bx
@@ -1406,7 +1406,7 @@ prochand proc	near
 	call	tracer
 	endif
 
-	call	Enque			; serialize cd-rom logic
+	call	Enque			; serialize CD-ROM logic
 
 	mov	al,[bx+bHTDrive]	;930621  oops, we forgot this
 	mov	[bThisDrive],al		;930621
@@ -1642,7 +1642,7 @@ f42got:
 Fun43	label	near
 	mov	al,17h			; include dir,rdonly,sys,hidden files
 	mov	si,[wUserDX]		; offset to asciiz string
-	call	f3dfront		; same startup as open
+	call	f3dfront		; same start-up as open
 	cmp	byte ptr [wUserAX],0	; just getting the attribute?
 	jne	f43bad			; no, error
 	call	cnvattr			; convert attribute flags
@@ -1740,7 +1740,7 @@ f47loop:
 Fun4b	label	near
 	mov	es,[wUserDS]		; address asciiz string
 	mov	si,[wUserDX]
-	call	CheckPath		; go away if ds:dx not a cd-rom path
+	call	CheckPath		; go away if ds:dx not a CD-ROM path
 	mov	sp,bp			; restore registers as at EntInt21
 
 	call	Deque			; this because CheckPath did an Enque
@@ -1821,7 +1821,7 @@ f4ewrap:
 	mov	si,offset dDRFileSize	; file size
 	movsw
 	movsw
-	mov	si,offset sDRName	; filename, asciiz format
+	mov	si,offset sDRName	; file name, asciiz format
 	call	copyname
 	mov	[wUserAX],0		; DOS does this!
 	jmp	i21clcx
@@ -1837,7 +1837,7 @@ cpnloop:
 
 	cmp	al,'.'			;0992 check if .ext reached
 	jne	cpncklen		;0992 no, skip
-	mov	cl,ch			;0992 yes, set max ramaining length
+	mov	cl,ch			;0992 yes, set max remaining length
 	xor	ch,ch			;0992
 cpncklen:				;0992
 	or	cl,cl			;0992 exceeded max length?
@@ -2009,7 +2009,7 @@ F2f04	label	near
 F2f05	label	near
 	mov	ax,[wUserCX]		; init for specified drive
 	call	procdrv
-	jc	F2f02Error		; error if not a cd-rom drive
+	jc	F2f02Error		; error if not a CD-ROM drive
 	call	checkvol		; check if new or unmounted volume
 	mov	ax,0010h		; first vol descriptor is 00010h
 	xor	dx,dx
@@ -2046,7 +2046,7 @@ F2f05SetAX:
 F2f08	label	near
 	mov	ax,[wUserCX]		; init for specified drive
 	call	procdrv
-	jc	F2f02Error		; error if not a cd-rom drive
+	jc	F2f02Error		; error if not a CD-ROM drive
 	call	checkvol		; check if new or unmounted volume
 	mov	ax,[wUserDX]		; dx is number of sectors
 	mov	[wRLNoSec],ax
@@ -2075,13 +2075,13 @@ F2f0b	label	near
 	mov	[wUserBX],0adadh	; indicate extensions are installed
 	mov	ax,[wUserCX]		; init for specified drive
 	call	procdrv
-	mov	ax,0			; 0 means not a cd-rom drive
+	mov	ax,0			; 0 means not a CD-ROM drive
 	jc	F2f0bSkip
 	dec	ax			; nonzero means it is
 	mov	[wUserAX],ax
 	jmp	I2fDeque
 F2f0bSkip:
-	mov	[wUserAX],ax		; if not cd-rom then we're not enqued
+	mov	[wUserAX],ax		; if not CD-ROM then we're not enqued
 	jmp	I2fclcx
 
 ;--------------------- Extensions Version Check ---------------------;
@@ -2120,7 +2120,7 @@ F2f0f	label	near
 F2f10	label	near
 	mov	ax,[wUserCX]		; init for specified drive
 	call	procdrv
-	jc	F2f10Error		; error if not a cd-rom drive
+	jc	F2f10Error		; error if not a CD-ROM drive
 	mov	bx,[wUserBX]
 	mov	es,[wUserES]
 	mov	al,[bThisDrive]		; set subunit
@@ -2161,7 +2161,7 @@ EntInt25 label	near
 	call	Deque
 
 	call	restregs
-	mov 	ax,0201h		; int25 not allowed on a cd-rom
+	mov 	ax,0201h		; int25 not allowed on a CD-ROM
 	stc
 
 farret	proc	far
@@ -2259,7 +2259,7 @@ cnvaskip:
 	ret
 cnvattr	endp
 
-;	Subroutine: Store formatted filename/extension from ds:si to es:di.
+;	Subroutine: Store formatted file name/extension from ds:si to es:di.
 ;	DS need not point to this program's segment!
 
 stofname proc	near
@@ -2340,8 +2340,8 @@ getusend proc	near
 getusend endp
 
 ;	The following, if called, should be called right after getusend.
-;	It is used if the path is expected to end with a filename, and scans
-;	backwards to determine the filename start position.  DI is returned.
+;	It is used if the path is expected to end with a file name, and scans
+;	backwards to determine the file name start position.  DI is returned.
 
 getupend proc	near
 	cmp	di,si
@@ -2360,10 +2360,10 @@ getupend endp
 ;	This consists of checking to see if the relevant drive belongs
 ;	to us, and if it does then building the complete new path in
 ;	"sWorkDir", setting "bThisDrive" to the drive number, and checking
-;	to see if the path is valid for the current cd-rom.
+;	to see if the path is valid for the current CD-ROM.
 
 procpath proc	near
-	call	CheckPath		; go away if not cd-rom path
+	call	CheckPath		; go away if not CD-ROM path
 
 ;	The drive for this function call is ours! 
 ;	Build a tentative new current directory in "sWorkDir".
@@ -2409,7 +2409,7 @@ prpent2:
 prpskip2:
 
 ;	Workdir is built. Now we need to see if all the names exist 
-;	in the path table in the specified heirarchical order.
+;	in the path table in the specified hierarchical order.
 
 	call	checkvol		; need volume info now
 	call	AddrDrive		; ensure valid return if root
@@ -2506,7 +2506,7 @@ ucplug:
 	ret
 UpperCase endp
 
-;	Subroutine: Compare filenames; ?'s allowed in ds:si name
+;	Subroutine: Compare file names; ?'s allowed in ds:si name
 
 compname proc	near
 	cld
@@ -2866,14 +2866,14 @@ cdrpass:
 CheckDrive endp
 
 procdrv proc	near
-	cmp	al,[bDriveFirst]	; see if it's a cd-rom drive
+	cmp	al,[bDriveFirst]	; see if it's a CD-ROM drive
 	jb	pdrerror
 	cmp	al,[bDriveLast]
 	ja	pdrerror
 	cmp	word ptr [dDevAddr+2],0	; make sure there's a h/w driver
 	je	pdrerror
 
-	call	Enque			; serialize access to cd-rom logic
+	call	Enque			; serialize access to CD-ROM logic
 
 	mov	[bThisDrive],al
 	push	es
@@ -3163,7 +3163,7 @@ rasgo:
 ; - - - - - - - - - -  Cache logic starts here - - - - - - - - - - - ;
 
 	call	GetHandle		; get cachefile handle
-	jc	jrascaerr		; skip cacheing if it fails
+	jc	jrascaerr		; skip caching if it fails
 	or	dx,dx			; don't use cache if VTOC sector
 	jnz	rascache
 	cmp	ax,16
@@ -3274,7 +3274,7 @@ rascdrom:
 
 	endif
 
-	mov	word ptr [dBuffSector+2],-1 ; invalidate whatever's buffered
+	mov	word ptr [dBuffSector+2],-1 ; invalidate whatever is buffered
 	mov	[wRLNoSec],1		; number of sectors
 	mov	word ptr [dpRLXfer],0	; transfer address
 	mov	ax,[wDataBuffAddr]
@@ -3435,7 +3435,7 @@ ifslash	endp				;0992
 criterr	proc	near
 	mov	ax,21			; indicate drive not ready
 	call	SetError		; set ext error code for int24 handler
-	mov	bx,offset waSaveArea	; savearea for stuff on the stack
+	mov	bx,offset waSaveArea	; save area for stuff on the stack
 	mov	ds:[bx],sp		; save sp for calculation below
 	mov	al,[bThisDrive]		; the failing drive
 	mov	ah,00010000b		; disk error, retry allowed, dos area
@@ -3454,7 +3454,7 @@ crepop:
 	mov	bp,sp
 	mov	bx,sp			; compute address of 1st word to push
 	sub	bx,[waSaveArea]		; = current sp - original sp
-	add	bx,offset waSaveArea	; + savearea address 
+	add	bx,offset waSaveArea	; + save area address 
 crepush:
 	push	ds:[bx]			; pushed saved stuff back onto stack
 	sub	bx,2
@@ -3809,7 +3809,7 @@ sMsgSerial	db	'CDL12 Invalid serial number!',13,10,'$'
 
 sMsgFound	db	'CDL01 Using existing cache file.',13,10,'$'
 sMsgCreating	db	'CDL02 Creating new cache file...',13,10,'$'
-sMsgBadName	db	'CDL04 Incomplete cache filename!',13,10,'$'
+sMsgBadName	db	'CDL04 Incomplete cache file name!',13,10,'$'
 sMsgCacheInit	db	'CDL05 Error initializing cache file!',13,10,'$'
 sMsgTooSmall	db	'CDL06 Cache Size too small!',13,10,'$'
 
@@ -3960,7 +3960,7 @@ ParseTasks:
 	mov	[wMaxTasks],ax
 	jmp	ParseLoop
 ParseHandles:
-	call	DecToBin		; Number of cd-rom handles allowed
+	call	DecToBin		; Number of CD-ROM handles allowed
 	mov	dx,offset cgroup:sMsgHandles
 	cmp	ax,5			; H= must be 5-235, default is 20
 	jb	ParseErrMsg

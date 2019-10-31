@@ -497,7 +497,7 @@ DisplayDocument label near
 
 	mov	[wDocumentIndex],0
 DDocLoop:
-	call	DocDisplay		; write a screenful
+	call	DocDisplay		; write a screen full
 	mov	ah,0			; get a key
 	int	16h
 	cmp	al,1bh			; Esc
@@ -917,7 +917,7 @@ dosglcd:
 dosgsk1:
 	cmp	byte ptr [si],01h
 	jbe	dosglcd
-	jmp	dosdsf			; redisplay new field
+	jmp	dosdsf			; re-display new field
 dosgncd:
 
 ;	Handle Cursor Up key
@@ -935,7 +935,7 @@ dosglcu:
 dosgsk2:
 	cmp	byte ptr [si],01h	; loop if not selectable
 	jbe	dosglcu
-	jmp	dosdsf			; redisplay new field
+	jmp	dosdsf			; re-display new field
 dosgncu:
 
 ;	Handle Enter key

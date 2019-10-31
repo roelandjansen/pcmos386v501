@@ -81,7 +81,7 @@ More specifically, the optional parameters are as follows:
      "MSCD001".
 
      <cachefilespec> is the fully qualified file specification 
-     for the work file that CD-Link creates and uses for cacheing 
+     for the work file that CD-Link creates and uses for caching 
      of CD-ROM data.  "Fully qualified" means that a drive letter 
      and complete path specification must be supplied - e.g., 
      "C:\WORK\CACHE.DAT".  Default is "C:\CDLINKCA.CHE".  This 
@@ -98,7 +98,7 @@ More specifically, the optional parameters are as follows:
 
      <longreadsectors> is a number from 2 to 65,535 which specifies 
      the minimum number of whole CD-ROM sectors in a single read 
-     request that will cause cacheing to NOT occur.  The theory is 
+     request that will cause caching to NOT occur.  The theory is 
      that if there is a "long" read request for some large number 
      of contiguous sectors, then it may be better to always read 
      them directly from the CD-ROM as opposed to consuming large 
@@ -143,10 +143,10 @@ file and will be re-used even after you power off your computer; this will
 translate to a significant performance benefit as the system "learns" your 
 CD-ROMs.
 
-IMPORTANT NOTE: Cacheing performance is closely tied to the performance of your
-hard disk.  We strongly recommend that you use a cacheing utility for your hard
+IMPORTANT NOTE: Caching performance is closely tied to the performance of your
+hard disk.  We strongly recommend that you use a caching utility for your hard
 disk - or if you use PC-MOS, take the time to optimize your "cache=" parameters
-(write cacheing IS recommended).
+(write caching IS recommended).
 
 
 THE CDSTAT UTILITY
@@ -198,7 +198,7 @@ The ability of DOS 5 and 6 to put itself, device drivers, and TSRs into upper
 memory is a big plus.  CDLINK (for DOS) appears to work well when loaded with 
 the "DEVICEHIGH=" config.sys statement.
 
-As noted above, use of a disk cacheing utility is strongly recommended.  We 
+As noted above, use of a disk caching utility is strongly recommended.  We 
 have had good results with SMARTDRV.EXE, which can also be loaded into upper 
 memory with DOS 5 and greater.
 
@@ -288,7 +288,7 @@ sure to delete your old cache file and reboot!
 WARNING FOR HITACHI CD-ROM DRIVE USERS
 --------------------------------------
 
-A pecularity was found with the driver HITACHIA.SYS version 2.20, and may also
+A peculiarity was found with the driver HITACHIA.SYS version 2.20, and may also
 exist in other versions.  This driver requires that it be the LAST device in 
 your config.sys file (let's hope this does not become a common requirement from
 developers of device drivers!).

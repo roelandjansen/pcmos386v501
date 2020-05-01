@@ -6,4 +6,4 @@ if [ -z "$REV" ] || [ "$REV" -lt 3684 ]; then
     exit 1
 fi
 
-dosemu -td -K ./MAKEMOS.BAT -U 2 'path=%D\bin;%O'
+dosemu -td -K SOURCES/src/MAKEMOS.BAT -U 2 'path=%D\bin;%O'

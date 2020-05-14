@@ -24,6 +24,7 @@ REM =======================
 
 rem cd mos5src
 make -f makeutil.mak all
+ren moxcptsk.com command.com
 rem make -f maketerm.mak all
 ren __*.* $$*.*
 ren _*.sys $*.sys

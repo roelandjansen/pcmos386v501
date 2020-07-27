@@ -18,12 +18,14 @@ REM ren $$eval.sys $$mos.sys
 
 REM this was for internal R & D use only.
 make -f kernel.mak $$mos.sys
+if ERRORLEVEL 1 exit 1
 
 rem cd ..
 REM =======================
 
 rem cd mos5src
 make -f makeutil.mak all
+if ERRORLEVEL 1 exit 1
 ren moxcptsk.com command.com
 rem make -f maketerm.mak all
 ren __*.* $$*.*
@@ -32,6 +34,7 @@ cd ..
 
 cd import
 make -f import.mak import.exe
+if ERRORLEVEL 1 exit 1
 cd ..
 
 rem cd export

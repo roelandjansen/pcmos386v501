@@ -1,0 +1,29 @@
+language: c
+
+dist:  focal
+
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:dosemu2/ppa'
+    packages:
+      - acl
+      - dosemu2
+      - fdpp
+      - comcom32
+
+  update: true
+
+env: DOSEMU_QUIET=1
+
+before_install:
+  - sudo setfacl -m u:${USER}:rw /dev/kvm
+
+install:
+  - ./build.sh
+
+before_script:
+  - echo "before_script"
+
+script:
+  - echo "script"

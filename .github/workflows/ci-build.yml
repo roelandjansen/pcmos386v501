@@ -1,0 +1,27 @@
+name: Build
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - ready_for_review
+      - reopened
+      - synchronize
+  push:
+
+jobs:
+  build:
+    if: contains(github.event.head_commit.message, '[skip ci]') == false
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: package install
+      run: ./ci_prereq.sh
+
+    - name: build
+      run: ./build.sh
+      env:
+        DOSEMU_QUIET: 1

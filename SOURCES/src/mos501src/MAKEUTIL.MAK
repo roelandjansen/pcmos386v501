@@ -466,11 +466,11 @@ moxcppls.obj :  moxcppls.asm  page.inc  moxcpdat.inc  mosscbdf.inc \
 #  Utility programs written in C.  (And Pascal, temporarily)
 #
 compfile.exe: compfile.c
-        cl -c compfile.c
+        loadfix cl -c compfile.c
         link compfile/e,,,rsasmall
 
 helpgen.exe: helpgen.c
-        cl -c helpgen.c
+        loadfix cl -c helpgen.c
         link helpgen/e,,,rsasmall
 
 help.exe: help.pas help.inc

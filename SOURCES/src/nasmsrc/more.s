@@ -171,7 +171,7 @@ SkipInc:
         jae     EnoughMem
         lea     dx,ermsg1       ; not enough memory 
         mov     bx,stderr       ; report and quit
-        mov     cl,erm1ln
+        mov     cl,[erm1ln]
         xor     ch,ch
         MOS     writfil
         MOS     quit
@@ -217,7 +217,7 @@ WriteChar:
         mov     dl,al           ; send the charactor to standard output
         MOS     prnchr
         mov     bl,al
-        cmp     [lincntr], byte maxlins
+        cmp     byte [lincntr], maxlins
         jl      Wc1
         lea     dx,moremsg      ; if a screen full has been sent, put up
         MOS     prnstr          ; message and pause for key.  

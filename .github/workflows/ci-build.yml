@@ -13,18 +13,18 @@ jobs:
   build:
     if: contains(github.event.head_commit.message, '[skip ci]') == false
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v7
 
-    - name: package install
+    - name: Package Install
       run: ./ci_prereq.sh
 
-    - name: build
+    - name: Build
       id: build
       run: ./build.sh
-    - name: log
+    - name: Log
       if: ${{ always() && (steps.build.outcome == 'failure') }}
       run: |
         echo "output.log"

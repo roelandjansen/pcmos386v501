@@ -1,6 +1,6 @@
 # PC-MOS/386
 
-This repository the home of PC-MOS/386, based on the last released commercial version (v5.01). 
+This repository is the home of PC-MOS/386, based on the last released commercial version (v5.01). 
 
 In concert with Gary Robertson and Rod Roark it has been decided to place all under GPL v3. The development now continues in the hope that it will be both an educational and useful project.
 

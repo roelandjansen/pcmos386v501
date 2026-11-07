@@ -1,10 +1,8 @@
 # PC-MOS/386
 
-This repository is the home of PC-MOS/386, based on the last released commercial version (v5.01). 
+This repository is the home of PC-MOS/386, originally made by **The Software Link, Inc.**, based on the last released commercial version (**v5.01**). 
 
-In concert with Gary Robertson and Rod Roark it has been decided to place all under GPL v3. The development now continues in the hope that it will be both an educational and useful project.
-
-This does only apply to the PC-MOS/386, The Software Link inc and CDROM source code. Does not apply for helper files that are included and publically available.
+In concert with Gary Robertson and Rod Roark it has been decided to place all under GPL v3. It does not apply for helper files that are included and publically available, only to the PC-MOS/386 and CDROM source code. The development now continues in the hope that it will be both an educational and useful project.
 
 The C compiler and linker *et al.* can be downloaded from several places. Giving the age of the compiler tools (1998...), i think it's not a problem to add it, otherwise i will remove the files.
 
